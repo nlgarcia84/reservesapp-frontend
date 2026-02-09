@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+
+/* CSS global opcional */
+body {
+  font-family: 'Montserrat', sans-serif;
+}
