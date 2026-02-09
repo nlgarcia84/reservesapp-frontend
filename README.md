@@ -1,33 +1,52 @@
 # ReservesApp Frontend
 
-[![React](https://img.shields.io/badge/React-17.0.2-blue?logo=react&logoColor=white)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-18.x-green?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![Vite](https://img.shields.io/badge/Vite-4.x-blueviolet?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![License](https://img.shields.io/badge/License-MIT-yellow)](LICENSE)
+![React](https://img.shields.io/badge/React-18.x-blue?logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-4.x-purple?logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-teal?logo=tailwind-css&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-## Descripció
-Aquest repositori conté el frontend de **ReservesApp**, una aplicació per a gestionar reserves de sales.  
-El frontend està desenvolupat amb **React** i ofereix una interfície d’usuari per consultar disponibilitat, crear, editar i cancel·lar reserves, consumint l’API REST del backend.
+---
 
-## Funcionalitats principals
-- Visualitzar sales i horaris disponibles.  
-- Crear noves reserves i consultar-les.  
-- Editar i cancel·lar reserves existents.  
-- Interfície responsiva i components reutilitzables.  
-- Consum d’API REST exposada pel backend (Spring Boot).  
-- Gestió de l’estat amb **React Context** o altres eines similars.
+## 📖 Descripción
 
-## Tecnologies
-- **React**: Framework principal del frontend.  
-- **JavaScript / JSX**: Llenguatge principal.  
-- **Vite**: Bundler i servidor de desenvolupament.  
-- **CSS / Sass / Tailwind**: Estils i disseny de components.  
-- **Axios / Fetch**: Comunicació amb el backend.  
-- **GitHub**: Control de versions i col·laboració.
+Este repositorio contiene el **frontend** de **ReservesApp**, una aplicación para gestionar reservas de salas.  
+Está desarrollado con **React**, usando **Vite** como bundler y **TailwindCSS** para estilos.
 
-## Instal·lació
-Clonar el repositori:
+El frontend permite a los usuarios:
 
-```bash
-git clone https://github.com/nlgarcia84/reservesapp-frontend.git
+- Consultar disponibilidad de salas.
+- Crear, editar y cancelar reservas.
+- Visualizar horarios de manera clara y responsiva.
+- Conectarse con el **backend REST** de Spring Boot.
+
+---
+
+## 🛠 Tecnologías
+
+- **React 18** – Framework principal del frontend.
+- **Vite 4** – Bundler y servidor de desarrollo.
+- **JavaScript (ES6+)** – Lenguaje principal.
+- **TailwindCSS 3** – Estilos rápidos y responsivos.
+- **Axios / Fetch** – Comunicación con el backend.
+- **Node.js & npm** – Entorno de desarrollo y gestión de dependencias.
+- **GitHub** – Control de versiones.
+
+---
+
+## 📁 Estructura del proyecto
+
+```text
+reservesapp-frontend/
+├─ public/               # Archivos estáticos (index.html, favicon, etc.)
+├─ src/                  # Código fuente de React
+│  ├─ components/        # Componentes reutilizables
+│  ├─ pages/             # Páginas principales
+│  ├─ services/          # Funciones para consumir API
+│  ├─ App.jsx            # Componente principal
+│  └─ main.jsx           # Entrada del proyecto
+├─ node_modules/         # Dependencias del proyecto
+├─ package.json           # Configuración del proyecto y scripts
+├─ package-lock.json      # Lockfile de dependencias
+├─ vite.config.js         # Configuración de Vite
+└─ README.md             # Documentación del proyecto
 
