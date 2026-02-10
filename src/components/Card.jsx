@@ -1,3 +1,4 @@
+import React from 'react';
 import { Button } from './Button';
 
 export const Card = ({ title, data, onClick }) => {

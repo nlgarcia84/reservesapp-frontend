@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const Button = ({ buttonTitle, onClick }) => {
   return (
     <>
