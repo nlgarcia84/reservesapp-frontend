@@ -17,8 +17,8 @@ export const getRooms = async () => {
   return rooms;
 };
 
-export const setRooms = async (name: string, capacity: string) => {
-  const res = await fetch(`${API_URL}/rooms/createRooms`, {
+export const setRooms = async (name: string, capacity: number) => {
+  const res = await fetch(`${API_URL}/rooms`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, capacity }),
