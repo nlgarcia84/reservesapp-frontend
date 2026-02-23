@@ -1,37 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ReservesApp Frontend
 
-## Getting Started
+Frontend de **ReservesApp** construït amb **Next.js (App Router)**, **TypeScript** i **Tailwind CSS**. Inclou el login i panells (Admin/Employee) consumint una API REST.
 
-First, run the development server:
+## Stack
+
+- **Framework:** Next.js 16
+- **UI:** React 19
+- **Lenguaje:** TypeScript
+- **Estilos:** Tailwind CSS v4 + PostCSS
+- **Iconos:** lucide-react
+- **Calidad:** ESLint (eslint-config-next)
+
+## Requisits
+
+- Node.js (recomanat: LTS)
+- npm
+
+## Configuració
+
+1. Instal·lar dependències:
+
+```bash
+npm install
+```
+
+2. Variables d'entorn
+
+Crea un fitxer `.env.local` a l'arrel del projecte:
+
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:8080
+```
+
+> `NEXT_PUBLIC_*` s'exposa al navegador. No hi posis secrets.
+
+3. Arrencar en desenvolupament:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Obrir: http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` — servidor de desarrollo
+- `npm run build` — build de producción
+- `npm run start` — servidor en modo producción
+- `npm run lint` — lint del proyecto
 
-## Learn More
+## Integració amb l'API
 
-To learn more about Next.js, take a look at the following resources:
+Aquest frontend espera una API amb endpoints similars a:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `POST /auth/login` → retorna un JSON tipus `{ token, role }`
+- `GET /rooms` → retorna una llista de sales (array JSON)
+- `POST /rooms` → crea una sala
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+La URL base es configura amb `NEXT_PUBLIC_API_URL`.
 
-## Deploy on Vercel
+## Captura
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<!-- Afegeix una captura a `public/screenshot.png` i actualitza el path si cal -->
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# reservesapp-frontend
+![Captura del projecte](public/screenshot.png)
+
+## Estructura del projecte
+
+```text
+.
+├─ app/
+│  ├─ globals.css
+│  ├─ layout.tsx
+│  ├─ login/
+│  │  └─ page.tsx
+│  ├─ dashboard/
+│  │  ├─ admin/
+│  │  │  ├─ layout.tsx
+│  │  │  └─ page.tsx
+│  │  └─ employee/
+│  │     ├─ layout.tsx
+│  │     └─ page.tsx
+│  └─ services/
+│     ├─ auth.ts
+│     └─ rooms.ts
+├─ components/
+│  ├─ admin/
+│  │  └─ AdminSidebar.tsx
+│  ├─ employee/
+│  │  └─ EmployeeSidebar.tsx
+│  ├─ layout/
+│  │  ├─ BurgerButton.tsx
+│  │  └─ Header.tsx
+│  └─ ui/
+│     └─ Card.tsx
+├─ public/
+├─ eslint.config.mjs
+├─ next.config.ts
+├─ postcss.config.mjs
+├─ tsconfig.json
+└─ package.json
+```
+
+## Notes
+
+- **App Router:** Les rutes viuen a `app/` (per exemple `app/login/page.tsx`).
+- **Tailwind v4:** es carrega via `@import "tailwindcss";` a `app/globals.css`.
+- Si canvies tipus/rutes, Next genera fitxers de validació dins de `.next/` automàticament (no editar-los a mà).
