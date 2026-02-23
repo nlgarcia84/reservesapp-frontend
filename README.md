@@ -63,7 +63,7 @@ La URL base es configura amb `NEXT_PUBLIC_API_URL`.
 
 <!-- Afegeix una captura a `public/screenshot.png` i actualitza el path si cal -->
 
-![Captura del projecte](public/screenshot.png)
+![alt text](<Captura de pantalla 2026-02-23 a les 23.31.49.png>)
 
 ## Estructura del projecte
 
