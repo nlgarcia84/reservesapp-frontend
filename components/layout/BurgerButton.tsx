@@ -3,12 +3,19 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
-export const BurgerButton = () => {
+interface BurgerButtonProps {
+  sidebar: () => void;
+}
+
+export const BurgerButton = ({ sidebar }: BurgerButtonProps) => {
   const [open, setOpen] = useState(false);
 
   return (
     <button
-      onClick={() => setOpen(!open)}
+      onClick={() => {
+        setOpen(!open);
+        sidebar();
+      }}
       className="flex items-center p-2 rounded-md hover:bg-gray-200 focus:outline-none transition"
     >
       <Menu
