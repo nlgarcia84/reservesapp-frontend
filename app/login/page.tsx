@@ -49,10 +49,10 @@ const LoginPage = () => {
              shadow-[0_0_25px_rgba(52,211,153,0.35)]  sm:py-15 sm:px-1 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl"
       >
         <div className="text-center mb-5 p-5">
-          <p className="text-white text-3xl md:text-xl mb-2 text-center font-bold">
+          <p className="text-white text-3xl md:text-4xl mb-2 text-center font-bold">
             Inicia sessió
           </p>
-          <p className="text-slate-300 text-lg font-light">
+          <p className="text-slate-300 text-lg md:text-lg font-light">
             Introdueix les teves credencials per accedir
           </p>
         </div>
