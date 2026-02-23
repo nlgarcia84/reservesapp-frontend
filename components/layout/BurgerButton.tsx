@@ -16,7 +16,7 @@ export const BurgerButton = ({ sidebar }: BurgerButtonProps) => {
         setOpen(!open);
         sidebar();
       }}
-      className="flex items-center p-2 rounded-md hover:bg-gray-200 focus:outline-none transition"
+      className="relative inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-gray-200 focus:outline-none transition"
     >
       <Menu
         className={`w-6 h-6 text-gray-700 absolute transition-all duration-300 ${
