@@ -56,6 +56,7 @@ const AdminPage = async () => {
                   className="bg-emerald-950 m-1 rounded-2xl p-4 mb-2 flex flex-row justify-between"
                 >
                   <p className="font-semibold">{room.name}</p>
+
                   <p className="text-sm text-slate-400">
                     {room.capacity} places
                   </p>

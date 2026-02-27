@@ -14,10 +14,10 @@ export const getRooms = async () => {
   }
 
   const rooms: Room[] = await res.json();
-  return rooms;
+  return rooms.sort((a, b) => a.name.localeCompare(b.name));
 };
 
-export const setRooms = async (name: string, capacity: number) => {
+export const addNewRoom = async (name: string, capacity: number) => {
   const res = await fetch(`${API_URL}/rooms`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -30,4 +30,15 @@ export const setRooms = async (name: string, capacity: number) => {
   }
 
   return res.json();
+};
+
+export const deleteRoom = async (name: string) => {
+  const res = await fetch(`${API_URL}/rooms/${name}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.message || 'Error eliminant sala');
+  }
 };

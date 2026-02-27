@@ -15,7 +15,6 @@ export const Sidebar = ({ open, onClose, children }: Sidebar) => {
         'transform transition-transform duration-300 ease-in-out will-change-transform',
         open ? 'translate-x-0' : '-translate-x-full',
       ].join(' ')}
-      aria-hidden={!open}
     >
       <nav className="p-10 flex flex-col gap-4 text-2xl">
         {children}
