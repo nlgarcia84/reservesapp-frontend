@@ -3,13 +3,20 @@
 import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
-export const BurgerButton = () => {
+interface BurgerButtonProps {
+  sidebar: () => void;
+}
+
+export const BurgerButton = ({ sidebar }: BurgerButtonProps) => {
   const [open, setOpen] = useState(false);
 
   return (
     <button
-      onClick={() => setOpen(!open)}
-      className="flex items-center p-2 rounded-md hover:bg-gray-200 focus:outline-none transition"
+      onClick={() => {
+        setOpen(!open);
+        sidebar();
+      }}
+      className="relative inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-gray-200 focus:outline-none transition"
     >
       <Menu
         className={`w-6 h-6 text-gray-700 absolute transition-all duration-300 ${
