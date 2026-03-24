@@ -37,8 +37,7 @@ const LoginPage = () => {
     <div className="flex min-h-screen items-center justify-center bg-black px-4 py-8 font-sans text-white sm:px-6">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md rounded-2xl border border-white/10 bg-black/80 p-5 backdrop-blur-sm sm:p-7
-              shadow-[0_1px_0_rgba(255,255,255,0.18),0_24px_60px_rgba(0,0,0,0.58),0_0_44px_rgba(255,255,255,0.18),0_0_64px_rgba(59,130,246,0.2),0_0_108px_rgba(251,191,36,0.16)]"
+        className="w-full max-w-md rounded-2xl bg-black/80 p-5 backdrop-blur-sm sm:p-7"
       >
         <div className="mb-6 text-center">
           <p className="mb-2 text-center text-3xl font-bold sm:text-4xl text-white">
