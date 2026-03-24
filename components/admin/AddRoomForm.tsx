@@ -38,7 +38,7 @@ export function AddRoomForm() {
 
   return (
     <div className="mb-10">
-      <h2 className="text-2xl font-semibold mb-6 text-emerald-300">
+      <h2 className="mb-6 text-2xl font-semibold text-zinc-100">
         Afegir nova sala
       </h2>
 
@@ -47,34 +47,38 @@ export function AddRoomForm() {
         className="flex flex-col w-full md:w-4/5 lg:w-2/3 mx-auto gap-4"
       >
         <div className="flex flex-col gap-1">
-          <label className="text-lg text-slate-300">Nom de la sala</label>
+          <label className="text-base font-medium text-zinc-300">
+            Nom de la sala
+          </label>
           <input
             type="text"
             placeholder="Nova Sala"
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={isLoading}
-            className="bg-white px-4 py-2 rounded-3xl text-stone-900 text-center disabled:opacity-50"
+            className="rounded-lg border border-white/15 bg-black px-4 py-2 text-zinc-100 text-center placeholder:text-zinc-500 disabled:opacity-50"
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-lg text-slate-300">Capacitat</label>
+          <label className="text-base font-medium text-zinc-300">
+            Capacitat
+          </label>
           <input
             type="number"
             placeholder="Capacitat"
             value={capacity}
             onChange={(e) => setCapacity(e.target.value)}
             disabled={isLoading}
-            className="bg-white px-4 py-2 rounded-3xl text-stone-900 text-center disabled:opacity-50"
+            className="rounded-lg border border-white/15 bg-black px-4 py-2 text-zinc-100 text-center placeholder:text-zinc-500 disabled:opacity-50"
           />
         </div>
 
         <button
           type="submit"
           disabled={isLoading}
-          className="mx-auto w-full rounded-3xl bg-emerald-400 px-4 py-2
-                     text-slate-900 font-semibold hover:bg-emerald-300
+          className="mx-auto w-full rounded-lg border border-zinc-200 bg-white px-4 py-2
+                     text-black font-semibold hover:bg-zinc-100
                      disabled:opacity-60 transition-colors"
         >
           Afegir Sala
@@ -90,7 +94,7 @@ export function AddRoomForm() {
               Afegint sala...
             </span>
             <LoaderCircle
-              className="mx-auto h-8 w-8 animate-spin text-emerald-400 motion-reduce:animate-none"
+              className="mx-auto h-8 w-8 animate-spin text-blue-400 motion-reduce:animate-none"
               aria-label="Carregant"
             />
           </div>
@@ -98,9 +102,7 @@ export function AddRoomForm() {
 
         {/* Success */}
         {showSuccess ? (
-          <p className="text-center text-2xl text-emerald-300">
-            ✓ Sala afegida!
-          </p>
+          <p className="text-center text-2xl text-blue-400">✓ Sala afegida!</p>
         ) : null}
       </form>
     </div>
