@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "fresh": "rm -rf .next && npm run dev",
+    "sync": "npm install && rm -rf .next && npm run dev"
   },
   "dependencies": {
     "lucide-react": "^0.575.0",
