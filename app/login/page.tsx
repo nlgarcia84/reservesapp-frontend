@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { login, type LoginResponse } from '@/app/services/auth';
 import { Interruptor } from '@/components/layout/Interruptor';
+import { InputForm } from '@/components/ui/InputForm';
+import { Button } from '@/components/ui/Button';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -62,27 +64,25 @@ const LoginPage = () => {
             <p className="font-semibold pb-2 text-zinc-100">
               Correu electrònic
             </p>
-            <input
+            <InputForm
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="block w-full rounded-lg border border-white/15 bg-black px-3 py-3 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
             />
           </div>
 
           <div className="mb-6 w-full">
             <div>
               <p className="font-semibold pb-2 text-zinc-100">Contrasenya</p>
-              <input
-                type="password"
-                placeholder="Contrasenya"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mb-4 block w-full rounded-lg border border-white/15 bg-black px-3 py-3 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
+              <div className="mb-4">
+                <InputForm
+                  type="password"
+                  placeholder="Contrasenya"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
             </div>
             <div className="mb-2 flex items-center justify-between gap-3">
               <Interruptor
@@ -99,13 +99,9 @@ const LoginPage = () => {
             </div>
           </div>
           <div className="w-full">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="mb-4 block w-full rounded-lg border border-zinc-200 bg-white p-3 text-base font-medium text-black transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-70"
-            >
+            <Button type="submit" disabled={isSubmitting}>
               {isSubmitting ? 'Entrant...' : 'Entrar'}
-            </button>
+            </Button>
           </div>
         </div>
         <div className="mt-2 text-center">
