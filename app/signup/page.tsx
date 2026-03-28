@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { InputForm } from '@/components/ui/InputForm';
-import { LoginRequest, register } from '../services/auth';
 
 const SignUpPage = () => {
   const router = useRouter();
