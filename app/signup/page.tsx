@@ -22,7 +22,6 @@ const SignUpPage = () => {
         className="w-full max-w-md rounded-2xl bg-black/80 p-6 backdrop-blur-sm sm:p-8"
       >
         <div className="mb-6 text-center">
-          <p className="text-xs uppercase tracking-[0.4em] text-emerald-300/70">ReservesApp</p>
           <p className="mb-2 text-center text-3xl font-bold sm:text-4xl text-white">Crea el teu compte</p>
         </div>
 
@@ -89,7 +88,7 @@ const SignUpPage = () => {
         <div className="mt-3 text-center">
           <p className="text-sm text-zinc-300 sm:text-base">
             Ja tens usuari?{' '}
-            <a href="/login" className="text-emerald-300 font-semibold hover:text-emerald-200">
+            <a href="/login" className="text-blue-500 font-semibold hover:text-blue-400 cursor-pointer">
               Inicia sessió
             </a>
           </p>
