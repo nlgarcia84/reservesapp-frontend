@@ -6,6 +6,7 @@ import { login, type LoginResponse } from '@/app/services/auth';
 import { Interruptor } from '@/components/layout/Interruptor';
 import { InputForm } from '@/components/ui/InputForm';
 import { Button } from '@/components/ui/Button';
+import { Eye, EyeOff } from 'lucide-react';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -14,8 +15,9 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
@@ -75,25 +77,32 @@ const LoginPage = () => {
           <div className="mb-6 w-full">
             <div>
               <p className="font-semibold pb-2 text-zinc-100">Contrasenya</p>
-              <div className="mb-4">
+
+              <div className="mb-4 relative">
                 <InputForm
-                  type="password"
+                  type={showPassword ? 'text' : 'password'} 
                   placeholder="Contrasenya"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                  aria-label={showPassword ? 'Amagar contrasenya' : 'Mostrar contrasenya'}
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
             </div>
+            
             <div className="mb-2 flex items-center justify-between gap-3">
               <Interruptor
                 label=" Recorda'm la sessió"
                 checked={isChecked}
                 onChange={setIsChecked}
               />
-              <a
-                href="#"
-                className="link"
-              >
+              <a href="#" className="link">
                 Recupera-la aquí
               </a>
             </div>
