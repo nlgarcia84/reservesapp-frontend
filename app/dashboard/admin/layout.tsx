@@ -11,6 +11,7 @@ export default function AdminLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const closeSidebar = () => setSidebarOpen(false);
   const toggleSidebar = () => setSidebarOpen((value) => !value);
 
   return (
@@ -21,13 +22,13 @@ export default function AdminLayout({
           'transition-opacity duration-300',
           sidebarOpen ? 'opacity-100' : 'pointer-events-none opacity-0',
         ].join(' ')}
-        onClick={toggleSidebar}
+        onClick={closeSidebar}
         aria-hidden="true"
       />
-      <AdminSidebar open={sidebarOpen} onClose={toggleSidebar} />
-      <div className="flex flex-col justify-center">
-        <Header sidebar={toggleSidebar} />
-        <main className="flex-1 p-6 ml-auto mr-auto">{children}</main>
+      <AdminSidebar open={sidebarOpen} onClose={closeSidebar} />
+      <div className="flex min-h-screen flex-col justify-center bg-black font-sans text-zinc-100">
+        <Header sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
+        <main className="ml-auto mr-auto flex-1 p-6 pt-20">{children}</main>
       </div>
     </>
   );

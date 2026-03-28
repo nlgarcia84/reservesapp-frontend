@@ -2,96 +2,119 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '@/app/services/auth';
+import { login, type LoginResponse } from '@/app/services/auth';
+import { Interruptor } from '@/components/layout/Interruptor';
+import { InputForm } from '@/components/ui/InputForm';
+import { Button } from '@/components/ui/Button';
 
 const LoginPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isChecked, setIsChecked] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
 
     try {
-      const data = await login(email, password); // { token, role }
+      const data: LoginResponse = await login(email, password); // { token, role }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       data.role === 'ADMIN'
-        ? router.replace('/dashboard/admin')
-        : router.replace('/dashboard/employee');
+        ? // Si el rol es admin dirigimos al dash del admin
+          router.replace('/dashboard/admin')
+        : // Si el rol es de empleado al dashdel empleado
+          router.replace('/dashboard/employee');
+      // Si se produce algún error lo capturamos con el catch
     } catch (err: unknown) {
       console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-slate-950">
-      <div className="flex flex-row items-center">
-        <div className="flex flex-col text-center mb-15">
-          <span
-            className="text-emerald-400 font-bold text-5xl mb-2
-             [text-shadow:0_0_25px_rgba(52,211,153,0.55)]"
-          >
-            ReservesApp
-          </span>
-          <span className="text-slate-300 font-extralight text-xl">
-            Gestió de sales i reserves
-          </span>
-        </div>
-      </div>
-
+    <div className="flex min-h-screen items-center justify-center bg-black px-4 py-8 font-sans text-white sm:px-6">
       <form
         onSubmit={handleSubmit}
-        className="border border-emerald-600 rounded-2xl ring-2 ring-emerald-400/30
-             shadow-[0_0_25px_rgba(52,211,153,0.35)]  sm:py-15 sm:px-1 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl"
+        className="w-full max-w-md rounded-2xl bg-black/80 p-5 backdrop-blur-sm sm:p-7"
       >
-        <div className="text-center mb-5 p-5">
-          <p className="text-white text-3xl md:text-4xl mb-2 text-center font-bold">
+        <div className="mb-6 text-center">
+          <p className="mb-2 text-center text-3xl font-bold sm:text-4xl text-white">
             Inicia sessió
           </p>
-          <p className="text-slate-300 text-lg md:text-lg font-light">
+          <p className="text-sm font-light text-zinc-400 sm:text-base">
             Introdueix les teves credencials per accedir
           </p>
         </div>
 
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {error && (
+          <p className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+            {error}
+          </p>
+        )}
 
-        <div className="p-5">
-          <div className="w-full md:w-4/5 lg:w-2/3 mx-auto">
-            <p className="font-bold pb-2">Correu electrònic</p>
-            <input
+        <div>
+          <div className="mb-5 w-full">
+            <p className="font-semibold pb-2 text-zinc-100">
+              Correu electrònic
+            </p>
+            <InputForm
               type="email"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="block w-full sm:w-3/4 md:w-full lg:w-full mx-auto p-3 mb-4 border rounded bg-slate-300 text-black"
-              required
             />
           </div>
 
-          <div className="w-full md:w-4/5 lg:w-2/3 mx-auto">
-            <p className="font-bold pb-2">Contrasenya</p>
-            <input
-              type="password"
-              placeholder="Contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="block w-full sm:w-3/4 md:w-full lg:w-full mx-auto p-3 mb-4 border rounded bg-slate-300 text-black"
-              required
-            />
+          <div className="mb-6 w-full">
+            <div>
+              <p className="font-semibold pb-2 text-zinc-100">Contrasenya</p>
+              <div className="mb-4">
+                <InputForm
+                  type="password"
+                  placeholder="Contrasenya"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="mb-2 flex items-center justify-between gap-3">
+              <Interruptor
+                label=" Recorda'm la sessió"
+                checked={isChecked}
+                onChange={setIsChecked}
+              />
+              <a
+                href="#"
+                className="text-xs font-semibold text-blue-500 transition-colors hover:text-blue-400"
+              >
+                Recupera-la aquí
+              </a>
+            </div>
           </div>
-
-          <div className="w-full md:w-4/5 lg:w-2/3 mx-auto">
+          <div className="w-full">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Entrant...' : 'Entrar'}
+            </Button>
+          </div>
+        </div>
+        <div className="mt-2 text-center">
+          <p className="text-sm text-zinc-300 sm:text-base">
+            Encara no ets membre?{' '}
             <button
-              type="submit"
-              className="block w-full sm:w-3/4 md:w-full lg:w-full mx-auto text-slate-950 text-lg p-3 border rounded bg-emerald-400 font-mono hover:bg-emerald-300"
+              onClick={() => router.push('/signup')}
+              type="button"
+              className="text-blue-500 font-semibold hover:text-blue-400 cursor-pointer"
             >
-              Entrar
+              Registrat
             </button>
-          </div>
+          </p>
         </div>
       </form>
     </div>

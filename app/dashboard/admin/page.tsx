@@ -17,13 +17,15 @@ const AdminPage = async () => {
     <>
       <div className="md:w-2xl lg:w-3xl xl:w-5xl">
         {/* Aqui el texto bienvenida */}
-        <div className="mb-5 p-5">
+        <div className="mb-5 p-2 sm:p-4">
           <div className="flex flex-row">
-            <h1 className="text-3xl font-bold mb-2 mr-5">Bon dia, Admin</h1>
-            <Hand />
+            <h1 className="mb-2 mr-3 text-3xl font-bold tracking-tight">
+              Bon dia, Admin
+            </h1>
+            <Hand className="text-blue-400" />
           </div>
 
-          <h2 className="text-xl font-extralight">
+          <h2 className="text-base text-zinc-400 sm:text-lg font-light">
             Aqui tens un resum de les teves sales i reserves.
           </h2>
         </div>
@@ -53,11 +55,11 @@ const AdminPage = async () => {
               {rooms.map((room) => (
                 <div
                   key={room.id}
-                  className="bg-emerald-950 m-1 rounded-2xl p-4 mb-2 flex flex-row justify-between"
+                  className="m-1 mb-2 flex flex-row justify-between rounded-xl border border-white/10 bg-zinc-900/70 p-3"
                 >
-                  <p className="font-semibold">{room.name}</p>
+                  <p className="font-semibold text-zinc-100">{room.name}</p>
 
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-zinc-400">
                     {room.capacity} places
                   </p>
                 </div>
