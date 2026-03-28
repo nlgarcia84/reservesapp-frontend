@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "fresh": "rm -rf .next && npm run dev",
+    "sync": "npm install && rm -rf .next && npm run dev",
     "test": "jest --watchAll"
   },
   "dependencies": {

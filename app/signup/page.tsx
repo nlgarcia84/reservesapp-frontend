@@ -1,9 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-import { InputForm } from '@/components/ui/InputForm';
-import { Button } from '@/components/ui/Button';
-
 const SignUpPage = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
