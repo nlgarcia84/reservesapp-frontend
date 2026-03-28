@@ -92,7 +92,7 @@ const LoginPage = () => {
               />
               <a
                 href="#"
-                className="text-xs font-semibold text-blue-500 transition-colors hover:text-blue-400"
+                className="link"
               >
                 Recupera-la aquí
               </a>
@@ -110,7 +110,7 @@ const LoginPage = () => {
             <button
               onClick={() => router.push('/signup')}
               type="button"
-              className="text-blue-500 font-semibold hover:text-blue-400 cursor-pointer"
+              className="link"
             >
               Registrat
             </button>

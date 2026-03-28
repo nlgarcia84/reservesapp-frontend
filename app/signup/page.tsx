@@ -88,7 +88,7 @@ const SignUpPage = () => {
         <div className="mt-3 text-center">
           <p className="text-sm text-zinc-300 sm:text-base">
             Ja tens usuari?{' '}
-            <a href="/login" className="text-blue-500 font-semibold hover:text-blue-400 cursor-pointer">
+            <a href="/login" className="link">
               Inicia sessió
             </a>
           </p>
