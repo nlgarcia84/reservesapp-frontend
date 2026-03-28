@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '@/app/services/auth';
+import { login, type LoginResponse } from '@/app/services/auth';
 import { Interruptor } from '@/components/layout/Interruptor';
 
 const LoginPage = () => {
@@ -13,18 +13,21 @@ const LoginPage = () => {
   const [isChecked, setIsChecked] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsSubmitting(true);
 
     try {
-      const data = await login(email, password); // { token, role }
+      const data: LoginResponse = await login(email, password); // { token, role }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       data.role === 'ADMIN'
-        ? router.replace('/dashboard/admin')
-        : router.replace('/dashboard/employee');
+        ? // Si el rol es admin dirigimos al dash del admin
+          router.replace('/dashboard/admin')
+        : // Si el rol es de empleado al dashdel empleado
+          router.replace('/dashboard/employee');
+      // Si se produce algún error lo capturamos con el catch
     } catch (err: unknown) {
       console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
@@ -107,8 +110,14 @@ const LoginPage = () => {
         </div>
         <div className="mt-2 text-center">
           <p className="text-sm text-zinc-300 sm:text-base">
-            Encara no ets membre?
-            <span className="text-blue-500 font-semibold"> Registrat</span>
+            Encara no ets membre?{' '}
+            <button
+              onClick={() => router.push('/signup')}
+              type="button"
+              className="text-blue-500 font-semibold hover:text-blue-400 cursor-pointer"
+            >
+              Registrat
+            </button>
           </p>
         </div>
       </form>
