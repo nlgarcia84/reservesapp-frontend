@@ -34,17 +34,18 @@ export const login = async (
 };
 
 export const register = async (
+  name: string,
   email: string,
   password: string,
-): Promise<LoginResponse> => {
-  const res = await fetch(`${API_URL}/auth/login`, {
+): Promise<LoginRequest> => {
+  const res = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ name, email, password }),
   });
 
   if (!res.ok) {
-    let errorMessage = 'Error de login';
+    let errorMessage = 'Error de registre';
     try {
       const err = await res.json();
       errorMessage = err.message || errorMessage;

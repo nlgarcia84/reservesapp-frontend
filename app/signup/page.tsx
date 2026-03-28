@@ -1,14 +1,34 @@
 'use client';
 
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/Button';
+import { InputForm } from '@/components/ui/InputForm';
+import { LoginRequest, register } from '../services/auth';
+
 const SignUpPage = () => {
-  const [fullName, setFullName] = useState('');
+  const router = useRouter();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+    setIsSubmitting(true);
+
+    try {
+      await register(name, email, password); // { token, role }
+    } catch (err: unknown) {
+      console.error('Login error:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -18,22 +38,34 @@ const SignUpPage = () => {
         className="w-full max-w-md rounded-2xl bg-black/80 p-6 backdrop-blur-sm sm:p-8"
       >
         <div className="mb-6 text-center">
-          <p className="mb-2 text-center text-3xl font-bold sm:text-4xl text-white">Crea el teu compte</p>
+          <p className="mb-2 text-center text-3xl font-bold sm:text-4xl text-white">
+            Crea el teu compte
+          </p>
         </div>
+
+        {error && (
+          <p className="mb-4 rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+            {error}
+          </p>
+        )}
 
         <div className="space-y-5">
           <div className="w-full">
-            <p className="pb-2 text-sm font-semibold text-zinc-200">Nom i cognoms</p>
+            <p className="pb-2 text-sm font-semibold text-zinc-200">
+              Nom i cognoms
+            </p>
             <InputForm
               type="text"
               placeholder="Nom complet"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
           </div>
 
           <div className="w-full">
-            <p className="pb-2 text-sm font-semibold text-zinc-200">Correu electrònic</p>
+            <p className="pb-2 text-sm font-semibold text-zinc-200">
+              Correu electrònic
+            </p>
             <InputForm
               type="email"
               placeholder="nom@empresa.cat"
@@ -45,7 +77,9 @@ const SignUpPage = () => {
 
         <div className="mt-6 space-y-5">
           <div className="w-full">
-            <p className="pb-2 text-sm font-semibold text-zinc-200">Contrasenya</p>
+            <p className="pb-2 text-sm font-semibold text-zinc-200">
+              Contrasenya
+            </p>
             <InputForm
               type="password"
               placeholder="••••••••"
@@ -54,7 +88,9 @@ const SignUpPage = () => {
             />
           </div>
           <div className="w-full">
-            <p className="pb-2 text-sm font-semibold text-zinc-200">Repeteix la contrasenya</p>
+            <p className="pb-2 text-sm font-semibold text-zinc-200">
+              Repeteix la contrasenya
+            </p>
             <InputForm
               type="password"
               placeholder="••••••••"
@@ -76,7 +112,11 @@ const SignUpPage = () => {
         </label>
 
         <div className="mt-6 w-full">
-          <Button type="submit" disabled={!acceptTerms}>
+          <Button
+            type="submit"
+            disabled={!acceptTerms}
+            onClick={() => router.push('/login')}
+          >
             Crear compte
           </Button>
         </div>
@@ -84,7 +124,10 @@ const SignUpPage = () => {
         <div className="mt-3 text-center">
           <p className="text-sm text-zinc-300 sm:text-base">
             Ja tens usuari?{' '}
-            <a href="/login" className="text-blue-500 font-semibold hover:text-blue-400 cursor-pointer">
+            <a
+              href="/login"
+              className="text-blue-500 font-semibold hover:text-blue-400 cursor-pointer"
+            >
               Inicia sessió
             </a>
           </p>
@@ -92,6 +135,6 @@ const SignUpPage = () => {
       </form>
     </div>
   );
-}
+};
 
 export default SignUpPage;
