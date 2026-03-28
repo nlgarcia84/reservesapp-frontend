@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { InputForm } from '@/components/ui/InputForm';
+import { register } from '@/app/services/auth';
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -18,12 +19,20 @@ const SignUpPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      await register(name, email, password); // { token, role }
+      await register(name, email, password);
+      router.push('/login');
+      // { token, role }
     } catch (err: unknown) {
-      console.error('Login error:', err);
+      console.error('Signup error:', err);
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsSubmitting(false);
@@ -111,11 +120,7 @@ const SignUpPage = () => {
         </label>
 
         <div className="mt-6 w-full">
-          <Button
-            type="submit"
-            disabled={!acceptTerms}
-            onClick={() => router.push('/login')}
-          >
+          <Button type="submit" disabled={!acceptTerms || isSubmitting}>
             Crear compte
           </Button>
         </div>

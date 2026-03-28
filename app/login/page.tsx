@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login, type LoginResponse } from '@/app/services/auth';
+import { login, type AuthResponse } from '@/app/services/auth';
 import { Interruptor } from '@/components/layout/Interruptor';
 import { InputForm } from '@/components/ui/InputForm';
 import { Button } from '@/components/ui/Button';
@@ -21,7 +21,7 @@ const LoginPage = () => {
     setIsSubmitting(true);
 
     try {
-      const data: LoginResponse = await login(email, password); // { token, role }
+      const data: AuthResponse = await login(email, password); // { token, role }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       data.role === 'ADMIN'

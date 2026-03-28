@@ -1,12 +1,7 @@
 // lib/auth.ts
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export type LoginRequest = {
-  email: string;
-  password: string;
-};
-
-export type LoginResponse = {
+export type AuthResponse = {
   token: string;
   role: 'ADMIN' | 'EMPLOYEE';
 };
@@ -14,7 +9,7 @@ export type LoginResponse = {
 export const login = async (
   email: string,
   password: string,
-): Promise<LoginResponse> => {
+): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -37,7 +32,7 @@ export const register = async (
   name: string,
   email: string,
   password: string,
-): Promise<LoginRequest> => {
+): Promise<AuthResponse> => {
   const res = await fetch(`${API_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -49,7 +44,9 @@ export const register = async (
     try {
       const err = await res.json();
       errorMessage = err.message || errorMessage;
-    } catch (error) {}
+    } catch (error) {
+      console.log('Error parsing response:', error);
+    }
     throw new Error(errorMessage);
   }
 
