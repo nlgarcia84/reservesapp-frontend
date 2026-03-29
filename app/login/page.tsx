@@ -6,13 +6,14 @@ import { login, type AuthResponse } from '@/app/services/auth';
 import { Interruptor } from '@/components/layout/Interruptor';
 import { InputForm } from '@/components/ui/InputForm';
 import { Button } from '@/components/ui/Button';
+import { saveToken } from '@/app/services/saveToken';
 
 const LoginPage = () => {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [isChecked, setIsChecked] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,8 +22,9 @@ const LoginPage = () => {
     setIsSubmitting(true);
 
     try {
-      const data: AuthResponse = await login(email, password); // { token, role }
+      const data: AuthResponse = await login(email, password, rememberMe); // { token, role, name } - rememberMe per mantenir sesió més temps
 
+      saveToken(data.token, data.role, data.name);
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       data.role === 'ADMIN'
         ? // Si el rol es admin dirigimos al dash del admin
@@ -87,8 +89,8 @@ const LoginPage = () => {
             <div className="mb-2 flex items-center justify-between gap-3">
               <Interruptor
                 label=" Recorda'm la sessió"
-                checked={isChecked}
-                onChange={setIsChecked}
+                checked={rememberMe}
+                onChange={setRememberMe}
               />
               <a
                 href="#"

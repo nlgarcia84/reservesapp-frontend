@@ -10,7 +10,6 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
   const closeSidebar = () => setSidebarOpen(false);
   const toggleSidebar = () => setSidebarOpen((value) => !value);
 
