@@ -7,6 +7,7 @@ import { Interruptor } from '@/components/layout/Interruptor';
 import { InputForm } from '@/components/ui/InputForm';
 import { Button } from '@/components/ui/Button';
 import { saveToken } from '@/app/services/saveToken';
+import { Eye, EyeOff } from 'lucide-react';
 
 const LoginPage = () => {
   const router = useRouter();
@@ -15,6 +16,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,19 +24,21 @@ const LoginPage = () => {
     setIsSubmitting(true);
 
     try {
-      const data: AuthResponse = await login(email, password, rememberMe); // { token, role, name } - rememberMe per mantenir sesió més temps
+      // Cridem a la funció login del servei d'autenticació
+      const data: AuthResponse = await login(email, password, rememberMe);
 
+      // Guarden el token, rol i nom en localStorage
       saveToken(data.token, data.role, data.name);
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      data.role === 'ADMIN'
-        ? // Si el rol es admin dirigimos al dash del admin
-          router.replace('/dashboard/admin')
-        : // Si el rol es de empleado al dashdel empleado
-          router.replace('/dashboard/employee');
-      // Si se produce algún error lo capturamos con el catch
+
+      // Redirigim l'usuari al dashboard corresponent segons el seu rol
+      if (data.role === 'ADMIN') {
+        router.replace('/dashboard/admin');
+      } else {
+        router.replace('/dashboard/employee');
+      }
     } catch (err: unknown) {
       console.error('Login error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : 'Error de login');
     } finally {
       setIsSubmitting(false);
     }
@@ -61,54 +65,66 @@ const LoginPage = () => {
           </p>
         )}
 
-        <div>
-          <div className="mb-5 w-full">
-            <p className="font-semibold pb-2 text-zinc-100">
-              Correu electrònic
-            </p>
+        {/* Bloc del correu electrònic */}
+        <div className="mb-5 w-full">
+          <p className="font-semibold pb-2 text-zinc-100">Correu electrònic</p>
+          <InputForm
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+
+        {/* Bloc de la contrasenya */}
+        <div className="mb-6 w-full">
+          <p className="font-semibold pb-2 text-zinc-100">Contrasenya</p>
+          <div className="mb-4 relative">
             <InputForm
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Contrasenya"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+              aria-label={
+                showPassword ? 'Amagar contrasenya' : 'Mostrar contrasenya'
+              }
+            >
+              {showPassword ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
           </div>
 
-          <div className="mb-6 w-full">
-            <div>
-              <p className="font-semibold pb-2 text-zinc-100">Contrasenya</p>
-              <div className="mb-4">
-                <InputForm
-                  type="password"
-                  placeholder="Contrasenya"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <Interruptor
-                label=" Recorda'm la sessió"
-                checked={rememberMe}
-                onChange={setRememberMe}
-              />
-              <a
-                href="#"
-                className="text-xs font-semibold text-blue-500 transition-colors hover:text-blue-400"
-              >
-                Recupera-la aquí
-              </a>
-            </div>
-          </div>
-          <div className="w-full">
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Entrant...' : 'Entrar'}
-            </Button>
+          {/* Bloc del Interruptor i recuperació */}
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <Interruptor
+              label=" Recorda'm la sessió"
+              checked={rememberMe}
+              onChange={setRememberMe}
+            />
+            <a href="#" className="link">
+              Recupera-la aquí
+            </a>
           </div>
         </div>
+
+        {/* Botó de login */}
+        <div className="w-full">
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? 'Entrant...' : 'Entrar'}
+          </Button>
+        </div>
+        {/* Bloc de registre */}
         <div className="mt-2 text-center">
           <p className="text-sm text-zinc-300 sm:text-base">
-            Encara no ets membre?{' '}
+            Ancora no ets membre?{' '}
             <button
               onClick={() => router.push('/signup')}
               type="button"

@@ -3,33 +3,32 @@ import { BurgerButton } from './BurgerButton';
 
 describe('Component BurgerButton', () => {
   it('ha de renderitzar el botó correctament', () => {
-    // Creem una funció buida de prova (mock) perquè el component la demana per props
+    // Creem una funció buida de prova (mock)
     const funcioSimulada = jest.fn();
     
-    render(<BurgerButton sidebar={funcioSimulada} />);
+    render(<BurgerButton isOpen={false} onToggle={funcioSimulada} />);
 
-    // Com que és l'únic element <button> del component, el podem buscar pel seu "rol"
     const boto = screen.getByRole('button');
     expect(boto).toBeInTheDocument();
   });
 
-  it('ha de cridar la funció "sidebar" i canviar destat quan s\'hi fa clic', () => {
-    // 1. Creem una funció "espia" de Jest per veure quantes vegades s'executa
+  it('ha de cridar la funció "onToggle" quan s\'hi fa clic', () => {
+    // 1 Creem una funció "espia" de Jest per veure quantes vegades s'executa
     const funcioSimulada = jest.fn();
     
-    render(<BurgerButton sidebar={funcioSimulada} />);
+    render(<BurgerButton isOpen={false} onToggle={funcioSimulada} />);
     const boto = screen.getByRole('button');
 
-    // 2. Simulem que l'usuari fa un clic al botó
+    // 2 Simulem que l'usuari fa un clic al botó
     fireEvent.click(boto);
 
-    // 3. Comprovem que la funció "sidebar" s'ha executat exactament 1 vegada
+    // 3 Comprovem que la funció simulada s'ha executat exactament 1 vegada
     expect(funcioSimulada).toHaveBeenCalledTimes(1);
 
-    // 4. Simulem un altre clic (per tancar el menú)
+    // 4 Simulem un altre clic (per tancar el menú)
     fireEvent.click(boto);
 
-    // 5. Ara la funció s'hauria d'haver executat 2 vegades en total
+    // 5 Ara la funció s'hauria d'haver executat 2 vegades en total
     expect(funcioSimulada).toHaveBeenCalledTimes(2);
   });
 });

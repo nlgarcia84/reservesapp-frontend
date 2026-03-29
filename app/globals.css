@@ -24,3 +24,14 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.link {
+  color: #3b82f6;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 150ms ease-in-out;
+}
+
+.link:hover {
+  color: #60a5fa;
+}

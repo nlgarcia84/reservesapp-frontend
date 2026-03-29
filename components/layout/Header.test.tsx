@@ -6,10 +6,9 @@ describe('Component Header', () => {
     // Creem una funció de prova ja que el Header la necessita per passar-la al BurgerButton
     const funcioSimulada = jest.fn();
     
-    render(<Header sidebar={funcioSimulada} />);
+    render(<Header sidebarOpen={false} onToggleSidebar={funcioSimulada} />);
 
-    // Comprovem que el text del títol hi és
-    expect(screen.getByText('Dashboard ReservesApp')).toBeInTheDocument();
+    expect(screen.getByText('Dashboard RoomyApp')).toBeInTheDocument();
     
     // Comprovem que s'ha renderitzat un botó (que correspon al BurgerButton)
     expect(screen.getByRole('button')).toBeInTheDocument();
