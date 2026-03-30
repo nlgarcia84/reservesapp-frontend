@@ -1,58 +1,79 @@
+// URL base de l'API obtinguda de les variables d'entorn
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+// Tipus de dada que representa una sala amb el seu identificador, nom i capacitat
 type Room = { id: number; name: string; capacity: number };
 
+// Funció per obtenir totes les sales disponibles
+// Paràmetres: token d'autenticació de l'usuari
+// Retorna: llista de sales ordenades alfabèticament per nom
 export const getRooms = async (token: string | null) => {
+  // Validar que existeix un token, sinó llançar un error
   if (!token) throw new Error('Token no disponible');
 
-  // Usar fetchProtected per incloure el token d'autenticació
+  // Realitzar petició GET a l'API per obtenir les sales amb autenticació
   const res = await fetch(`${API_URL}/rooms`, {
     method: 'GET',
-    cache: 'no-store',
-    headers: { Authorization: `Bearer ${token}` },
+    cache: 'no-store', // No utilitzar cache per sempre obtenir dades actualitzades
+    headers: { Authorization: `Bearer ${token}` }, // Incloure token al encapçalament
   });
 
+  // Verificar que la resposta és correcta
   if (!res.ok) {
     throw new Error(`Error: ${res.status} ${res.statusText}`);
   }
 
+  // Processar la resposta JSON i ordenar les sales per nom
   const rooms: Room[] = await res.json();
   return rooms.sort((a, b) => a.name.localeCompare(b.name));
 };
 
+// Funció per crear una nova sala
+// Paràmetres: name (nom de la sala), capacity (capacitat màxima), token (autenticació)
+// Retorna: resposta del servidor amb les dades de la sala creada
 export const addNewRoom = async (
   name: string,
   capacity: number,
   token: string | null,
 ) => {
+  // Validar que existeix un token
   if (!token) throw new Error('Token no disponible');
 
+  // Realitzar petició POST a l'API per crear una nova sala
   const res = await fetch(`${API_URL}/rooms`, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json', // Especificar que el cos és JSON
+      Authorization: `Bearer ${token}`, // Incloure token al encapçalament
     },
-    body: JSON.stringify({ name, capacity }),
+    body: JSON.stringify({ name, capacity }), // Enviar nom i capacitat com dades
   });
 
+  // Verificar que la resposta és correcta
   if (!res.ok) {
     throw new Error(`Error: ${res.status} ${res.statusText}`);
   }
 
+  // Retornar les dades de la sala creada
   return res.json();
 };
 
+// Funció per eliminar una sala existent
+// Paràmetres: name (nom de la sala a eliminar), token (autenticació)
+// Retorna: resposta del servidor confirmant l'eliminació
 export const deleteRoom = async (name: string, token: string | null) => {
+  // Validar que existeix un token
   if (!token) throw new Error('Token no disponible');
 
+  // Realitzar petició DELETE a l'API per eliminar la sala
   const res = await fetch(`${API_URL}/rooms/${name}`, {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`, // Incloure token al encapçalament
     },
   });
 
+  // Verificar que la resposta és correcta
   if (!res.ok) {
     throw new Error(`Error: ${res.status} ${res.statusText}`);
   }

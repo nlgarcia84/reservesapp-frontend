@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { addNewRoom } from '@/app/services/rooms';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
+import { useAuth } from '@/app/hooks/useAuth';
 import { LoaderCircle } from 'lucide-react';
 
 export function AddRoomForm() {
@@ -10,6 +11,7 @@ export function AddRoomForm() {
   const [capacity, setCapacity] = useState('');
   const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
     useLoadingState();
+  const { token } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,7 +28,7 @@ export function AddRoomForm() {
 
     startLoading();
     try {
-      await addNewRoom(name.trim(), cap);
+      await addNewRoom(name.trim(), cap, token);
       stopLoading(true);
       setName('');
       setCapacity('');

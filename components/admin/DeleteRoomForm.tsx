@@ -4,12 +4,14 @@
 import { useState } from 'react';
 import { deleteRoom } from '@/app/services/rooms';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
+import { useAuth } from '@/app/hooks/useAuth';
 import { LoaderCircle } from 'lucide-react';
 
 export function DeleteRoomForm() {
   const [name, setName] = useState('');
   const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
     useLoadingState();
+  const { token } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -21,7 +23,7 @@ export function DeleteRoomForm() {
 
     startLoading();
     try {
-      await deleteRoom(name.trim());
+      await deleteRoom(name.trim(), token);
       stopLoading(true);
       setName('');
     } catch (err: unknown) {
