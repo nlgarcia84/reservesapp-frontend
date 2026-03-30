@@ -48,7 +48,7 @@ export const login = async (
 };
 
 // Funció de registre: crea un nou usuari amb el seu email, nom i contrasenya
-// El backend retorna les dades del nou usuari (normalment sense token pregenerat)
+// El backend retorna les dades del nou usuari amb token JWT
 export const register = async (
   name: string,
   email: string,

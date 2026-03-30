@@ -1,3 +1,6 @@
+import { useAuth } from '@/app/hooks/useAuth';
+import { getAvatarUrl } from '@/app/utils/avatar';
+import Image from 'next/image';
 import Link from 'next/link';
 
 // Tipus per a cada enllaç del sidebar
@@ -32,6 +35,8 @@ const roleLinks: Record<'admin' | 'employee', SidebarLink[]> = {
 export const SidebarLayout = ({ role, open, onClose }: SidebarLayoutProps) => {
   // Obtenim els enllaços del rol especificat
   const links = roleLinks[role];
+  const { name } = useAuth();
+  const profileImage = getAvatarUrl(name);
 
   return (
     <aside
@@ -43,6 +48,20 @@ export const SidebarLayout = ({ role, open, onClose }: SidebarLayoutProps) => {
       ].join(' ')}
     >
       <nav className="flex flex-col gap-3 p-6 text-base font-medium [&>a]:rounded-lg [&>a]:border [&>a]:border-white/10 [&>a]:bg-zinc-900/70 [&>a]:px-4 [&>a]:py-2.5 [&>a]:transition-colors [&>a]:hover:bg-zinc-800">
+        {/* Mostrem la imatge de perfil i el nom */}
+        <div className="flex flex-col items-center gap-3 pb-3 border-b border-white/10">
+          <Image
+            src={profileImage}
+            alt={name || 'Perfil'}
+            width={64}
+            height={64}
+            unoptimized
+            className="rounded-full object-cover border-2 border-white/20"
+          />
+          <div className="text-center text-sm font-medium">
+            {name || 'Usuari'}
+          </div>
+        </div>
         {/* Renderitzem dinàmicament els enllaços associats al rol */}
         {links.map((link) => (
           <Link key={link.href} href={link.href} onClick={onClose}>
