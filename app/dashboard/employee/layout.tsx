@@ -1,6 +1,6 @@
 'use client';
 
-import { EmployeeSidebar } from '@/components/employee/EmployeeSidebar';
+import { EmployeeNavigationSidebar } from '@/components/employee/EmployeeSidebar';
 import { Header } from '@/components/layout/Header';
 import { useState } from 'react';
 
@@ -25,7 +25,7 @@ export default function AdminLayout({
         onClick={closeSidebar}
         aria-hidden="true"
       />
-      <EmployeeSidebar open={sidebarOpen} onClose={closeSidebar} />
+      <EmployeeNavigationSidebar open={sidebarOpen} onClose={closeSidebar} />
       <div className="flex min-h-screen flex-col justify-center bg-black font-sans text-zinc-100">
         <Header sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
         <main className="ml-auto mr-auto flex-1 p-6 pt-20">{children}</main>

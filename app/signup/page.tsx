@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
-import { register } from '@/app/services/auth';
+import { AuthResponse, register } from '@/app/services/auth';
 import { InputForm } from '@/components/ui/InputForm';
 import { Button } from '@/components/ui/Button';
+import { saveToken } from '@/app/services/saveToken';
 
 const SignUpPage = () => {
   const router = useRouter();
@@ -73,10 +74,12 @@ const SignUpPage = () => {
     setIsLoading(true);
 
     try {
-      // Cridem a la funció register del servei d'autenticació
-      await register(name, email, password);
-      // Si tot va bé, anem al login
-      router.push('/login');
+      // Cridem a la funció register del servei d'autenticació, ens retorna la data de tipus AuthResponse amb el token, el role i el name
+      const data: AuthResponse = await register(name, email, password);
+      // Guardem el token al ls
+      saveToken(data.token, data.role, data.name);
+      // Si tot va bé, entra el dashboard
+      router.push('/dashboard/employee');
     } catch (err: unknown) {
       console.error('Signup error:', err);
       setError(

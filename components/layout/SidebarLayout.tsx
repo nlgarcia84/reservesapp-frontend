@@ -1,12 +1,16 @@
 'use client';
 
-type Sidebar = {
+type SidebarLayoutProps = {
   open: boolean;
   onClose: () => void;
   children: React.ReactNode;
 };
 
-export const Sidebar = ({ open, onClose, children }: Sidebar) => {
+export const SidebarLayout = ({
+  open,
+  onClose,
+  children,
+}: SidebarLayoutProps) => {
   return (
     <aside
       className={[

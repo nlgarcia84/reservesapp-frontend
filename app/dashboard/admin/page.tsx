@@ -1,3 +1,7 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useAuth } from '@/app/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
 import { getRooms } from '@/app/services/rooms';
 import {
@@ -10,9 +14,39 @@ import {
   CalendarClock,
 } from 'lucide-react';
 
-const AdminPage = async () => {
-  const rooms = await getRooms();
-  const total = rooms.reduce((acc, producto) => acc + producto.capacity, 0);
+type Room = { id: number; name: string; capacity: number };
+
+const AdminPage = () => {
+  const { token } = useAuth();
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (!token) {
+      setError('No hay autenticación');
+      setLoading(false);
+      return;
+    }
+
+    const fetchRooms = async () => {
+      try {
+        const data = await getRooms(token);
+        setRooms(data);
+        setTotal(data.reduce((acc, room) => acc + room.capacity, 0));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error carregant sales');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRooms();
+  }, [token]);
+
+  if (loading) return <div>Carregant...</div>;
+  if (error) return <div className="text-red-500">Error: {error}</div>;
   return (
     <>
       <div className="md:w-2xl lg:w-3xl xl:w-5xl">

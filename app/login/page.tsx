@@ -124,7 +124,7 @@ const LoginPage = () => {
         {/* Bloc de registre */}
         <div className="mt-2 text-center">
           <p className="text-sm text-zinc-300 sm:text-base">
-            Ancora no ets membre?{' '}
+            Encara no ets membre?{' '}
             <button
               onClick={() => router.push('/signup')}
               type="button"
