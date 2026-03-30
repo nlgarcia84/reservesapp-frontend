@@ -1,13 +1,10 @@
-import { RoleSidebar } from '../layout/RoleSidebar';
+import { SidebarLayout } from '../layout/SidebarLayout';
 
-type EmployeeNavigationSidebarProps = {
+type EmployeeSidebarProps = {
   open: boolean;
   onClose: () => void;
 };
 
-export const EmployeeNavigationSidebar = ({
-  open,
-  onClose,
-}: EmployeeNavigationSidebarProps) => {
-  return <RoleSidebar role="employee" open={open} onClose={onClose} />;
+export const EmployeeSidebar = ({ open, onClose }: EmployeeSidebarProps) => {
+  return <SidebarLayout role="employee" open={open} onClose={onClose} />;
 };

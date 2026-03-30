@@ -1,16 +1,38 @@
-'use client';
+import Link from 'next/link';
 
-type SidebarLayoutProps = {
-  open: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
+// Tipus per a cada enllaç del sidebar
+type SidebarLink = {
+  href: string;
+  label: string;
 };
 
-export const SidebarLayout = ({
-  open,
-  onClose,
-  children,
-}: SidebarLayoutProps) => {
+// Props del component SidebarLayout
+type SidebarLayoutProps = {
+  role: 'admin' | 'employee'; // Rol de l'usuari que determina els enlaces visibles
+  open: boolean; // Indica si el sidebar està obert
+  onClose: () => void; // Callback per tancar el sidebar
+};
+
+// Definició dels enllaços del sidebar segons el rol de l'usuari
+// Cada rol té un conjunt diferent de rutes i etiquetes
+const roleLinks: Record<'admin' | 'employee', SidebarLink[]> = {
+  admin: [
+    { href: '/dashboard/admin', label: 'Dashboard' },
+    { href: '/dashboard/admin/gestio-sales', label: 'Gestió de Sales' },
+    { href: '/dashboard/admin/gestio-reserves', label: 'Gestió Reserves' },
+  ],
+  employee: [
+    { href: '/dashboard/employee', label: 'Dashboard' },
+    { href: '/dashboard/employee/gestio-reserves', label: 'Gestió Reserves' },
+  ],
+};
+
+// Component SidebarLayout: Renderitza un sidebar dinàmic segons el rol
+// Inclou tota la estructura i lògica del sidebar
+export const SidebarLayout = ({ role, open, onClose }: SidebarLayoutProps) => {
+  // Obtenim els enllaços del rol especificat
+  const links = roleLinks[role];
+
   return (
     <aside
       className={[
@@ -21,8 +43,12 @@ export const SidebarLayout = ({
       ].join(' ')}
     >
       <nav className="flex flex-col gap-3 p-6 text-base font-medium [&>a]:rounded-lg [&>a]:border [&>a]:border-white/10 [&>a]:bg-zinc-900/70 [&>a]:px-4 [&>a]:py-2.5 [&>a]:transition-colors [&>a]:hover:bg-zinc-800">
-        {/* Aqui va el Sidebar */}
-        {children}
+        {/* Renderitzem dinàmicament els enllaços associats al rol */}
+        {links.map((link) => (
+          <Link key={link.href} href={link.href} onClick={onClose}>
+            {link.label}
+          </Link>
+        ))}
         <button
           type="button"
           onClick={onClose}

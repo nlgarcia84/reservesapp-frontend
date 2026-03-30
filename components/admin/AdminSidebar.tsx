@@ -1,13 +1,10 @@
-import { RoleSidebar } from '../layout/RoleSidebar';
+import { SidebarLayout } from '../layout/SidebarLayout';
 
-type AdminNavigationSidebarProps = {
+type AdminSidebarProps = {
   open: boolean;
   onClose: () => void;
 };
 
-export const AdminNavigationSidebar = ({
-  open,
-  onClose,
-}: AdminNavigationSidebarProps) => {
-  return <RoleSidebar role="admin" open={open} onClose={onClose} />;
+export const AdminSidebar = ({ open, onClose }: AdminSidebarProps) => {
+  return <SidebarLayout role="admin" open={open} onClose={onClose} />;
 };
