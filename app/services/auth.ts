@@ -39,7 +39,10 @@ export const login = async (
         const err = JSON.parse(responseText);
         errorMessage = err.message || errorMessage;
       }
-    } catch {}
+    } catch {
+      // Si no és JSON, usem el text com a error
+      errorMessage = responseText || errorMessage;
+    }
     throw new Error(errorMessage);
   }
 
@@ -115,6 +118,21 @@ export const fetchProtected = async (
 export const logout = () => {
   // Esborrem tots els dades d'autenticació emmagatzemades (token, rol, nom)
   clearToken();
-  // Redirigim l'usuari a la pàgina de login
-  window.location.href = '/login';
+
+  // Netegem sessionStorage per si de cas
+  try {
+    sessionStorage.clear();
+  } catch (e) {
+    // Ignorar errors
+  }
+
+  // Disparem un event de storage per sincronitzar els altres tabs
+  window.dispatchEvent(new Event('storage'));
+
+  // Fem reload complet (no cache) per assegurar estado limpio
+  // location.href força reload desde el servidor
+  setTimeout(() => {
+    // Forçar reload sense cache
+    window.location.href = '/login?' + Date.now();
+  }, 100);
 };

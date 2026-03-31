@@ -8,8 +8,12 @@ interface HeaderProps {
 
 export const Header = ({ sidebarOpen, onToggleSidebar }: HeaderProps) => {
   const handleLogout = () => {
-    logout();
-    console.log('Logout clicked');
+    try {
+      logout();
+    } catch (error) {
+      console.error('Error durante logout:', error);
+      window.location.href = '/login';
+    }
   };
 
   return (

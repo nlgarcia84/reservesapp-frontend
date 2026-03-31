@@ -23,8 +23,7 @@ export const useAuth = () => {
     };
   });
 
-  useEffect(() => {
-    // Força una actualización si el logout ha ocorregut
+  const updateAuth = () => {
     const token = getToken();
     setAuth({
       token,
@@ -32,7 +31,18 @@ export const useAuth = () => {
       name: getName(),
       isAuthenticated: !!token,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  };
+
+  useEffect(() => {
+    // Actualiza al montar
+    updateAuth();
+
+    // Escucha cambios en localStorage (logout en otros tabs o formulario de login actual)
+    window.addEventListener('storage', updateAuth);
+
+    return () => {
+      window.removeEventListener('storage', updateAuth);
+    };
   }, []);
 
   return auth;

@@ -24,6 +24,8 @@ const AdminPage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    setLoading(true);
+
     if (!token) {
       setError('No hay autenticación');
       setLoading(false);
@@ -32,11 +34,14 @@ const AdminPage = () => {
 
     const fetchRooms = async () => {
       try {
+        setError('');
         const data = await getRooms(token);
         setRooms(data);
         setTotal(data.reduce((acc, room) => acc + room.capacity, 0));
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error carregant sales');
+        setRooms([]);
+        setTotal(0);
       } finally {
         setLoading(false);
       }

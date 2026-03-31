@@ -1,7 +1,10 @@
+'use client';
+
 import { useAuth } from '@/app/hooks/useAuth';
 import { getAvatarUrl } from '@/app/utils/avatar';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 // Tipus per a cada enllaç del sidebar
 type SidebarLink = {
@@ -37,6 +40,12 @@ export const SidebarLayout = ({ role, open, onClose }: SidebarLayoutProps) => {
   const links = roleLinks[role];
   const { name } = useAuth();
   const profileImage = getAvatarUrl(name);
+  // Estado para evitar hidratación incorrecta: solo renderizamos el nombre después de montar
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   return (
     <aside
@@ -52,14 +61,14 @@ export const SidebarLayout = ({ role, open, onClose }: SidebarLayoutProps) => {
         <div className="flex flex-col items-center gap-3 pb-3 border-b border-white/10">
           <Image
             src={profileImage}
-            alt={name || 'Perfil'}
+            alt={isMounted ? name || 'Perfil' : 'Perfil'}
             width={64}
             height={64}
             unoptimized
             className="rounded-full object-cover border-2 border-white/20"
           />
           <div className="text-center text-sm font-medium">
-            {name || 'Usuari'}
+            {isMounted ? name || 'Usuari' : 'Usuari'}
           </div>
         </div>
         {/* Renderitzem dinàmicament els enllaços associats al rol */}

@@ -2,9 +2,10 @@
 
 import { EmployeeSidebar } from '@/components/employee/EmployeeSidebar';
 import { Header } from '@/components/layout/Header';
+import { RoleGuard } from '@/components/RoleGuard';
 import { useState } from 'react';
 
-export default function AdminLayout({
+export default function EmployeeLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -15,7 +16,7 @@ export default function AdminLayout({
   const toggleSidebar = () => setSidebarOpen((value) => !value);
 
   return (
-    <>
+    <RoleGuard allowedRoles={['employee']}>
       <div
         className={[
           'fixed inset-0 z-40 bg-black/40 backdrop-blur-sm',
@@ -30,6 +31,6 @@ export default function AdminLayout({
         <Header sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
         <main className="ml-auto mr-auto flex-1 p-6 pt-20">{children}</main>
       </div>
-    </>
+    </RoleGuard>
   );
 }
