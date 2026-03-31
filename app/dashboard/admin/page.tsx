@@ -27,8 +27,8 @@ const AdminPage = () => {
     setLoading(true);
 
     if (!token) {
-      setError('No hay autenticación');
-      setLoading(false);
+      // Durante logout, mantener loading sin mostrar error
+      // El logout redirigirá a /login antes de que se vea aquí
       return;
     }
 
