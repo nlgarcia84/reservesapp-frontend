@@ -5,6 +5,8 @@ import { useLoadingState } from '@/app/hooks/useLoadingState';
 import { useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { useAuth } from '@/app/hooks/useAuth';
+import { InputForm } from '@/components/ui/InputForm';
+import { Button } from '../ui/Button';
 
 export const AddUserForm = () => {
   const [name, setName] = useState('');
@@ -27,6 +29,8 @@ export const AddUserForm = () => {
       await addUser(name.trim(), email, password, token);
       stopLoading(true);
       setName('');
+      setEmail('');
+      setPassword('');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error afegint l'usuari");
       stopLoading(false);
@@ -35,63 +39,59 @@ export const AddUserForm = () => {
 
   return (
     <div className="mb-10">
-      <h2 className="mb-6 text-2xl font-semibold text-zinc-100">
-        Afegir nou usuari
-      </h2>
-
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col w-full md:w-4/5 lg:w-2/3 mx-auto gap-4"
+        className="flex flex-col w-full mx-auto gap-5"
       >
         <div className="flex flex-col gap-1">
-          <label className="text-base font-medium text-zinc-300">
+          <label className="text-base font-medium text-zinc-300 mb-2">
             Nom de l&apos;usuari
           </label>
-          <input
+          <InputForm
             type="text"
             placeholder="Nou usuari"
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={isLoading}
-            className="rounded-lg border border-white/15 bg-black px-4 py-2 text-zinc-100 text-center placeholder:text-zinc-500 disabled:opacity-50"
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-base font-medium text-zinc-300">E-mail</label>
-          <input
-            type="text"
+          <label className="text-base font-medium text-zinc-300 mb-2">
+            E-mail
+          </label>
+          <InputForm
+            type="email"
             placeholder="E-Mail"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
-            className="rounded-lg border border-white/15 bg-black px-4 py-2 text-zinc-100 text-center placeholder:text-zinc-500 disabled:opacity-50"
           />
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-base font-medium text-zinc-300">
+          <label className="text-base font-medium text-zinc-300 mb-2">
             Password
           </label>
-          <input
+          <InputForm
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLoading}
-            className="rounded-lg border border-white/15 bg-black px-4 py-2 text-zinc-100 text-center placeholder:text-zinc-500 disabled:opacity-50"
           />
         </div>
 
-        <button
+        <Button
           type="submit"
           disabled={isLoading}
-          className="mx-auto w-full rounded-lg border border-zinc-200 bg-white px-4 py-2
-                     text-black font-semibold hover:bg-zinc-100
-                     disabled:opacity-60 transition-colors"
+          className="mx-auto w-full rounded-lg border border-zinc-200 bg-white px-4 py-3
+                     text-black font-semibold hover:bg-zinc-100 cursor-pointer
+                     active:scale-95 active:shadow-inner transition-all duration-150
+                     disabled:opacity-60 disabled:cursor-not-allowed"
         >
           Afegir Usuari
-        </button>
+        </Button>
 
         {/* Error */}
         {error ? <p className="text-center text-red-400">{error}</p> : null}
@@ -100,7 +100,7 @@ export const AddUserForm = () => {
         {isLoading ? (
           <div className="text-center mt-4">
             <span className="block text-lg mb-3 text-slate-300">
-              Afegint Usuari...
+              Afegint usuari...
             </span>
             <LoaderCircle
               className="mx-auto h-8 w-8 animate-spin text-blue-400 motion-reduce:animate-none"
@@ -111,7 +111,9 @@ export const AddUserForm = () => {
 
         {/* Success */}
         {showSuccess ? (
-          <p className="text-center text-2xl text-blue-400">✓ Usuari afegit!</p>
+          <p className="text-center text-green-400">
+            Usuari afegit correctament!
+          </p>
         ) : null}
       </form>
     </div>

@@ -28,7 +28,7 @@ export default function AdminLayout({
       <AdminSidebar open={sidebarOpen} onClose={closeSidebar} />
       <div className="flex min-h-screen flex-col justify-center bg-black font-sans text-zinc-100">
         <Header sidebarOpen={sidebarOpen} onToggleSidebar={toggleSidebar} />
-        <main className="ml-auto mr-auto flex-1 p-6 pt-20">{children}</main>
+        <main className="ml-auto mr-auto flex-1 p-6 pt-10">{children}</main>
       </div>
     </RoleGuard>
   );

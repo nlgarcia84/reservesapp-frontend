@@ -28,9 +28,9 @@ export const Header = ({ sidebarOpen, onToggleSidebar }: HeaderProps) => {
       {/* Botó de Logout */}
       <button
         onClick={handleLogout}
-        className="absolute right-2 sm:right-6 px-3 py-2 sm:px-4 sm:py-2 rounded-lg bg-zinc-800 text-zinc-100 hover:bg-zinc-700 transition-colors border border-zinc-700 hover:border-zinc-600 font-medium text-xs sm:text-sm"
+        className="absolute right-2 px-2 py-1 rounded-md bg-zinc-800 text-zinc-100 hover:bg-zinc-700 transition-colors font-semibold text-xs active:scale-95 active:shadow-inner duration-150 sm:right-6 sm:px-4 sm:py-2 sm:rounded-lg sm:border sm:border-zinc-700 sm:hover:border-zinc-600 sm:text-sm"
       >
-        Tancar sessió
+        Sortir
       </button>
     </header>
   );

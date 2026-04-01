@@ -6,8 +6,9 @@ import { deleteRoom } from '@/app/services/rooms';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
 import { useAuth } from '@/app/hooks/useAuth';
 import { LoaderCircle } from 'lucide-react';
+import { InputForm } from '@/components/ui/InputForm';
 
-export function DeleteRoomForm() {
+const DeleteRoomForm = () => {
   const [name, setName] = useState('');
   const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
     useLoadingState();
@@ -40,28 +41,28 @@ export function DeleteRoomForm() {
 
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col w-full md:w-4/5 lg:w-2/3 mx-auto gap-4"
+        className="flex flex-col w-full mx-auto gap-4"
       >
         <div className="flex flex-col gap-1">
           <label className="text-base font-medium text-zinc-300">
             Nom de la sala
           </label>
-          <input
+          <InputForm
             type="text"
             placeholder="Nom de la Sala p.e: Sala X"
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={isLoading}
-            className="rounded-lg border border-white/15 bg-black px-4 py-2 text-zinc-100 text-center placeholder:text-zinc-500 disabled:opacity-50"
           />
         </div>
 
         <button
           type="submit"
           disabled={isLoading}
-          className="mx-auto w-full rounded-lg border border-zinc-200 bg-white px-4 py-2
-                     text-black font-semibold hover:bg-zinc-100
-                     disabled:opacity-60 transition-colors"
+          className="mx-auto w-full rounded-lg border border-zinc-200 bg-white px-4 py-3
+                     text-black font-semibold hover:bg-zinc-100 cursor-pointer
+                     active:scale-95 active:shadow-inner transition-all duration-150
+                     disabled:opacity-60 disabled:cursor-not-allowed"
         >
           Eliminar Sala
         </button>
@@ -91,4 +92,6 @@ export function DeleteRoomForm() {
       </form>
     </div>
   );
-}
+};
+
+export default DeleteRoomForm;

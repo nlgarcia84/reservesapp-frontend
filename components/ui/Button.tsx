@@ -1,26 +1,20 @@
-type ButtonProps = {
-  children: React.ReactNode;
-  type?: 'submit' | 'button' | 'reset';
-  disabled?: boolean;
-  onClick?: () => void;
-  className?: string;
+import React from 'react';
+
+type ButtonProps = React.ComponentPropsWithoutRef<'button'> & {
+  asChild?: boolean;
 };
 
-export const Button = ({
-  children,
-  type = 'button',
-  disabled = false,
-  onClick,
-  className = '',
-}: ButtonProps) => {
-  return (
-    <button
-      type={type}
-      disabled={disabled}
-      onClick={onClick}
-      className={`mb-4 block w-full rounded-lg border border-zinc-200 bg-white p-3 text-base font-medium text-black transition-colors hover:bg-zinc-100 disabled:cursor-not-allowed disabled:opacity-70 ${className}`}
-    >
-      {children}
-    </button>
-  );
-};
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className = '', asChild = false, ...props }, ref) => {
+    const Component = asChild ? React.Fragment : 'button';
+    const classes = `mb-4 block w-full rounded-lg border border-zinc-200 bg-white p-3 text-base font-medium text-black transition-all duration-150 hover:bg-zinc-100 active:scale-95 active:shadow-inner cursor-pointer disabled:cursor-not-allowed disabled:opacity-70 ${className}`;
+
+    if (asChild) {
+      return <>{props.children}</>;
+    }
+
+    return <button ref={ref} className={classes} {...props} />;
+  },
+);
+
+Button.displayName = 'Button';
