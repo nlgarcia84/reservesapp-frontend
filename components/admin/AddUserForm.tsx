@@ -7,11 +7,13 @@ import { LoaderCircle } from 'lucide-react';
 import { useAuth } from '@/app/hooks/useAuth';
 import { InputForm } from '@/components/ui/InputForm';
 import { Button } from '../ui/Button';
+import { Eye, EyeOff } from 'lucide-react';
 
 export const AddUserForm = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPasswords, setShowPasswords] = useState(false);
   const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
     useLoadingState();
   const { token } = useAuth();
@@ -49,7 +51,7 @@ export const AddUserForm = () => {
           </label>
           <InputForm
             type="text"
-            placeholder="Nou usuari"
+            placeholder="Nom de l'usuari"
             value={name}
             onChange={(e) => setName(e.target.value)}
             disabled={isLoading}
@@ -62,24 +64,40 @@ export const AddUserForm = () => {
           </label>
           <InputForm
             type="email"
-            placeholder="E-Mail"
+            placeholder="E-Mail de l'usuari"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
           />
         </div>
 
-        <div className="flex flex-col gap-1">
-          <label className="text-base font-medium text-zinc-300 mb-2">
-            Password
-          </label>
-          <InputForm
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            disabled={isLoading}
-          />
+        <div className="relative">
+          <div className="flex flex-col gap-1">
+            <label className="text-base font-medium text-zinc-300 mb-2">
+              Password
+            </label>
+            <InputForm
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              disabled={isLoading}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowPasswords(!showPasswords)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+            aria-label={
+              showPasswords ? 'Amagar contrasenya' : 'Mostrar contrasenya'
+            }
+          >
+            {showPasswords ? (
+              <EyeOff className="h-5 w-5" />
+            ) : (
+              <Eye className="h-5 w-5" />
+            )}
+          </button>
         </div>
 
         <Button

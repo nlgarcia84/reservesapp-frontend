@@ -14,7 +14,7 @@ type User = {
   password: string;
 };
 
-export default function EsborrarUsuari() {
+const EsborrarUsuari = () => {
   // Token d'autenticació de l'usuari
   const { token } = useAuth();
   // Estat dels usuaris carregats
@@ -92,4 +92,6 @@ export default function EsborrarUsuari() {
       </div>
     </>
   );
-}
+};
+
+export default EsborrarUsuari;
