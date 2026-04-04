@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent} from '@testing-library/react';
 import { AddRoomForm } from './AddRoomForm';
 import { addNewRoom } from '@/app/services/rooms';
 
@@ -61,11 +61,10 @@ describe('Component AddRoomForm', () => {
     const boto = screen.getByRole('button', { name: /afegir sala/i });
     fireEvent.click(boto);
 
-    // Fem servir findByText (forma més moderna d'esperar elements). Li donem fins a 3 segons de marge per si el vostre hook té algun retard visual.
     const missatgeExit = await screen.findByText('✓ Sala afegida!', {}, { timeout: 3000 });
     
     // Comprovem
     expect(missatgeExit).toBeInTheDocument();
-    expect(addNewRoom).toHaveBeenCalledWith('Sala A', 10);
+    expect(addNewRoom).toHaveBeenCalledWith('Sala A', 10, null);
   });
 });
