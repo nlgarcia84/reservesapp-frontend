@@ -11,21 +11,42 @@ export const getRooms = async (token: string | null) => {
   // Validar que existeix un token, sinó llançar un error
   if (!token) throw new Error('Token no disponible');
 
-  // Realitzar petició GET a l'API per obtenir les sales amb autenticació
-  const res = await fetch(`${API_URL}/rooms`, {
-    method: 'GET',
-    cache: 'no-store', // No utilitzar cache per sempre obtenir dades actualitzades
-    headers: { Authorization: `Bearer ${token}` }, // Incloure token al encapçalament
-  });
+  try {
+    // Realitzar petició GET a l'API per obtenir les sales amb autenticació
+    const res = await fetch(`${API_URL}/rooms`, {
+      method: 'GET',
+      cache: 'no-store', // No utilitzar cache per sempre obtenir dades actualitzades
+      headers: { Authorization: `Bearer ${token}` }, // Incloure token al encapçalament
+    });
 
-  // Verificar que la resposta és correcta
-  if (!res.ok) {
-    throw new Error(`Error: ${res.status} ${res.statusText}`);
+    // Verificar que la resposta és correcta
+    if (!res.ok) {
+      // Intentar obtenir el missatge d'error del servidor
+      const errorData = await res.json().catch(() => ({}));
+      const errorMessage =
+        errorData.message ||
+        errorData.error ||
+        `Error: ${res.status} ${res.statusText}`;
+
+      console.error('Error getRooms:', {
+        status: res.status,
+        statusText: res.statusText,
+        serverMessage: errorMessage,
+        fullResponse: errorData,
+        apiUrl: API_URL,
+        token: token ? `${token.substring(0, 20)}...` : 'null',
+      });
+
+      throw new Error(errorMessage);
+    }
+
+    // Processar la resposta JSON i ordenar les sales per nom
+    const rooms: Room[] = await res.json();
+    return rooms.sort((a, b) => a.name.localeCompare(b.name));
+  } catch (error) {
+    console.error('Exception en getRooms:', error);
+    throw error;
   }
-
-  // Processar la resposta JSON i ordenar les sales per nom
-  const rooms: Room[] = await res.json();
-  return rooms.sort((a, b) => a.name.localeCompare(b.name));
 };
 
 // Funció per crear una nova sala
@@ -59,14 +80,14 @@ export const addNewRoom = async (
 };
 
 // Funció per eliminar una sala existent
-// Paràmetres: name (nom de la sala a eliminar), token (autenticació)
+// Paràmetres: id (id de la sala a eliminar), token (autenticació)
 // Retorna: resposta del servidor confirmant l'eliminació
-export const deleteRoom = async (name: string, token: string | null) => {
+export const deleteRoom = async (id: number, token: string | null) => {
   // Validar que existeix un token
   if (!token) throw new Error('Token no disponible');
 
   // Realitzar petició DELETE a l'API per eliminar la sala
-  const res = await fetch(`${API_URL}/rooms/${name}`, {
+  const res = await fetch(`${API_URL}/rooms/${id}`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token}`, // Incloure token al encapçalament

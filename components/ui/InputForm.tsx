@@ -23,7 +23,7 @@ export const InputForm = ({
       onChange={onChange}
       required={required}
       disabled={disabled}
-      className="block w-full rounded-lg border border-white/15 bg-black px-4 py-3 text-zinc-100 placeholder:text-zinc-500 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      className="block w-full rounded-lg border border-white/15 bg-black px-3 py-3 pr-11 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
     />
   );
 };

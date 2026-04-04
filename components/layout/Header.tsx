@@ -1,3 +1,5 @@
+'use client';
+
 import { logout } from '@/app/services/auth';
 import { BurgerButton } from './BurgerButton';
 
@@ -17,13 +19,15 @@ export const Header = ({ sidebarOpen, onToggleSidebar }: HeaderProps) => {
   };
 
   return (
-    <header className="fixed left-0 top-0 z-30 flex h-16 w-full flex-row items-center justify-center border-b border-white/30 bg-black/80 px-4 text-zinc-100 backdrop-blur-sm sm:px-6 relative">
+    <header className="left-0 top-0 z-30 flex h-16 w-full flex-row items-center justify-center border-b border-white/30 bg-black/80 px-4 text-zinc-100 backdrop-blur-sm sm:px-6 relative">
       <div className="absolute left-4 sm:left-6">
         <BurgerButton isOpen={sidebarOpen} onToggle={onToggleSidebar} />
       </div>
-      <h1 className="text-lg font-semibold tracking-tight sm:text-2xl">
-        RoomyApp Dashboard
-      </h1>
+      <div className="flex flex-col items-center">
+        <h1 className="text-lg font-semibold tracking-tight sm:text-2xl">
+          RoomyApp Dashboard
+        </h1>
+      </div>
 
       {/* Botó de Logout */}
       <button

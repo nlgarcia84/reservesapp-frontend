@@ -27,8 +27,8 @@ const LoginPage = () => {
       // Cridem a la funció login del servei d'autenticació
       const data: AuthResponse = await login(email, password, rememberMe);
 
-      // Guarden el token, rol i nom en localStorage
-      saveToken(data.token, data.role, data.name);
+      // Guarden el token, rol i nom en localStorage (amb flag de remember me)
+      saveToken(data.token, data.role, data.name, rememberMe);
 
       // Redirigim l'usuari al dashboard corresponent segons el seu rol
       if (data.role === 'ADMIN') {

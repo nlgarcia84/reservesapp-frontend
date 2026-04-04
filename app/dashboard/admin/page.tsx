@@ -13,11 +13,13 @@ import {
   Clock,
   CalendarClock,
 } from 'lucide-react';
+import { useTimeGreeting } from '@/app/hooks/useTimeGreeting';
 
 type Room = { id: number; name: string; capacity: number };
 
 const AdminPage = () => {
   const { token } = useAuth();
+  const { greeting, icon } = useTimeGreeting();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -52,6 +54,7 @@ const AdminPage = () => {
 
   if (loading) return <div>Carregant...</div>;
   if (error) return <div className="text-red-500">Error: {error}</div>;
+
   return (
     <>
       <div className="md:w-2xl lg:w-3xl xl:w-5xl">
@@ -59,7 +62,8 @@ const AdminPage = () => {
         <div className="mb-5 p-2 sm:p-4">
           <div className="flex flex-row">
             <h1 className="mb-2 mr-3 text-3xl font-bold tracking-tight">
-              Bon dia, Admin
+              {icon}
+              {greeting}, Admin
             </h1>
             <Hand className="text-blue-400" />
           </div>

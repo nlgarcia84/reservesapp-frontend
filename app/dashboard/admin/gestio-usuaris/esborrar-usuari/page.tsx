@@ -60,6 +60,7 @@ const EsborrarUsuari = () => {
         <h1 className="mb-10 rounded-2xl border border-white/10 bg-zinc-950/70 p-7 text-center text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl">
           Esborrar usuari
         </h1>
+
         {/* Tarjeta que mostra la llista d'usuaris */}
         <Card title={"Llistat d'usuaris"} icon={UsersRound}>
           {/* Mostra carregador mentre s'obtenen els usuaris */}
@@ -114,9 +115,7 @@ const EsborrarUsuari = () => {
           )}
         </Card>
         {/* Formulari per esborrar usuaris amb callback per actualitzar la llista */}
-        <div className="text-center mb-2">
-          <DeleteUserForm onUserDeleted={refetchUsers} />
-        </div>
+
         <BackButton previouspage={'/dashboard/admin/gestio-usuaris'} />
       </div>
     </>

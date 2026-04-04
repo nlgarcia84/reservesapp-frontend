@@ -40,10 +40,10 @@ export const AddUserForm = () => {
   };
 
   return (
-    <div className="mb-10">
+    <div className="mb-10 flex justify-center">
       <form
         onSubmit={handleSubmit}
-        className="flex flex-col w-full mx-auto gap-5"
+        className="flex flex-col w-full max-w-md gap-5"
       >
         <div className="flex flex-col gap-1">
           <label className="text-base font-medium text-zinc-300 mb-2">
@@ -76,28 +76,30 @@ export const AddUserForm = () => {
             <label className="text-base font-medium text-zinc-300 mb-2">
               Password
             </label>
-            <InputForm
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-            />
+            <div className="relative">
+              <InputForm
+                type={showPasswords ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPasswords(!showPasswords)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
+                aria-label={
+                  showPasswords ? 'Amagar contrasenya' : 'Mostrar contrasenya'
+                }
+              >
+                {showPasswords ? (
+                  <EyeOff className="h-5 w-5" />
+                ) : (
+                  <Eye className="h-5 w-5" />
+                )}
+              </button>
+            </div>
           </div>
-          <button
-            type="button"
-            onClick={() => setShowPasswords(!showPasswords)}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
-            aria-label={
-              showPasswords ? 'Amagar contrasenya' : 'Mostrar contrasenya'
-            }
-          >
-            {showPasswords ? (
-              <EyeOff className="h-5 w-5" />
-            ) : (
-              <Eye className="h-5 w-5" />
-            )}
-          </button>
         </div>
 
         <Button

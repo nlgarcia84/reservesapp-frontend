@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import DeleteRoomForm from '@/components/admin/DeleteRoomForm';
 import { Card } from '@/components/ui/Card';
 import { DoorOpen, LoaderCircle } from 'lucide-react';
 import { getRooms } from '@/app/services/rooms';
 import { useAuth } from '@/app/hooks/useAuth';
 import { DeleteButton } from '@/components/ui/DeleteButton';
+import { BackButton } from '@/components/ui/BackButton';
 
 type Room = {
   id: number;
@@ -117,10 +117,7 @@ const EliminaSala = () => {
             </div>
           )}
         </Card>
-        {/* Formulari per eliminar sales amb callback per actualitzar la llista */}
-        <div className="text-center mb-2">
-          <DeleteRoomForm onRoomDeleted={refetchRooms} />
-        </div>
+        <BackButton previouspage={'/dashboard/admin/gestio-sales'} />
       </div>
     </>
   );
