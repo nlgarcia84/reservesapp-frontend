@@ -6,6 +6,8 @@ import { Card } from '@/components/ui/Card';
 import { UsersRound, LoaderCircle } from 'lucide-react';
 import { getUsers } from '@/app/services/users';
 import { useAuth } from '@/app/hooks/useAuth';
+import { DeleteButton } from '@/components/ui/DeleteButton';
+import { BackButton } from '@/components/ui/BackButton';
 
 type User = {
   id: number;
@@ -71,24 +73,51 @@ const EsborrarUsuari = () => {
               No hi ha usuaris disponibles
             </p>
           ) : (
-            // Llista d'usuaris carregada
-            <ul className="space-y-2">
-              {users.map((user) => (
-                <li
-                  key={user.id}
-                  className="p-2 rounded bg-zinc-800/50 flex flex-row justify-between"
-                >
-                  <span className="font-medium text-zinc-100">{user.id}</span>
-                  <span className="font-medium text-zinc-100">{user.name}</span>
-                </li>
-              ))}
-            </ul>
+            // Llista d'usuaris carregada amb scroll blau
+            <div className="max-h-64 overflow-y-auto scrollbar-blue">
+              <style>{`
+                .scrollbar-blue::-webkit-scrollbar {
+                  width: 8px;
+                }
+                .scrollbar-blue::-webkit-scrollbar-track {
+                  background: rgba(24, 24, 27, 0.5);
+                  border-radius: 10px;
+                }
+                .scrollbar-blue::-webkit-scrollbar-thumb {
+                  background: #60a5fa;
+                  border-radius: 10px;
+                }
+                .scrollbar-blue::-webkit-scrollbar-thumb:hover {
+                  background: #3b82f6;
+                }
+              `}</style>
+
+              <ul className="space-y-2">
+                {users
+                  .filter((user) => user.name !== 'Administrador')
+                  .map((user) => (
+                    <li
+                      key={user.id}
+                      className="rounded bg-zinc-800/50 flex flex-row justify-between items-center p-5 gap-4"
+                    >
+                      <span className="font-medium text-zinc-100 min-w-12">
+                        {user.id}
+                      </span>
+                      <span className="font-medium text-zinc-100 flex-1">
+                        {user.name}
+                      </span>
+                      <DeleteButton codi={user.id} onDeleted={refetchUsers} />
+                    </li>
+                  ))}
+              </ul>
+            </div>
           )}
         </Card>
         {/* Formulari per esborrar usuaris amb callback per actualitzar la llista */}
         <div className="text-center mb-2">
           <DeleteUserForm onUserDeleted={refetchUsers} />
         </div>
+        <BackButton previouspage={'/dashboard/admin/gestio-usuaris'} />
       </div>
     </>
   );

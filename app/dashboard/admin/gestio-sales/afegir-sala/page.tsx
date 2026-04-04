@@ -1,6 +1,7 @@
 'use client';
 
 import { AddRoomForm } from '@/components/admin/AddRoomForm';
+import { BackButton } from '@/components/ui/BackButton';
 
 const AfegirSala = () => {
   return (
@@ -11,6 +12,7 @@ const AfegirSala = () => {
       <div className="text-center mb-2">
         <AddRoomForm />
       </div>
+      <BackButton previouspage={'/dashboard/admin/gestio-sales'} />
     </div>
   );
 };

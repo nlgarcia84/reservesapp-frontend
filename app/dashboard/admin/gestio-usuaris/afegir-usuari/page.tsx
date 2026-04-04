@@ -1,8 +1,7 @@
 'use client';
 
 import { AddUserForm } from '@/components/admin/AddUserForm';
-import { SquareChevronLeft } from 'lucide-react';
-import Link from 'next/link';
+import { BackButton } from '@/components/ui/BackButton';
 
 const AfegirUsuaris = () => {
   return (
@@ -14,12 +13,7 @@ const AfegirUsuaris = () => {
         <div className="text-center mb-2">
           <AddUserForm />
         </div>
-        <Link href={'/dashboard/admin/gestio-usuaris'}>
-          <div className="flex flex-row justify-center text-blue-500 font-semiboldtext-blue-500 font-semibold hover:text-blue-400 cursor-pointer">
-            <SquareChevronLeft />
-            <span className="pl-2">Tornar</span>
-          </div>
-        </Link>
+        <BackButton previouspage={'/dashboard/admin/gestio-usuaris'} />
       </div>
     </>
   );

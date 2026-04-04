@@ -11,7 +11,7 @@ type CardProps = {
 export const Card = ({ title, subtitle, icon: Icon, children }: CardProps) => {
   return (
     <>
-      <div className="mb-5 overflow-hidden rounded-2xl border border-white/30 bg-zinc-950/70 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+      <div className=" mb-5 overflow-hidden rounded-2xl border border-white/30 bg-zinc-950/70 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
         <div className="rounded-t-2xl border-b border-white/10 bg-zinc-900/80 p-3 text-center text-zinc-100">
           <div className="flex flex-row justify-center items-center gap-3">
             <p className="text-lg font-semibold tracking-tight">{title}</p>

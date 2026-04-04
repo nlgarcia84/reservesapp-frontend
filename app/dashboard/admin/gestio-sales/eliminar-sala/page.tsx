@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { DoorOpen, LoaderCircle } from 'lucide-react';
 import { getRooms } from '@/app/services/rooms';
 import { useAuth } from '@/app/hooks/useAuth';
+import { DeleteButton } from '@/components/ui/DeleteButton';
 
 type Room = {
   id: number;
@@ -71,21 +72,49 @@ const EliminaSala = () => {
               No hi ha sales disponibles
             </p>
           ) : (
-            // Llista de sales carregada
-            <ul className="space-y-2">
-              {rooms.map((room) => (
-                <li
-                  key={room.id}
-                  className="p-2 rounded bg-zinc-800/50 flex flex-row justify-between"
-                >
-                  <span className="font-medium text-zinc-100">{room.id}</span>
-                  <span className="font-medium text-zinc-100">{room.name}</span>
-                  <span className="font-medium text-zinc-100">
-                    {room.capacity} places
-                  </span>
-                </li>
-              ))}
-            </ul>
+            // Llista de sales carregada amb scroll blau
+            <div className="max-h-64 overflow-y-auto scrollbar-blue">
+              <style>{`
+                .scrollbar-blue::-webkit-scrollbar {
+                  width: 8px;
+                }
+                .scrollbar-blue::-webkit-scrollbar-track {
+                  background: rgba(24, 24, 27, 0.5);
+                  border-radius: 10px;
+                }
+                .scrollbar-blue::-webkit-scrollbar-thumb {
+                  background: #60a5fa;
+                  border-radius: 10px;
+                }
+                .scrollbar-blue::-webkit-scrollbar-thumb:hover {
+                  background: #3b82f6;
+                }
+              `}</style>
+
+              <ul className="space-y-2">
+                {rooms.map((room) => (
+                  <li
+                    key={room.id}
+                    className="rounded bg-zinc-800/50 flex flex-row justify-between items-center p-5 gap-4"
+                  >
+                    <span className="font-medium text-zinc-100 min-w-12">
+                      {room.id}
+                    </span>
+                    <span className="font-medium text-zinc-100 flex-1">
+                      {room.name}
+                    </span>
+                    <span className="font-medium text-zinc-100 whitespace-nowrap">
+                      {room.capacity} places
+                    </span>
+                    <DeleteButton
+                      codi={room.id}
+                      type="room"
+                      onDeleted={refetchRooms}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
         </Card>
         {/* Formulari per eliminar sales amb callback per actualitzar la llista */}
