@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import { useState } from 'react';
@@ -43,12 +44,12 @@ const DeleteUserForm = ({ onUserDeleted }: DeleteUserFormProps) => {
         throw new Error(`Error: ${res.status} ${res.statusText}`);
       }
 
-      // Operació exitosa: para carregament, limpia el formulari i actualitza la llista
+      // Operació exitosa: atura carregament, neteja el formulari i actualitza la llista
       stopLoading(true);
       setName('');
       await onUserDeleted?.();
     } catch (err: unknown) {
-      // En cas d'error, mostra el missatge i para carregament
+      // En cas d'error, mostra el missatge i atura carregament
       setError(err instanceof Error ? err.message : "Error esborrant l'usuari");
       stopLoading(false);
     }

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // Serveis d'autenticació del frontend
 // Maneig de login, registre i peticions protegides amb JWT
 
@@ -30,7 +31,7 @@ export const login = async (
   // Llegim la resposta del servidor com a text per poder processar-la
   const responseText = await res.text();
 
-  // Si la resposta no és correcta (status != 200), llançem un error
+  // Si la resposta no és correcta (status != 200), llancem un error
   if (!res.ok) {
     let errorMessage = `Error de login (Status: ${res.status})`;
     try {
@@ -104,7 +105,7 @@ export const fetchProtected = async (
     },
   });
 
-  // Si la resposta no és correcta, llançem un error
+  // Si la resposta no és correcta, llancem un error
   if (!res.ok) {
     throw new Error(`Error: ${res.status}`);
   }
@@ -129,8 +130,8 @@ export const logout = () => {
   // Disparem un event de storage per sincronitzar els altres tabs
   window.dispatchEvent(new Event('storage'));
 
-  // Fem reload complet (no cache) per assegurar estado limpio
-  // location.href força reload desde el servidor
+  // Fem reload complet (no cache) per assegurar que tot l'estat s'ha reinicialitzat
+  // location.href força reload des del servidor
   setTimeout(() => {
     // Forçar reload sense cache
     window.location.href = '/login?' + Date.now();

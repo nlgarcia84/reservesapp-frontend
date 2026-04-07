@@ -59,7 +59,7 @@ export const useAuth = () => {
 
     // Si el token és vàlid, retornem l'autenticació read del localStorage
     if (token) {
-      console.log('✅ Token vàlid carregat al iniciar');
+      console.log('Token vàlid carregat al iniciar');
     }
 
     return {

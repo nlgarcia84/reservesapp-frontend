@@ -13,7 +13,7 @@ export const Header = ({ sidebarOpen, onToggleSidebar }: HeaderProps) => {
     try {
       logout();
     } catch (error) {
-      console.error('Error durante logout:', error);
+      console.error('Error durant logout:', error);
       window.location.href = '/login';
     }
   };
