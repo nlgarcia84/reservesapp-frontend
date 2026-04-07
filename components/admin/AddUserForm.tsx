@@ -14,22 +14,52 @@ export const AddUserForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState(false);
-  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
-    useLoadingState();
+  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } = useLoadingState();
   const { token } = useAuth();
+
+  // Funció per validar la contrasenya amb les mateixes regles que el registre
+  const validatePassword = (pwd: string): string | null => {
+    if (pwd.length < 6) {
+      return 'La contrasenya ha de tenir almenys 6 caràcters.';
+    }
+    if (!/[A-Z]/.test(pwd)) {
+      return 'La contrasenya ha de contenir almenys una lletra majúscula.';
+    }
+    if (!/[0-9]/.test(pwd)) {
+      return 'La contrasenya ha de contenir almenys un número.';
+    }
+    return null;
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    // Netegem qualsevol missatge d'error o èxit previ
+    setError('');
 
+    // Validacions del formulari
     if (!name.trim()) {
-      setError("El nom d'usuari és obligatori");
+      setError("El nom d'usuari és obligatori.");
       return;
     }
 
+    if (!email.trim()) {
+      setError("L'email és obligatori.");
+      return;
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+
+    // Si tot és correcte, fem la petició a l'API
     startLoading();
     try {
       await addUser(name.trim(), email, password, token);
       stopLoading(true);
+      // Buidem els camps després de crear l'usuari amb èxit
       setName('');
       setEmail('');
       setPassword('');
