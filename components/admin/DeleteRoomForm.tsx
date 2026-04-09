@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { deleteRoom } from '@/app/services/rooms';
+import { deleteRoom, getRooms } from '@/app/services/rooms';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
 import { useAuth } from '@/app/hooks/useAuth';
 import { LoaderCircle } from 'lucide-react';
@@ -36,8 +36,26 @@ const DeleteRoomForm = ({ onRoomDeleted }: DeleteRoomFormProps) => {
     // Inicia l'estat de carregament
     startLoading();
     try {
-      // Fa una petició DELETE a l'API per eliminar la sala
-      await deleteRoom(name.trim(), token);
+      // Obtenir la llista de sales per trobar l'ID corresponent al nom
+      if (!token) {
+        setError('Token no disponible');
+        stopLoading(false);
+        return;
+      }
+
+      const rooms = await getRooms(token);
+      const room = rooms.find(
+        (r) => r.name.toLowerCase() === name.trim().toLowerCase(),
+      );
+
+      if (!room) {
+        setError('La sala no ha estat trobada');
+        stopLoading(false);
+        return;
+      }
+
+      // Fa una petició DELETE a l'API per eliminar la sala usant l'ID
+      await deleteRoom(room.id, token);
       // Operació exitosa: para carregament, limpia el formulari i actualitza la llista
       stopLoading(true);
       setName('');
