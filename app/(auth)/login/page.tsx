@@ -24,13 +24,9 @@ const LoginPage = () => {
     setIsSubmitting(true);
 
     try {
-      // Cridem a la funció login del servei d'autenticació
       const data: AuthResponse = await login(email, password, rememberMe);
-
-      // Guarden el token, rol i nom en localStorage (amb flag de remember me)
       saveToken(data.token, data.role, data.name, rememberMe);
 
-      // Redirigim l'usuari al dashboard corresponent segons el seu rol
       if (data.role === 'ADMIN') {
         router.replace('/dashboard/admin');
       } else {
@@ -65,7 +61,6 @@ const LoginPage = () => {
           </p>
         )}
 
-        {/* Bloc del correu electrònic */}
         <div className="mb-5 w-full">
           <p className="font-semibold pb-2 text-zinc-100">Correu electrònic</p>
           <InputForm
@@ -76,7 +71,6 @@ const LoginPage = () => {
           />
         </div>
 
-        {/* Bloc de la contrasenya */}
         <div className="mb-6 w-full">
           <p className="font-semibold pb-2 text-zinc-100">Contrasenya</p>
           <div className="mb-4 relative">
@@ -102,7 +96,6 @@ const LoginPage = () => {
             </button>
           </div>
 
-          {/* Bloc del Interruptor i recuperació */}
           <div className="mb-2 flex items-center justify-between gap-3">
             <Interruptor
               label=" Recorda'm la sessió"
@@ -115,13 +108,12 @@ const LoginPage = () => {
           </div>
         </div>
 
-        {/* Botó de login */}
         <div className="w-full">
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Entrant...' : 'Entrar'}
           </Button>
         </div>
-        {/* Bloc de registre */}
+
         <div className="mt-2 text-center">
           <p className="text-sm text-zinc-300 sm:text-base">
             Encara no ets membre?{' '}

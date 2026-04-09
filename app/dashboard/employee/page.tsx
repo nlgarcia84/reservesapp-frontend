@@ -1,6 +1,8 @@
 'use client';
 
 import { useAuth } from '@/app/hooks/useAuth';
+import { useTimeGreeting } from '@/app/hooks/useTimeGreeting';
+import { Hand } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -8,6 +10,7 @@ const EmployeePage = () => {
   const router = useRouter();
   const { name, isAuthenticated } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
+  const { greeting, icon } = useTimeGreeting();
 
   useEffect(() => {
     // Pequeño delay para permitir que useAuth se inicialice
@@ -31,12 +34,19 @@ const EmployeePage = () => {
   }
 
   return (
-    <section className="mx-auto w-full max-w-3xl rounded-2xl border border-white/10 bg-zinc-950/70 p-6 shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
-      <h1 className="text-2xl font-semibold tracking-tight text-zinc-100">
-        Bon dia {name || 'usuari'}
-      </h1>
-      <p className="mt-2 text-zinc-400">Panell d&apos;empleat en preparació.</p>
-    </section>
+    <div className="mb-5 p-2 sm:p-4">
+      <div className="flex flex-row">
+        <h1 className="mb-2 mr-3 text-3xl font-bold tracking-tight">
+          {icon}
+          {greeting}, {name}
+        </h1>
+        <Hand className="text-blue-400" />
+      </div>
+
+      <h2 className="text-base text-zinc-400 sm:text-lg font-light">
+        Aqui tens un resum de les teves sales i reserves.
+      </h2>
+    </div>
   );
 };
 

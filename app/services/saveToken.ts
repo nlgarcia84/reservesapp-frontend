@@ -119,6 +119,16 @@ export const isRememberMeSession = (): boolean => {
 };
 
 /**
+ * Interfície per als claims del JWT
+ */
+interface JWTPayload {
+  exp?: number;
+  sub?: string;
+  role?: string;
+  [key: string]: unknown;
+}
+
+/**
  * Funció privada: Decodifica un JWT sense validació criptogràfica
  *
  * ESTRUCTURA JWT: header.payload.signature
@@ -135,7 +145,7 @@ export const isRememberMeSession = (): boolean => {
  * @param token - Token JWT sencer
  * @returns Object amb els claims del token o null si inválid
  */
-const decodeJWT = (token: string | null): any => {
+const decodeJWT = (token: string | null): JWTPayload | null => {
   if (!token) return null;
   try {
     // Dividir el JWT en 3 parts
@@ -152,7 +162,8 @@ const decodeJWT = (token: string | null): any => {
     const decoded = atob(padded);
 
     // Parsear el JSON per obtenir els claims
-    return JSON.parse(decoded);
+    return JSON.parse(decoded) as JWTPayload;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     // Si hi ha error (token malformat), retornar null
     return null;

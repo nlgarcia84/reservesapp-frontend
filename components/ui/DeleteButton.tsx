@@ -5,28 +5,39 @@ import { useAuth } from '@/app/hooks/useAuth';
 
 type DeleteButtonProps = {
   codi: number;
+  name: string;
   type?: 'user' | 'room';
   onDeleted?: () => void;
 };
 
 export const DeleteButton = ({
   codi,
+  name,
   type = 'user',
   onDeleted,
 }: DeleteButtonProps) => {
   const { token } = useAuth();
 
   const handleDelete = async () => {
-    if (!token) return;
-    try {
-      if (type === 'room') {
-        await deleteRoom(codi, token);
-      } else {
-        await deleteUser(codi, token);
+    const resultado: boolean = confirm(
+      `¿Estás segur que vols eliminar l'usuari?`,
+    );
+    if (resultado) {
+      if (!token) return;
+      try {
+        if (type === 'room') {
+          await deleteRoom(codi, token);
+          alert(`La sala ${name} ha sigut eliminada!`);
+        } else {
+          await deleteUser(codi, name, token);
+          alert(`L'usuari ${name} ha sigut eliminat!`);
+        }
+        onDeleted?.();
+      } catch (err) {
+        console.error(`Error eliminant ${type}:`, err);
       }
-      onDeleted?.();
-    } catch (err) {
-      console.error(`Error eliminant ${type}:`, err);
+    } else {
+      return;
     }
   };
 

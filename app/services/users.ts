@@ -57,7 +57,11 @@ export const addUser = async (
 // Funció per eliminar un usuari existent
 // Paràmetres: name (usuari a eliminar), token (autenticació)
 // Retorna: resposta del servidor confirmant l'eliminació
-export const deleteUser = async (id: number, token: string | null) => {
+export const deleteUser = async (
+  id: number,
+  name: string,
+  token: string | null,
+) => {
   // Validar que existeix un token
   if (!token) throw new Error('Token no disponible');
 
