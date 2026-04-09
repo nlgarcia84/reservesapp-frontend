@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import DeleteUserForm from '@/components/admin/DeleteUserForm';
 import { Card } from '@/components/ui/Card';
 import { UsersRound, LoaderCircle } from 'lucide-react';
 import { getUsers } from '@/app/services/users';
@@ -107,7 +106,11 @@ const EsborrarUsuari = () => {
                       <span className="font-medium text-zinc-100 flex-1">
                         {user.name}
                       </span>
-                      <DeleteButton codi={user.id} onDeleted={refetchUsers} />
+                      <DeleteButton
+                        codi={user.id}
+                        name={user.name}
+                        onDeleted={refetchUsers}
+                      />
                     </li>
                   ))}
               </ul>
