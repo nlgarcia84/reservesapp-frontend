@@ -108,6 +108,7 @@ const EliminaSala = () => {
                     </span>
                     <DeleteButton
                       codi={room.id}
+                      name={room.name}
                       type="room"
                       onDeleted={refetchRooms}
                     />
