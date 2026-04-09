@@ -1,277 +1,259 @@
 # RoomyApp Frontend
 
-Frontend per a **RoomyApp** - Aplicació de **gestió de reserves de sales**. Desenvolupat amb **Next.js 16**, **TypeScript** i **Tailwind CSS v4**. Inclou autenticació JWT, panells d'administrador i empleat, amb consumició d'API REST.
+Aplicació web de gestió de reserves de sales. Solució completa amb autenticació segura i panells de control per a administradors i empleats.
 
-## 📚 Stack Tecnològic
+## Descripció del Projecte
 
-- **Framework:** Next.js 16.2.1 (Turbopack)
-- **Llenguatge:** TypeScript
-- **UI/Componentes:** React 19
-- **Estilos:** Tailwind CSS v4 + PostCSS
-- **Iconos:** lucide-react
-- **Testing:** Jest + React Testing Library
-- **Qualitat:** ESLint + TypeScript strict mode
-- **Autenticació:** JWT (JSON Web Tokens)
+RoomyApp Frontend és una aplicació de gestió de reserves de sales desenvolupada amb Next.js, TypeScript i Tailwind CSS. Permet als administradors gestionar sales, usuaris i reserves, mentre que els empleats visualitzen el seu dashboard personalitzat.
 
-## 📋 Requisits Previs
+**Versió:** 0.1.0  
+**Estat:** Producció  
+**Última actualització:** 10 d'abril de 2026
 
-- **Node.js** versió 18+ (recomanat LTS)
-- **npm** o **yarn**
-- Accés a l'API del backend en `http://localhost:8080` (desenvolupament)
+---
 
-## 🚀 Guia de Desenvolupament
+## Stack Tecnològic
 
-### 1️⃣ Instal·lació de Dependències
+- **Next.js** 16.2.1 - Framework React amb SSR/SSG
+- **React** 19 - Biblioteca UI
+- **TypeScript** 5.x - Llenguatge tipat
+- **Tailwind CSS** v4 - Framework CSS utilitari
+- **Jest** 29.x - Testing framework
+- **ESLint** 9.x - Qualitat de codi
+
+**Característiques:**
+- Autenticació JWT segura
+- Routing avançat amb App Router
+- Tests unitaris
+- TypeScript strict mode
+- Responsive design
+- Dark mode support
+
+---
+
+## Prerequisits
+
+Necessites tenir instal·lat:
+
+- Node.js versió 18+ (recomanat LTS)
+- npm versió 9+
+- Git
+- Backend Spring Boot actiu a `http://localhost:8080`
+- PostgreSQL connectat al backend
+
+---
+
+## Configuració
+
+### Pas 1: Clonar i Instal·lar
 
 ```bash
+git clone https://github.com/nlgarcia84/reservesapp-frontend.git
 cd reservesapp-frontend
 npm install
 ```
 
-### 2️⃣ Configuració de Variables d'Entorn
+### Pas 2: Variables d'Entorn
 
-Crea un fitxer `.env.local` a l'arrel del projecte:
+Crea el fitxer `.env.local`:
 
 ```bash
-# .env.local (desenvolupament)
+cp .env.example .env.local
+```
+
+Edita `.env.local` amb:
+
+```
 NEXT_PUBLIC_API_URL=http://localhost:8080
 ```
 
-**Nota important:**
+Les variables amb prefixe `NEXT_PUBLIC_*` es publiquen al navegador, així que no hi posis secrets.
 
-- Les variables amb prefixe `NEXT_PUBLIC_*` es publiquen al navegador
-- No hi posis secrets o tokens permanents
-- Per producció, usa `.env.production`
-
-### 3️⃣ Arrencar el Servidor de Desenvolupament
+### Pas 3: Arrencar
 
 ```bash
 npm run dev
 ```
 
-La aplicació estarà disponible a **http://localhost:3000**
+L'aplicació estarà disponible a http://localhost:3000
 
-### 4️⃣ Autenticació de Prova
+---
 
-Utilitza les següents credencials de prova:
+## Credencials de Prova
 
-**Admin:**
+| Rol | Email | Contrasenya |
+|-----|-------|------------|
+| Admin | `admin@roomyapp.cat` | `admin123` |
+| Empleat | `employe@roomyapp.cat` | `employe123` |
 
-- Email: `admin@roomyapp.cat`
-- Contrasenya: `admin123`
+---
 
-**Empleat:**
-
-- Email: `employe@roomyapp.cat`
-- Contrasenya: `employe123`
-
-## 📦 Scripts Disponibles
+## Scripts Disponibles
 
 ```bash
-npm run dev      # Inicia el servidor de desenvolupament (port 3000)
-npm run build    # Crea la build de producció (optimitzada)
-npm run start    # Executa el servidor en mode producció
-npm run lint     # Verifica la qualitat del codi (ESLint)
-npm run test     # Executa els tests (Jest)
+npm run dev         # Servidor desenvolupament (localhost:3000)
+npm run build       # Build optimitzada de producció
+npm run start       # Servidor en mode producció
+npm run lint        # Verifica qualitat de codi
+npm run test        # Executa tests
+npm run test:watch  # Tests en mode watch
 ```
 
-## 🏗️ Estructura del Projecte
+---
+
+## Estructura del Projecte
 
 ```
 reservesapp-frontend/
 ├── app/
-│   ├── (auth)/                           # Rutes d'autenticació
-│   │   ├── login/page.tsx               # Pàgina de login
-│   │   ├── signup/page.tsx              # Pàgina de registre
+│   ├── (auth)/                      # Rutas autenticació
+│   │   ├── login/page.tsx
+│   │   ├── signup/page.tsx
 │   │   └── layout.tsx
-│   ├── (landing)/                        # Landing page pública
-│   │   ├── page.tsx
-│   │   └── layout.tsx
+│   ├── (landing)/                   # Landing pública
+│   │   └── page.tsx
 │   ├── dashboard/
-│   │   ├── admin/                        # Panell d'administrador
-│   │   │   ├── page.tsx                 # Dashboard admin
-│   │   │   ├── gestio-sales/            # Gestió de sales
-│   │   │   ├── gestio-usuaris/          # Gestió d'usuaris
-│   │   │   └── gestio-reserves/         # Gestió de reserves
-│   │   └── employee/                     # Panell d'empleat
-│   │       ├── page.tsx                 # Dashboard empleat
+│   │   ├── admin/                   # Panell admin
+│   │   │   ├── page.tsx
+│   │   │   ├── gestio-sales/
+│   │   │   ├── gestio-usuaris/
+│   │   │   └── gestio-reserves/
+│   │   └── employee/                # Panell empleat
+│   │       ├── page.tsx
 │   │       └── layout.tsx
-│   ├── hooks/                            # Custom React hooks
-│   │   ├── useAuth.ts                   # Hook d'autenticació
-│   │   ├── useLoadingState.ts           # Hook de loading
-│   │   └── useTimeGreeting.ts           # Hook de salutació per hora
-│   ├── services/                         # Serveis d'API
-│   │   ├── auth.ts                      # Autenticació (login/signup)
-│   │   ├── rooms.ts                     # Gestió de sales
-│   │   ├── users.ts                     # Gestió d'usuaris
-│   │   ├── registration.ts              # Registre d'usuaris
-│   │   └── saveToken.ts                 # Manteniment de JWT
-│   ├── utils/                            # Utilitats
-│   │   └── avatar.ts                    # Generació d'avatars
-│   ├── globals.css                       # Estilos globals
-│   └── layout.tsx                        # Layout arrel
+│   ├── hooks/
+│   │   ├── useAuth.ts
+│   │   ├── useLoadingState.ts
+│   │   └── useTimeGreeting.ts
+│   ├── services/
+│   │   ├── auth.ts
+│   │   ├── rooms.ts
+│   │   ├── users.ts
+│   │   └── saveToken.ts
+│   └── utils/
+│       └── avatar.ts
 ├── components/
-│   ├── admin/                            # Componentes admin
-│   │   ├── AddRoomForm.tsx
-│   │   ├── DeleteRoomForm.tsx
-│   │   ├── AddUserForm.tsx
-│   │   ├── DeleteUserForm.tsx
-│   │   └── AdminSidebar.tsx
-│   ├── employee/                         # Componentes empleat
-│   │   └── EmployeeSidebar.tsx
-│   ├── layout/                           # Componentes de layout
-│   │   ├── Header.tsx
-│   │   ├── SidebarLayout.tsx
-│   │   ├── Interruptor.tsx              # Toggle dark mode
-│   │   └── BurgerButton.tsx
-│   └── ui/                               # Componentes reutilitzables
-│       ├── Button.tsx
-│       ├── Card.tsx
-│       ├── InputForm.tsx
-│       ├── BackButton.tsx
-│       └── DeleteButton.tsx
-├── public/                               # Fitxers públics
-│   └── images/                           # Imatges
-│       ├── screen1.png
-│       └── screen2.png
-├── lib/                                  # Utilitats compartides
-├── .env.local                            # Variables locals (NO commitar)
-├── .env.example                          # Plantilla de variables
-├── .env.production                       # Variables de producció
-├── eslint.config.mjs                     # Configuració ESLint
-├── jest.config.mjs                       # Configuració Jest
-├── jest.setup.ts                         # Setup de tests
-├── next.config.ts                        # Configuració Next.js
-├── postcss.config.mjs                    # Configuració PostCSS
-├── tsconfig.json                         # Configuració TypeScript
+│   ├── admin/
+│   ├── employee/
+│   ├── layout/
+│   └── ui/
+├── public/
+│   └── images/
+├── .env.example
+├── .env.local
+├── .env.production
+├── jest.config.mjs
+├── next.config.ts
+├── tsconfig.json
 └── package.json
 ```
 
-## 🔌 Integració amb l'API
+---
 
-La aplicació està connectada a un backend Spring Boot que ha de tenir els seguents endpoints:
-
-### Autenticació
-
-- `POST /auth/login` → Login d'usuari, retorna `{ token, role, name }`
-
-### Sales (Rooms)
-
-- `GET /rooms` → Llista de sales disponibles
-- `POST /rooms` → Crea nova sala (admin)
-- `DELETE /rooms/{id}` → Elimina sala (admin)
-
-### Usuaris
-
-- `GET /users` → Llista d'usuaris (admin)
-- `POST /users` → Crea nou usuari (admin)
-- `DELETE /users/{id}` → Elimina usuari (admin)
-
-### Reserves
-
-- `GET /reserves` → Llista de reserves
-- `POST /reserves` → Crea nova reserva
-- `DELETE /reserves/{id}` → Cancella reserva
-
-**URL Base:** Es configura amb la variable `NEXT_PUBLIC_API_URL`
-
-## 📸 Captures de Pantalla
+## Captures de Pantalla
 
 ### Panell d'Administrador
+<img src="./public/screen1.png" alt="Admin Dashboard" width="600" style="border-radius: 8px;"/>
 
-![Panell Admin](./public/screen1.png)
+Sistema complet de gestió amb accés a sales, usuaris i reserves.
 
 ### Panell d'Empleat
+<img src="./public/screen2.png" alt="Employee Dashboard" width="600" style="border-radius: 8px;"/>
 
-![Panell Empleat](./public/screen2.png)
+Interfície personalitzada pel personal amb informació rellevant.
 
-## 🔐 Autenticació i Autorització
+---
 
-- **JWT Tokens:** L'aplicació usa JWT per a l'autenticació
-- **Roles:** Admin i Empleat amb permisos diferenciats
-- **Protected Routes:** Només usuaris autenticats accedeixen al dashboard
-- **Token Storage:** Es guarda en localStorage amb opció "Recorda'm la sessió"
+## API Backend
 
-## 🛠️ Desenvolupament
+El backend Spring Boot ha de proporcionar els següents endpoints:
 
-### Afegir una Pàgina Nova
-
-```bash
-# Crear carpeta i fitxer
-mkdir -p app/[nova-secció]
-touch app/[nova-secció]/page.tsx
+```
+POST   /auth/login              → { token, role, name }
+GET    /rooms                   → Llista de sales
+POST   /rooms                   → Crear sala (admin)
+DELETE /rooms/{id}              → Eliminar sala (admin)
+GET    /users                   → Llista usuaris (admin)
+POST   /users                   → Crear usuari (admin)
+DELETE /users/{id}              → Eliminar usuari (admin)
+GET    /reserves                → Llista reserves
+POST   /reserves                → Crear reserva
+DELETE /reserves/{id}           → Cancelar reserva
 ```
 
-### Afegir un Component
+---
 
-```bash
-# Crear component reutilitzable
-touch components/[categoria]/NovelComponent.tsx
-```
+## Seguretat
 
-### Afegir Tests
+- JWT Authentication: Tokens signats per a cada sessió
+- Role-based Access: Admin i Employee amb permisos específics
+- Protected Routes: RoleGuard component limita accés
+- Secure Token Storage: localStorage amb opció "Recorda'm"
+- CORS Configuration: Backend configurat per acceptar el frontend
 
-```bash
-# Crear test per a un component
-touch components/[categoria]/NoveComponent.test.tsx
-```
+---
 
-## 📝 Guia per a Professors
+## Guia d'Ús
 
-Per executar el projecte correctament en mode desenvolupament:
+### Per als Professors
 
-1. **Clonar el repositori:**
-
+1. Clona el repositori
    ```bash
    git clone https://github.com/nlgarcia84/reservesapp-frontend.git
-   cd reservesapp-frontend
    ```
 
-2. **Instal·lar dependències:**
-
+2. Instal·la les dependències
    ```bash
    npm install
    ```
 
-3. **Configurar variables d'entorn:**
-
-   ```bash
-   cp .env.example .env.local
-   # Editar .env.local amb la URL del backend (localhost:8080)
+3. Assegura't que el `.env.local` té:
+   ```
+   NEXT_PUBLIC_API_URL=http://localhost:8080
    ```
 
-4. **Assegurir-se que el backend corre:**
-   - El backend ha de estar disponible a `http://localhost:8080`
-   - La base de dades PostgreSQL ha de estar connectada
-   - Els endpoints d'API han d'estar funcionals
+4. Verifica que el backend Spring Boot corre a puerto 8080
 
-5. **Arrencar el frontend:**
-
+5. Arrenca el frontend:
    ```bash
    npm run dev
    ```
 
-6. **Accedir a l'aplicació:**
-   - Obrir navegador: http://localhost:3000
-   - Testejar amb les credencials de prova (veure secció 4️⃣ dalt)
+6. Obrir http://localhost:3000 i fer login amb les credencials de prova
 
-## 🚀 Deployment a Producció (Vercel)
-
-1. Configurar variables d'entorn a Vercel Dashboard
-2. Fer push a `main` branch
-3. Vercel deployarà automàticament
-
-## 📞 Suport i Preguntes
-
-Per a dubtes sobre el codi o configuració, contactar amb l'equip de desenvolupament.
-├─ tsconfig.json
-└─ package.json
+### Arquitectura del Sistema
 
 ```
-
-## Notes
-
-- **App Router:** Les rutes viuen a `app/` (per exemple `app/login/page.tsx`).
-- **Tailwind v4:** es carrega via `@import "tailwindcss";` a `app/globals.css`.
-- Si canvies tipus/rutes, Next genera fitxers de validació dins de `.next/` automàticament (no editar-los a mà).
+Frontend (React)           Backend (Spring Boot)      Database (PostgreSQL)
+Port 3000                  Port 8080                  Supabase
+    │                           │                          │
+    ├──► HTTP REST ──────────►  ├──► JDBC/SQL ──────────► │
+    │    (JWT Auth)             │                          │
+    │                           │                          │
+    └────────────────────────────────────────────────────── │
 ```
+
+---
+
+## Recursos
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [React Documentation](https://react.dev)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs)
+- [Tailwind CSS Docs](https://tailwindcss.com/docs)
+- [Jest Documentation](https://jestjs.io)
+
+---
+
+## Solucionar Problemes
+
+| Problema | Solució |
+|----------|---------|
+| `Failed to fetch` | Verifica que el backend corre a `localhost:8080` |
+| `CORS Error` | El backend necessita `allowedOriginPatterns` configurat |
+| `Invalid Token` | Verifica el JWT token al localStorage |
+| `Port 3000 in use` | Tanca l'altra instància: `lsof -i :3000` → `kill -9 <PID>` |
+
+---
+
+Per a dubtes o problemes, obrir un Issue al repositori.
