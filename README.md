@@ -83,8 +83,7 @@ L'aplicació estarà disponible a http://localhost:3000
 
 | Rol | Email | Contrasenya |
 |-----|-------|------------|
-| Admin | `admin@roomyapp.cat` | `admin123` |
-| Empleat | `employe@roomyapp.cat` | `employe123` |
+| Admin | `admin@roomyapp.cat` | `RoomyAdmin2026!` |
 
 ---
 
