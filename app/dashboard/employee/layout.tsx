@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import EmployeeLayoutClient from './EmployeeLayoutClient';
 
 export const metadata: Metadata = {
-  title: 'Panel Empleado | RoomyApp',
-  description: 'Gestiona tus reservas y eventos',
+  title: 'Panel Empleat | RoomyApp',
+  description: 'Gestiona les teves reserves i events',
 };
 
 export default function EmployeeLayout({

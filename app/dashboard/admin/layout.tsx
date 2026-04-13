@@ -3,7 +3,7 @@ import AdminLayoutClient from './AdminLayoutClient';
 
 export const metadata: Metadata = {
   title: 'Panel Administrador | RoomyApp',
-  description: 'Gestiona usuarios, salas y reservas',
+  description: 'Gestiona usuaris, sales i reserves',
 };
 
 export default function AdminLayout({

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Iniciar Sesión | RoomyApp',
-  description: 'Accede a tu cuenta de RoomyApp',
+  title: 'Inicia Sessió | RoomyApp',
+  description: 'Accedeix al teu compte de RoomyApp',
 };
 
 export default function LoginLayout({

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Registrarse | RoomyApp',
-  description: 'Crea tu cuenta de RoomyApp',
+  title: 'Registrar-se | RoomyApp',
+  description: 'Crea el teu compte de RoomyApp',
 };
 
 export default function SignupLayout({
