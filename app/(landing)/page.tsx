@@ -264,7 +264,9 @@ export default function LandingPage() {
           className="mx-auto max-w-7xl px-4 text-center text-sm sm:px-6"
           style={{ color: 'var(--text-secondary)' }}
         >
-          <p>© 2026 RoomyApp. Tots els drets reservats.</p>
+          <p>© 2026 RoomyApp.</p>
+          <br />
+          <p>Desenvolupat amb ❤️ pel Grupo2 de M12</p>
         </div>
       </footer>
     </div>
