@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import EmployeeLayoutClient from './EmployeeLayoutClient';
 
 export const metadata: Metadata = {
-  title: 'Panel Empleat | RoomyApp',
+  title: "Dashboard de l'empleat | RoomyApp",
   description: 'Gestiona les teves reserves i events',
 };
 

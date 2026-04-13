@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import AdminLayoutClient from './AdminLayoutClient';
 
 export const metadata: Metadata = {
-  title: 'Panel Administrador | RoomyApp',
+  title: "Dashboard de l'administrador | RoomyApp",
   description: 'Gestiona usuaris, sales i reserves',
 };
 
