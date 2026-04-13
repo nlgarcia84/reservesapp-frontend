@@ -266,7 +266,7 @@ export default function LandingPage() {
         >
           <p>© 2026 RoomyApp.</p>
           <br />
-          <p>Desenvolupat amb ❤️ pel Grupo2 de M12</p>
+          <p>Desenvolupat amb ❤️ pel Grup2 de M12</p>
         </div>
       </footer>
     </div>
