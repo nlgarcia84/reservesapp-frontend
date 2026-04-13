@@ -109,6 +109,7 @@ const EsborrarUsuari = () => {
                       <DeleteButton
                         codi={user.id}
                         name={user.name}
+                        type="user"
                         onDeleted={refetchUsers}
                       />
                     </li>

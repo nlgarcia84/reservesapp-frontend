@@ -13,7 +13,7 @@ type DeleteButtonProps = {
 export const DeleteButton = ({
   codi,
   name,
-  type = 'user',
+  type,
   onDeleted,
 }: DeleteButtonProps) => {
   const { token } = useAuth();
