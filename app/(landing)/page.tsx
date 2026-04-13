@@ -80,16 +80,22 @@ export default function LandingPage() {
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="text-center">
           <h1
-            className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl"
+            className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl animate-fade-in-up"
             style={{ color: 'var(--text-primary)' }}
           >
             Gestiona les teves reserves
-            <span className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
+            <span
+              className="block bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent animate-floating-glow delay-200"
+              style={{
+                display: 'inline-block',
+                width: '100%',
+              }}
+            >
               amb facilitat
             </span>
           </h1>
           <p
-            className="mb-10 max-w-2xl text-lg sm:text-xl mx-auto"
+            className="mb-10 max-w-2xl text-lg sm:text-xl mx-auto animate-fade-in-up delay-300"
             style={{ color: 'var(--text-secondary)' }}
           >
             Una plataforma moderna per administrar sales, usuaris i reserves amb
@@ -98,7 +104,7 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={() => router.push('/signup')}
-              className="rounded-lg px-6 py-3 font-semibold text-white active:scale-95 transition-all duration-150"
+              className="rounded-lg px-6 py-3 font-semibold text-white active:scale-95 transition-all duration-150 animate-fade-in-up delay-400"
               style={{
                 backgroundColor: 'var(--accent-primary)',
               }}
@@ -114,7 +120,7 @@ export default function LandingPage() {
             </button>
             <button
               onClick={() => router.push('/login')}
-              className="rounded-lg border px-6 py-3 font-semibold transition-colors"
+              className="rounded-lg border px-6 py-3 font-semibold transition-colors animate-fade-in-up delay-500"
               style={{
                 borderColor: 'var(--border-primary)',
                 color: 'var(--text-primary)',
