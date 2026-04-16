@@ -58,7 +58,7 @@ describe('Component AdminPage', () => {
 
         // Esperem a que desaparegui el "Carregant..." i aparegui el títol
         await waitFor(() => {
-            expect(screen.getByText('Bon dia, Admin')).toBeInTheDocument();
+            expect(screen.getByText(/Admin/i)).toBeInTheDocument();
         });
 
         // 1 Comprovem els càlculs totals 

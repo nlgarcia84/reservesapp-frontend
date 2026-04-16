@@ -8,35 +8,25 @@ import { useAuth } from '@/app/hooks/useAuth';
 import { LoaderCircle } from 'lucide-react';
 import { InputForm } from '@/components/ui/InputForm';
 
-// Interfície per als paràmetres del component
 interface DeleteRoomFormProps {
-  // Callback que s'executa quan la sala s'elimina correctament
   onRoomDeleted?: () => Promise<void>;
 }
 
 const DeleteRoomForm = ({ onRoomDeleted }: DeleteRoomFormProps) => {
-  // Estat del nom de la sala a eliminar
   const [name, setName] = useState('');
-  // Hook personalitzat per gestionar carregament, errors i èxit
-  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
-    useLoadingState();
-  // Token d'autenticació per a les peticions
+  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } = useLoadingState();
   const { token } = useAuth();
 
-  // Gestor del formulari d'eliminació
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validació: el nom no pot estar buit
     if (!name.trim()) {
       setError('El nom de la sala és obligatori');
       return;
     }
 
-    // Inicia l'estat de carregament
     startLoading();
     try {
-      // Obtenir la llista de sales per trobar l'ID corresponent al nom
       if (!token) {
         setError('Token no disponible');
         stopLoading(false);
@@ -54,41 +44,64 @@ const DeleteRoomForm = ({ onRoomDeleted }: DeleteRoomFormProps) => {
         return;
       }
 
-      // Fa una petició DELETE a l'API per eliminar la sala usant l'ID
       await deleteRoom(room.id, token);
-      // Operació exitosa: para carregament, limpia el formulari i actualitza la llista
       stopLoading(true);
       setName('');
       await onRoomDeleted?.();
     } catch (err: unknown) {
-      // En cas d'error, mostra el missatge i para carregament
       setError(err instanceof Error ? err.message : 'Error eliminant la sala');
       stopLoading(false);
     }
   };
 
   return (
-    <div className="mb-10">
-      {/* Missatge d'error */}
-      {error ? <p className="text-center text-red-400">{error}</p> : null}
-
-      {/* Indicador de carregament */}
-      {isLoading ? (
-        <div className="text-center mt-4">
-          <span className="block text-lg mb-3 text-slate-300">
-            Eliminant sala...
-          </span>
-          <LoaderCircle
-            className="mx-auto h-8 w-8 animate-spin text-blue-400 motion-reduce:animate-none"
-            aria-label="Carregant"
+    <div className="mb-10 flex justify-center">
+      <form onSubmit={handleSubmit} className="flex flex-col w-full max-w-md gap-5">
+        
+        <div className="flex flex-col gap-1 text-left">
+          <label className="text-base font-medium text-zinc-300 mb-2">
+            Nom de la sala a eliminar
+          </label>
+          <InputForm
+            type="text"
+            placeholder="Nom de la Sala p.e: Sala X"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={isLoading}
           />
         </div>
-      ) : null}
 
-      {/* Missatge d'èxit */}
-      {showSuccess ? (
-        <p className="text-center text-2xl text-blue-400">✓ Sala eliminada!</p>
-      ) : null}
+        <button
+          type="submit"
+          disabled={isLoading}
+          // Li donem un estil vermell per indicar que és una acció perillosa (eliminar)
+          className="mb-4 block w-full rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-base font-medium text-red-500 transition-all duration-150 hover:bg-red-500/20 active:scale-95 active:shadow-inner cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          Eliminar Sala
+        </button>
+
+        {/* Missatge d'error */}
+        {error ? <p className="text-center text-red-400">{error}</p> : null}
+
+        {/* Indicador de carregament */}
+        {isLoading ? (
+          <div className="text-center mt-4">
+            <span className="block text-lg mb-3 text-slate-300">
+              Eliminant sala...
+            </span>
+            <LoaderCircle
+              className="mx-auto h-8 w-8 animate-spin text-blue-400 motion-reduce:animate-none"
+              aria-label="Carregant"
+            />
+          </div>
+        ) : null}
+
+        {/* Missatge d'èxit */}
+        {showSuccess ? (
+          <p className="text-center text-2xl text-blue-400">✓ Sala eliminada!</p>
+        ) : null}
+        
+      </form>
     </div>
   );
 };

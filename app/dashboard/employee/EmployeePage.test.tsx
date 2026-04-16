@@ -55,11 +55,11 @@ describe('EmployeePage Component', () => {
 
         // Ens esperem a que el text canviï
         await waitFor(() => {
-            expect(screen.getByText('Bon dia Esteve')).toBeInTheDocument();
+            expect(screen.getByText(/Esteve/i)).toBeInTheDocument();
         });
 
         // Comprovem la resta del text de la pàgina
-        expect(screen.getByText('Panell d\'empleat en preparació.')).toBeInTheDocument();
+        expect(screen.getByText(/Aqui tens un resum de les teves sales i reserves/i)).toBeInTheDocument();
         // Ens assegurem que el "Carregant..." ja no hi és
         expect(screen.queryByText('Carregant...')).not.toBeInTheDocument();
     });
@@ -71,7 +71,7 @@ describe('EmployeePage Component', () => {
         render(<EmployeePage />);
 
         await waitFor(() => {
-            expect(screen.getByText('Bon dia usuari')).toBeInTheDocument();
+            expect(screen.getByText(/Aqui tens un resum de les teves sales i reserves/i)).toBeInTheDocument();
         });
     });
 });

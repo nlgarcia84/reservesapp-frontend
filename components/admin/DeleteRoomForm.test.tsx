@@ -2,12 +2,15 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import DeleteRoomForm from './DeleteRoomForm';
 import { useAuth } from '@/app/hooks/useAuth';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
-import { deleteRoom } from '@/app/services/rooms';
+import { deleteRoom, getRooms } from '@/app/services/rooms';
 
 // Mocks
 jest.mock('@/app/hooks/useAuth');
 jest.mock('@/app/hooks/useLoadingState');
-jest.mock('@/app/services/rooms');
+jest.mock('@/app/services/rooms', () => ({
+    deleteRoom: jest.fn(),
+    getRooms: jest.fn(), 
+}));
 
 describe('Component DeleteRoomForm', () => {
     const mockSetError = jest.fn();
@@ -43,7 +46,12 @@ describe('Component DeleteRoomForm', () => {
     });
 
     it('ha de cridar la funció deleteRoom correctament i netejar el camp si tot va bé', async () => {
-        // Simulem que la promesa es resol bé
+        // Simulem una llista de sales perquè el .find() pugui trobar l'ID de la sala que volem eliminar
+        (getRooms as jest.Mock).mockResolvedValue([
+            { id: 10, name: 'Sala Principal', capacity: 20 }
+        ]);
+        
+        // Simulem que la promesa d'eliminació es resol bé
         (deleteRoom as jest.Mock).mockResolvedValue({});
 
         render(<DeleteRoomForm />);
@@ -60,16 +68,26 @@ describe('Component DeleteRoomForm', () => {
 
         // Posem totes les comprovacions posteriors dins del waitFor
         await waitFor(() => {
-            // Verifiquem que crida al servei amb el nom i el token
-            expect(deleteRoom).toHaveBeenCalledWith('Sala Principal', 'fake-token-admin');
+            // Verifiquem que primer obté les sales per buscar l'ID
+            expect(getRooms).toHaveBeenCalledWith('fake-token-admin');
+            
+            // Verifiquem que crida al servei amb l'ID de la sala trobada i el token
+            expect(deleteRoom).toHaveBeenCalledWith(10, 'fake-token-admin');
+            
             // Verifiquem l'aturada de càrrega i èxit
             expect(mockStopLoading).toHaveBeenCalledWith(true);
+            
             // El camp s'hauria d'haver buidat
             expect(input).toHaveValue('');
         });
     });
 
     it('ha de capturar errors de deleteRoom i mostrar-los', async () => {
+        // Simulem l'existència de la sala perquè no falli abans d'hora
+        (getRooms as jest.Mock).mockResolvedValue([
+            { id: 99, name: 'Sala Ocupada', capacity: 15 }
+        ]);
+
         // Simulem que el servei llança un error
         (deleteRoom as jest.Mock).mockRejectedValue(new Error('No es pot eliminar una sala amb reserves'));
 

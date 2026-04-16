@@ -119,7 +119,7 @@ describe('SidebarLayout', () => {
         'fixed',
         'left-0',
         'top-0',
-        'z-50',
+        'z-60',
         'h-dvh',
         'w-64',
       );

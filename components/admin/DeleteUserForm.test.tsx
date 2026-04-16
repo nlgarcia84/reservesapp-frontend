@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import DeleteUserForm from './DeleteUserForm';
+import { DeleteUserForm } from './DeleteUserForm';
 import { useAuth } from '@/app/hooks/useAuth';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
 
@@ -40,7 +40,7 @@ describe('Component DeleteUserForm', () => {
         fireEvent.click(botoSubmit);
 
         // Verifiquem que crida a setError del hook
-        expect(mockSetError).toHaveBeenCalledWith("El nom de l'usuari és obligatori");
+        expect(mockSetError).toHaveBeenCalledWith("El nom d'usuari és obligatori");
         // I que no ha intentat fer cap fetch
         expect(global.fetch).not.toHaveBeenCalled();
     });
@@ -112,7 +112,7 @@ describe('Component DeleteUserForm', () => {
         render(<DeleteUserForm />);
 
         expect(screen.getByText('Esborrant usuari...')).toBeInTheDocument();
-        expect(screen.getByText('Usuari esborrat correctament!')).toBeInTheDocument();
+        expect(screen.getByText('✓ Usuari esborrat correctament!')).toBeInTheDocument();
         expect(screen.getByText('Error de prova')).toBeInTheDocument();
     });
 });

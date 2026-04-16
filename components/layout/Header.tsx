@@ -13,16 +13,18 @@ export const Header = ({ sidebarOpen, onToggleSidebar }: HeaderProps) => {
     try {
       logout();
     } catch (error) {
-      console.error('Error durant logout:', error);
+      console.error('Error durante logout:', error);
       window.location.href = '/login';
     }
   };
 
   return (
-    <header className="left-0 top-0 z-30 flex h-16 w-full flex-row items-center justify-center border-b border-white/30 bg-black/80 px-4 text-zinc-100 backdrop-blur-sm sm:px-6 relative">
+    <header className="sticky top-0 z-50 flex h-16 w-full flex-row items-center justify-center border-b border-white/30 bg-black/80 px-4 text-zinc-100 backdrop-blur-sm sm:px-6">
+      
       <div className="absolute left-4 sm:left-6">
         <BurgerButton isOpen={sidebarOpen} onToggle={onToggleSidebar} />
       </div>
+      
       <div className="flex flex-col items-center">
         <h1 className="text-lg font-semibold tracking-tight sm:text-2xl">
           RoomyApp Dashboard

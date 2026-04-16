@@ -1,34 +1,35 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+// components/admin/DeleteUserForm.tsx
 'use client';
 
 import { useState } from 'react';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
 import { useAuth } from '@/app/hooks/useAuth';
 import { LoaderCircle } from 'lucide-react';
+import { InputForm } from '@/components/ui/InputForm';
 
 // Interfície per als paràmetres del component
 interface DeleteUserFormProps {
-  // Callback que s'executa quan l'usuari s'esborra correctament
   onUserDeleted?: () => Promise<void>;
 }
 
-const DeleteUserForm = ({ onUserDeleted }: DeleteUserFormProps) => {
-  // Estat del nom d'usuari a esborrar
+// Canviem a export const perquè el test ho pugui importar correctament
+export const DeleteUserForm = ({ onUserDeleted }: DeleteUserFormProps) => {
   const [name, setName] = useState('');
-  // Hook personalitzat per gestionar carregament, errors i èxit
-  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
-    useLoadingState();
-  // Token d'autenticació per a les peticions
+  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } = useLoadingState();
   const { token } = useAuth();
 
-  // Gestor del formulari d'esborrament
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Inicia l'estat de carregament
+    // Validació per al test: comprovem si està buit
+    if (!name.trim()) {
+      setError("El nom d'usuari és obligatori");
+      return;
+    }
+
     startLoading();
     try {
-      // Fa una petició DELETE a l'API per esborrar l'usuari
+      // La teva lògica original de fetch directament amb el nom
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/users/${name.trim()}`,
         {
@@ -39,48 +40,68 @@ const DeleteUserForm = ({ onUserDeleted }: DeleteUserFormProps) => {
         },
       );
 
-      // Si la resposta no és correcta, genera un error
       if (!res.ok) {
         throw new Error(`Error: ${res.status} ${res.statusText}`);
       }
 
-      // Operació exitosa: atura carregament, neteja el formulari i actualitza la llista
       stopLoading(true);
       setName('');
       await onUserDeleted?.();
     } catch (err: unknown) {
-      // En cas d'error, mostra el missatge i atura carregament
       setError(err instanceof Error ? err.message : "Error esborrant l'usuari");
       stopLoading(false);
     }
   };
 
   return (
-    <div className="mb-10">
-      {/* Missatge d'error */}
-      {error ? <p className="text-center text-red-400">{error}</p> : null}
-
-      {/* Indicador de carregament */}
-      {isLoading ? (
-        <div className="text-center mt-4">
-          <span className="block text-lg mb-3 text-slate-300">
-            Esborrant usuari...
-          </span>
-          <LoaderCircle
-            className="mx-auto h-8 w-8 animate-spin text-blue-400 motion-reduce:animate-none"
-            aria-label="Carregant"
+    <div className="mb-10 flex justify-center">
+      {/* Afegim el formulari que els tests estaven buscant */}
+      <form onSubmit={handleSubmit} className="flex flex-col w-full max-w-md gap-5">
+        
+        <div className="flex flex-col gap-1 text-left">
+          <label className="text-base font-medium text-zinc-300 mb-2">
+            Nom de l&apos;usuari a eliminar
+          </label>
+          <InputForm
+            type="text"
+            placeholder="Nom usuari p.e: admin"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            disabled={isLoading}
           />
         </div>
-      ) : null}
 
-      {/* Missatge d'èxit */}
-      {showSuccess ? (
-        <p className="text-center text-green-400">
-          Usuari esborrat correctament!
-        </p>
-      ) : null}
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="mb-4 block w-full rounded-lg border border-red-500/50 bg-red-500/10 p-3 text-base font-medium text-red-500 transition-all duration-150 hover:bg-red-500/20 active:scale-95 active:shadow-inner cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          Esborrar Usuari
+        </button>
+
+        {/* Missatge d'error */}
+        {error ? <p className="text-center text-red-400">{error}</p> : null}
+
+        {/* Indicador de carregament */}
+        {isLoading ? (
+          <div className="text-center mt-4">
+            <span className="block text-lg mb-3 text-slate-300">
+              Esborrant usuari...
+            </span>
+            <LoaderCircle
+              className="mx-auto h-8 w-8 animate-spin text-blue-400 motion-reduce:animate-none"
+              aria-label="Carregant"
+            />
+          </div>
+        ) : null}
+
+        {/* Missatge d'èxit */}
+        {showSuccess ? (
+          <p className="text-center text-2xl text-blue-400">
+            ✓ Usuari esborrat correctament!
+          </p>
+        ) : null}
+      </form>
     </div>
   );
 };
-
-export default DeleteUserForm;

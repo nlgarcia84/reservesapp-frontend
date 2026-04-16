@@ -52,7 +52,7 @@ export const SidebarLayout = ({ role, open, onClose }: SidebarLayoutProps) => {
   return (
     <aside
       className={[
-        'fixed left-0 top-0 z-50 h-dvh w-64',
+        'fixed left-0 top-0 z-60 h-dvh w-64',
         'border-r border-white/10 bg-zinc-950 text-zinc-100 shadow-2xl',
         'transform transition-transform duration-300 ease-in-out will-change-transform',
         open ? 'translate-x-0' : '-translate-x-full',

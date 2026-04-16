@@ -1,8 +1,14 @@
 // URL base de l'API obtinguda de les variables d'entorn
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Tipus de dada que representa una sala amb el seu identificador, nom i capacitat
-type Room = { id: number; name: string; capacity: number };
+// Tipus de dada que representa una sala amb el seu identificador, nom, capacitat, equipament i descripció
+type Room = { 
+  id: number; 
+  name: string; 
+  capacity: number;
+  equipment: string;
+  description: string;
+};
 
 // Funció per obtenir totes les sales disponibles
 // Paràmetres: token d'autenticació de l'usuari
@@ -49,12 +55,43 @@ export const getRooms = async (token: string | null) => {
   }
 };
 
+// Funció per obtenir els detalls d'una sala específica
+// Paràmetres: id (identificador de la sala), token d'autenticació
+// Retorna: les dades detallades de la sala (US2)
+export const getRoomById = async (id: number, token: string | null): Promise<Room> => {
+  // Validar que existeix un token
+  if (!token) throw new Error('Token no disponible');
+
+  try {
+    // Realitzar petició GET a l'API per obtenir una sala concreta
+    const res = await fetch(`${API_URL}/rooms/${id}`, {
+      method: 'GET',
+      cache: 'no-store',
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    // Verificar que la resposta és correcta (ex: 404 si la sala no existeix)
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || `Error: ${res.status} ${res.statusText}`);
+    }
+
+    // Retornar les dades de la sala
+    return await res.json();
+  } catch (error) {
+    console.error(`Exception en getRoomById (ID: ${id}):`, error);
+    throw error;
+  }
+};
+
 // Funció per crear una nova sala
-// Paràmetres: name (nom de la sala), capacity (capacitat màxima), token (autenticació)
+// Paràmetres: name (nom de la sala), capacity (capacitat màxima), equipment (equipament), description (descripció), token (autenticació)
 // Retorna: resposta del servidor amb les dades de la sala creada
 export const addNewRoom = async (
   name: string,
   capacity: number,
+  equipment: string,
+  description: string,
   token: string | null,
 ) => {
   // Validar que existeix un token
@@ -67,12 +104,14 @@ export const addNewRoom = async (
       'Content-Type': 'application/json', // Especificar que el cos és JSON
       Authorization: `Bearer ${token}`, // Incloure token al encapçalament
     },
-    body: JSON.stringify({ name, capacity }), // Enviar nom i capacitat com dades
+    body: JSON.stringify({ name, capacity, equipment, description }), // Enviar totes les dades al backend
   });
 
   // Verificar que la resposta és correcta
   if (!res.ok) {
-    throw new Error(`Error: ${res.status} ${res.statusText}`);
+    // Afegim captura d'error del backend per si de cas
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || `Error: ${res.status} ${res.statusText}`);
   }
 
   // Retornar les dades de la sala creada

@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { AddUserForm } from './AddUserForm'; 
+import { AddUserForm } from './AddUserForm';
 import { useAuth } from '@/app/hooks/useAuth';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
 import { addUser } from '@/app/services/users';
@@ -38,7 +38,7 @@ describe('Component AddUserForm', () => {
         fireEvent.click(botoSubmit);
 
         // Ha de llançar l'error al hook i no cridar al servei
-        expect(mockSetError).toHaveBeenCalledWith("El nom d'usuari és obligatori");
+        expect(mockSetError).toHaveBeenCalledWith("El nom d'usuari és obligatori.");
         expect(addUser).not.toHaveBeenCalled();
     });
 
@@ -49,9 +49,9 @@ describe('Component AddUserForm', () => {
         render(<AddUserForm />);
 
         // Busquem els tres camps pels seus placeholders
-        const inputName = screen.getByPlaceholderText(/Nou usuari/i);
-        const inputEmail = screen.getByPlaceholderText(/E-Mail/i);
-        const inputPassword = screen.getByPlaceholderText(/Password/i);
+        const inputName = screen.getByPlaceholderText(/Nom de l'usuari/i);
+        const inputEmail = screen.getByPlaceholderText(/E-Mail de l'usuari/i);
+        const inputPassword = screen.getByPlaceholderText(/••••••••/i);
         const botoSubmit = screen.getByRole('button', { name: /Afegir Usuari/i });
 
         // Omplim el formulari
@@ -85,10 +85,15 @@ describe('Component AddUserForm', () => {
 
         render(<AddUserForm />);
 
-        const inputName = screen.getByPlaceholderText(/Nou usuari/i);
-        const botoSubmit = screen.getByRole('button', { name: /Afegir Usuari/i });
+        const inputName = screen.getByPlaceholderText(/Nom de l'usuari/i);
+        const inputEmail = screen.getByPlaceholderText(/E-Mail de l'usuari/i);
+        const inputPassword = screen.getByPlaceholderText(/••••••••/i);
+
+        const botoSubmit = screen.getByRole('button', { name: /Afegir Usuari/i });      
 
         fireEvent.change(inputName, { target: { value: 'Usuari Duplicat' } });
+        fireEvent.change(inputEmail, { target: { value: 'test@test.com' } }); 
+        fireEvent.change(inputPassword, { target: { value: 'Secreta123' } });
         fireEvent.click(botoSubmit);
 
         await waitFor(() => {
@@ -117,9 +122,9 @@ describe('Component AddUserForm', () => {
         expect(screen.getByText('Error simulat en afegir usuari')).toBeInTheDocument();
 
         // Comprovem que tots els inputs i el botó estiguin deshabilitats durant la càrrega
-        expect(screen.getByPlaceholderText(/Nou usuari/i)).toBeDisabled();
-        expect(screen.getByPlaceholderText(/E-Mail/i)).toBeDisabled();
-        expect(screen.getByPlaceholderText(/Password/i)).toBeDisabled();
+        expect(screen.getByPlaceholderText(/Nom de l'usuari/i)).toBeDisabled();
+        expect(screen.getByPlaceholderText(/E-Mail de l'usuari/i)).toBeDisabled();
+        expect(screen.getByPlaceholderText(/••••••••/i)).toBeDisabled();
         expect(screen.getByRole('button', { name: /Afegir Usuari/i })).toBeDisabled();
     });
 });
