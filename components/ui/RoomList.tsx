@@ -15,6 +15,7 @@ type RoomListProps = {
 };
 
 export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
+
   // Gestionem l'estat buit
   if (!rooms || rooms.length === 0) {
     return (
@@ -24,7 +25,7 @@ export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
         </p>
         {isAdmin && (
           <p className="mt-2 text-sm text-zinc-500">
-            Afegeix-ne una de nova utilitzant el formulari superior.
+            Afegeix-ne una de nova utilitzant el botó superior.
           </p>
         )}
       </div>

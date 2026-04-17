@@ -8,7 +8,7 @@ describe('Component Header', () => {
 
     render(<Header sidebarOpen={false} onToggleSidebar={funcioSimulada} />);
 
-    expect(screen.getByText('RoomyApp Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('RoomyApp')).toBeInTheDocument();
 
     // Comprovem que s'ha renderitzat el botó BurgerButton i el botó de logout
     const buttons = screen.getAllByRole('button');

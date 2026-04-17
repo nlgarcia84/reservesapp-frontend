@@ -27,7 +27,7 @@ export const Header = ({ sidebarOpen, onToggleSidebar }: HeaderProps) => {
       
       <div className="flex flex-col items-center">
         <h1 className="text-lg font-semibold tracking-tight sm:text-2xl">
-          RoomyApp Dashboard
+          RoomyApp
         </h1>
       </div>
 
