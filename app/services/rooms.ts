@@ -48,7 +48,7 @@ export const getRooms = async (token: string | null) => {
 
     // Processar la resposta JSON i ordenar les sales per nom
     const rooms: Room[] = await res.json();
-    return rooms.sort((a, b) => a.name.localeCompare(b.name));
+    return rooms.sort((a, b) => a.id - b.id);
   } catch (error) {
     console.error('Exception en getRooms:', error);
     throw error;

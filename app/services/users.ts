@@ -24,9 +24,9 @@ export const getUsers = async (token: string | null) => {
     throw new Error(`Error: ${res.status} ${res.statusText}`);
   }
 
-  // Processar la resposta JSON i ordenar les sales per nom
+  // Processar la resposta JSON i ordenar els usuaris per ID creixent
   const users: User[] = await res.json();
-  return users.sort((a, b) => a.name.localeCompare(b.name));
+  return users.sort((a, b) => a.id - b.id);
 };
 
 // Funció per a crear un nou usuari
@@ -50,7 +50,7 @@ export const addUser = async (
     throw new Error(`Error: ${res.status} ${res.statusText}`);
   }
 
-  // Retornar les dades de la sala creada
+  // Retornar les dades de l'usuari creat
   return res.json();
 };
 
@@ -65,7 +65,7 @@ export const deleteUser = async (
   // Validar que existeix un token
   if (!token) throw new Error('Token no disponible');
 
-  // Realitzar petició DELETE a l'API per eliminar la sala
+  // Realitzar petició DELETE a l'API per eliminar l'usuari
   const res = await fetch(`${API_URL}/users/${id}`, {
     method: 'DELETE',
     headers: {
