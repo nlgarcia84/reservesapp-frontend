@@ -7,8 +7,16 @@ import { useAuth } from '@/app/hooks/useAuth';
 import { getRooms } from '@/app/services/rooms';
 import { RoomList } from '@/components/ui/RoomList';
 
+type Room = { 
+  id: number; 
+  name: string; 
+  capacity: number;
+  equipment: string;
+  description: string;
+};
+
 const GestioSales = () => {
-  const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { token } = useAuth();
 
