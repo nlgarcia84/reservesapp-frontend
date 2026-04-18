@@ -7,9 +7,9 @@ import { useAuth } from '@/app/hooks/useAuth';
 import { getRooms } from '@/app/services/rooms';
 import { RoomList } from '@/components/ui/RoomList';
 
-type Room = { 
-  id: number; 
-  name: string; 
+type Room = {
+  id: number;
+  name: string;
   capacity: number;
   equipment: string;
   description: string;
@@ -52,7 +52,9 @@ const GestioSales = () => {
 
       <div>
         <div className="mb-6 flex items-center justify-between border-b border-white/5 pb-4">
-          <h2 className="text-xl font-semibold text-zinc-200">Sales registrades</h2>
+          <h2 className="text-xl font-semibold text-zinc-200">
+            Sales registrades
+          </h2>
           <span className="rounded-full bg-blue-500/10 px-3 py-1 text-sm font-medium text-blue-400">
             {rooms.length} totals
           </span>
@@ -66,11 +68,7 @@ const GestioSales = () => {
             </div>
           </div>
         ) : (
-          <RoomList 
-            rooms={rooms} 
-            isAdmin={true} 
-            onRefresh={fetchRooms} 
-          />
+          <RoomList rooms={rooms} isAdmin={true} onRefresh={fetchRooms} />
         )}
       </div>
     </div>
