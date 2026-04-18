@@ -4,20 +4,28 @@ import { useAuth } from '@/app/hooks/useAuth';
 import { useTimeGreeting } from '@/app/hooks/useTimeGreeting';
 import { Hand } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getRooms } from '@/app/services/rooms';
 import { RoomList } from '@/components/ui/RoomList';
+
+type Room = {
+  id: number;
+  name: string;
+  capacity: number;
+  equipment: string;
+  description: string;
+};
 
 const EmployeePage = () => {
   const router = useRouter();
   // Extraiem també el token per poder fer la crida a l'API
   const { name, isAuthenticated, token } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
-  
+
   // Nous estats per a la llista de sales
-  const [rooms, setRooms] = useState([]);
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [isLoadingRooms, setIsLoadingRooms] = useState(true);
-  
+
   const { greeting, icon } = useTimeGreeting();
 
   // 1. Comprovació de seguretat (el teu codi original)
@@ -34,15 +42,24 @@ const EmployeePage = () => {
   }, [isAuthenticated, router]);
 
   // 2. Obtenció de les sales de la base de dades
-  useEffect(() => {
-    if (isAuthenticated && token) {
+  const fetchRooms = useCallback(async () => {
+    if (!token) return;
+    try {
       setIsLoadingRooms(true);
-      getRooms(token)
-        .then((data) => setRooms(data))
-        .catch((err) => console.error('Error carregant les sales:', err))
-        .finally(() => setIsLoadingRooms(false));
+      const data = await getRooms(token);
+      setRooms(data);
+    } catch (err) {
+      console.error('Error carregant les sales:', err);
+    } finally {
+      setIsLoadingRooms(false);
     }
-  }, [isAuthenticated, token]);
+  }, [token]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchRooms();
+    }
+  }, [isAuthenticated, fetchRooms]);
 
   if (isChecking) {
     return (
@@ -71,7 +88,9 @@ const EmployeePage = () => {
       {/* Llistat de Sales */}
       <div className="mt-8">
         <div className="mb-6 flex items-center justify-between">
-          <h3 className="text-xl font-semibold text-zinc-200">Catàleg de Sales</h3>
+          <h3 className="text-xl font-semibold text-zinc-200">
+            Catàleg de Sales
+          </h3>
           <span className="rounded-full bg-blue-500/10 px-3 py-1 text-sm font-medium text-blue-400">
             {rooms.length} disponibles
           </span>
@@ -83,8 +102,8 @@ const EmployeePage = () => {
             <p>Carregant dades des del servidor...</p>
           </div>
         ) : (
-          <RoomList 
-            rooms={rooms} 
+          <RoomList
+            rooms={rooms}
             isAdmin={false} // Vital: Això fa que no surti el botó d'eliminar!
           />
         )}
