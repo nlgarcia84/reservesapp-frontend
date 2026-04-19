@@ -29,7 +29,7 @@ const uploadImageToSupabase = async (file: File): Promise<string> => {
   const fileName = `room-${timestamp}-${randomString}-${file.name}`;
 
   // Pujar fitxer al bucket 'room-images' de Supabase
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from('room-images')
     .upload(fileName, file);
 
@@ -48,40 +48,76 @@ const uploadImageToSupabase = async (file: File): Promise<string> => {
 };
 
 // Funció per obtenir totes les sales disponibles
+<<<<<<< Updated upstream
 // Paràmetres: token d'autenticació de l'usuari
 // Retorna: llista de sales ordenades alfabèticament per nom
 export const getRooms = async (token: string | null): Promise<Room[]> => {
   // Validar que existeix un token, sinó llançar un error
+=======
+// Paràmetres: token (string | null) - token d'autenticació de l'usuari
+// Retorna: Promise<Room[]> - llista de sales ordenades alfabèticament per nom
+export const getRooms = async (token: string | null) => {
+  // Validar que existeix un token, si no existeix llançar un error
+>>>>>>> Stashed changes
   if (!token) throw new Error('Token no disponible');
 
+  // Envoltall la lògica amb try-catch per capturar excepcions
   try {
+    // Realitzar una petició HTTP GET a l'endpoint /rooms de l'API
     const res = await fetch(`${API_URL}/rooms`, {
+<<<<<<< Updated upstream
       method: 'GET',
       cache: 'no-store', // No utilitzar cache per sempre obtenir dades actualitzades
       headers: { Authorization: `Bearer ${token}` }, // Incloure token a l'encapçalament
+=======
+      method: 'GET', // Mètode HTTP GET per obtenir dades
+      cache: 'no-store', // No utilitzar cache, sempre obtenir dades fresques del servidor
+      headers: { Authorization: `Bearer ${token}` }, // Afegir token d'autenticació al encapçalament
+>>>>>>> Stashed changes
     });
 
+    // Verificar si la resposta HTTP no és exitosa (status 4xx o 5xx)
     if (!res.ok) {
+      // Intentar obtenir el cos de la resposta com a JSON, si falla retornar object buit
       const errorData = await res.json().catch(() => ({}));
+
+      // Construir missatge d'error prioritzant: missatge del servidor → error del servidor → status HTTP
       const errorMessage =
         errorData.message ||
         errorData.error ||
         `Error: ${res.status} ${res.statusText}`;
 
+      // Registrar l'error en la consola amb informació detallada
       console.error('Error getRooms:', {
+<<<<<<< Updated upstream
         status: res.status,
         statusText: res.statusText,
         serverMessage: errorMessage,
         apiUrl: API_URL,
+=======
+        status: res.status, // Codi d'estat HTTP (ex: 404, 500)
+        statusText: res.statusText, // Descripció de l'estat (ex: "Not Found", "Internal Server Error")
+        serverMessage: errorMessage, // Missatge d'error obtingut del servidor
+>>>>>>> Stashed changes
       });
 
+      // Llançar una excepció amb el missatge d'error
       throw new Error(errorMessage);
     }
 
+    // Convertir la resposta JSON a un array de tipus Room
     const rooms: Room[] = await res.json();
+
+    // Retornar les sales ordenades alfabèticament comparant els noms
+    // localeCompare() compara strings seguint les regles de localització (ex: acentos)
     return rooms.sort((a, b) => a.name.localeCompare(b.name));
   } catch (error) {
+    // Capturar qualsevol excepció (errors de xarxa, parsing JSON, validació, etc.)
+
+    // Registrar l'error en la consola per a debugging
     console.error('Excepció en getRooms:', error);
+
+    // Relançar l'error perquè el codi que crida aquesta funció la pugui gestionar
     throw error;
   }
 };
