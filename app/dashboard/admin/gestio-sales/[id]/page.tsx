@@ -8,8 +8,8 @@ import { getRoomById, updateRoom } from '@/app/services/rooms';
 import { InputForm } from '@/components/ui/InputForm';
 import { InputSelectForm } from '@/components/ui/InputSelectForm';
 import { InputFileForm } from '@/components/ui/InputFileForm';
-import { LoaderCircle, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { BackButton } from '@/components/ui/BackButton'; // Importem el component existent
+import { LoaderCircle } from 'lucide-react';
 
 export default function EditRoomPage() {
     const params = useParams();
@@ -43,9 +43,7 @@ export default function EditRoomPage() {
                 setCapacity(room.capacity.toString());
                 setDescription(room.description || '');
 
-                // Parseig segur de l'equipament per evitar errors de format del backend
                 let parsedEquipment: string[] = [];
-
                 if (room.equipment) {
                     if (Array.isArray(room.equipment)) {
                         parsedEquipment = room.equipment;
@@ -57,7 +55,6 @@ export default function EditRoomPage() {
                         }
                     }
                 }
-
                 setSelectedEquipment(parsedEquipment);
 
                 if (room.imageUrl) {
@@ -104,7 +101,7 @@ export default function EditRoomPage() {
 
         const capacityNum = parseInt(capacity);
         if (isNaN(capacityNum) || capacityNum <= 0) {
-            setError('La capacitat ha de ser un número vàlid més gran que 0.');
+            setError('La capacitat ha de ser un número vàlid.');
             return;
         }
 
@@ -129,12 +126,6 @@ export default function EditRoomPage() {
 
     return (
         <div className="mb-10 mt-8">
-            <div className="w-full max-w-md mx-auto mb-6">
-                <Link href="/dashboard/admin/gestio-sales" className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors w-fit">
-                    <ArrowLeft size={20} /> Tornar al llistat
-                </Link>
-            </div>
-
             <h2 className="mb-6 text-2xl font-semibold text-center text-zinc-100">
                 Detalls i edició de la sala
             </h2>
@@ -145,9 +136,7 @@ export default function EditRoomPage() {
             >
                 {/* Nom */}
                 <div className="flex flex-col gap-1 text-left">
-                    <label className="text-base font-medium text-zinc-300">
-                        Nom de la sala
-                    </label>
+                    <label className="text-base font-medium text-zinc-300">Nom de la sala</label>
                     <InputForm
                         type="text"
                         placeholder="Ex: Sala de reunions A"
@@ -159,9 +148,7 @@ export default function EditRoomPage() {
 
                 {/* Capacitat */}
                 <div className="flex flex-col gap-1 text-left">
-                    <label className="text-base font-medium text-zinc-300">
-                        Capacitat
-                    </label>
+                    <label className="text-base font-medium text-zinc-300">Capacitat</label>
                     <InputForm
                         type="number"
                         placeholder="Capacitat (núm de persones)"
@@ -174,9 +161,7 @@ export default function EditRoomPage() {
 
                 {/* Equipament */}
                 <div className="flex flex-col gap-1 text-left">
-                    <label className="text-base font-medium text-zinc-300">
-                        Equipament
-                    </label>
+                    <label className="text-base font-medium text-zinc-300">Equipament</label>
                     <div className="space-y-3">
                         {Object.entries(equipementOptions).map(([key, value]) => (
                             <InputSelectForm
@@ -205,9 +190,7 @@ export default function EditRoomPage() {
 
                 {/* Descripció */}
                 <div className="flex flex-col gap-1 text-left">
-                    <label className="text-base font-medium text-zinc-300">
-                        Descripció
-                    </label>
+                    <label className="text-base font-medium text-zinc-300">Descripció</label>
                     <textarea
                         className="block w-full rounded-lg border border-white/15 bg-black px-3 py-3 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                         placeholder="Descripció de la sala"
@@ -227,20 +210,19 @@ export default function EditRoomPage() {
                     {isLoading ? 'Desant...' : 'Desar canvis'}
                 </button>
 
-                {error && <p className="text-center text-red-400">{error}</p>}
-
-                {isLoading ? (
+                {error && <p className="text-center text-red-400 mt-2">{error}</p>}
+                
+                {isLoading && (
                     <div className="text-center mt-4">
-                        <span className="block text-lg mb-3 text-slate-300">
-                            Desant canvis...
-                        </span>
-                        <LoaderCircle
-                            className="mx-auto h-8 w-8 animate-spin text-blue-400 motion-reduce:animate-none"
-                            aria-label="Carregant"
-                        />
+                        <LoaderCircle className="mx-auto h-8 w-8 animate-spin text-blue-400" />
                     </div>
-                ) : null}
+                )}
             </form>
+
+            {/* Component BackButton unificat */}
+            <div className="mt-8">
+                <BackButton previouspage="/dashboard/admin/gestio-sales" />
+            </div>
         </div>
     );
 }

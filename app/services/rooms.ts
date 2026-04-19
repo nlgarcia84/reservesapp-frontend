@@ -29,7 +29,7 @@ const uploadImageToSupabase = async (file: File): Promise<string> => {
   const fileName = `room-${timestamp}-${randomString}-${file.name}`;
 
   // Pujar fitxer al bucket 'room-images' de Supabase
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from('room-images')
     .upload(fileName, file);
 
