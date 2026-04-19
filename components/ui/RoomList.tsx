@@ -4,8 +4,9 @@ type Room = {
   id: number;
   name: string;
   capacity: number;
-  equipment: string;
+  equipment: ('projector' | 'whiteboard' | 'tv' | 'ac')[]; // ✅ Array
   description: string;
+  imageUrl?: string | null; // ✅ URL de imagen
 };
 
 type RoomListProps = {
@@ -15,7 +16,6 @@ type RoomListProps = {
 };
 
 export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
-
   // Gestionem l'estat buit
   if (!rooms || rooms.length === 0) {
     return (

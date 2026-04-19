@@ -2,13 +2,13 @@ import Link from 'next/link';
 import { Users } from 'lucide-react'; // Hem tret les altres icones que ja no usem
 import { DeleteButton } from '@/components/ui/DeleteButton';
 
-type Room = {
+export type Room = {
   id: number;
   name: string;
   capacity: number;
-  // Tot i que l'API no ho envia a la llista, ho mantenim al tipus base per si de cas
-  equipment?: string; 
-  description?: string;
+  equipment: ('projector' | 'whiteboard' | 'tv' | 'ac')[];
+  description: string;
+  imageUrl?: string | null;
 };
 
 type RoomCardProps = {
@@ -27,10 +27,13 @@ export const RoomCard = ({ room, isAdmin, onRefresh }: RoomCardProps) => {
       <div>
         {/* Capçalera amb títol i paperera */}
         <div className="mb-4 flex items-start justify-between gap-2">
-          <h3 className="text-xl font-bold tracking-tight text-zinc-100 line-clamp-1" title={room.name}>
+          <h3
+            className="text-xl font-bold tracking-tight text-zinc-100 line-clamp-1"
+            title={room.name}
+          >
             {room.name}
           </h3>
-          
+
           {isAdmin && (
             <DeleteButton
               codi={room.id}

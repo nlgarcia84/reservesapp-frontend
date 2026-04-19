@@ -1,8 +1,13 @@
-// URL base de l'API obtinguda de les variables d'entorn
+import { createClient } from '@supabase/supabase-js';
+
+// Configurar cliente de Supabase
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Tipus de dada que representa una sala amb el seu identificador, nom, capacitat, equipament, descripció i imatge
-type Room = {
+export type Room = {
   id: number;
   name: string;
   capacity: number;
@@ -11,24 +16,46 @@ type Room = {
   imageUrl?: string | null;
 };
 
+// Funció per pujar una imatge a Supabase Storage
+// Paràmetres: file (fitxer a pujar)
+// Retorna: URL pública de la imatge
+const uploadImageToSupabase = async (file: File): Promise<string> => {
+  // Generar un nom únic per al fitxer
+  const timestamp = Date.now();
+  const randomString = Math.random().toString(36).substring(7);
+  const fileName = `room-${timestamp}-${randomString}-${file.name}`;
+
+  // Pujar fitxer al bucket 'room-images' de Supabase
+  const { data, error } = await supabase.storage
+    .from('room-images')
+    .upload(fileName, file);
+
+  // Verificar si hi ha error en la pujada
+  if (error) {
+    console.error('Error pujant imatge a Supabase:', error);
+    throw new Error(`Error pujant imatge: ${error.message}`);
+  }
+
+  // Obtenir URL pública del fitxer pujat
+  const { data: publicData } = supabase.storage
+    .from('room-images')
+    .getPublicUrl(fileName);
+
+  return publicData.publicUrl;
+};
+
 // Funció per obtenir totes les sales disponibles
-// Paràmetres: token d'autenticació de l'usuari
-// Retorna: llista de sales ordenades alfabèticament per nom
 export const getRooms = async (token: string | null) => {
-  // Validar que existeix un token, sinó llançar un error
   if (!token) throw new Error('Token no disponible');
 
   try {
-    // Realitzar petició GET a l'API per obtenir les sales amb autenticació
     const res = await fetch(`${API_URL}/rooms`, {
       method: 'GET',
-      cache: 'no-store', // No utilitzar cache per sempre obtenir dades actualitzades
-      headers: { Authorization: `Bearer ${token}` }, // Incloure token al encapçalament
+      cache: 'no-store',
+      headers: { Authorization: `Bearer ${token}` },
     });
 
-    // Verificar que la resposta és correcta
     if (!res.ok) {
-      // Intentar obtenir el missatge d'error del servidor
       const errorData = await res.json().catch(() => ({}));
       const errorMessage =
         errorData.message ||
@@ -39,42 +66,33 @@ export const getRooms = async (token: string | null) => {
         status: res.status,
         statusText: res.statusText,
         serverMessage: errorMessage,
-        fullResponse: errorData,
-        apiUrl: API_URL,
-        token: token ? `${token.substring(0, 20)}...` : 'null',
       });
 
       throw new Error(errorMessage);
     }
 
-    // Processar la resposta JSON i ordenar les sales per nom
     const rooms: Room[] = await res.json();
     return rooms.sort((a, b) => a.name.localeCompare(b.name));
   } catch (error) {
-    console.error('Exception en getRooms:', error);
+    console.error('Excepció en getRooms:', error);
     throw error;
   }
 };
 
 // Funció per obtenir els detalls d'una sala específica
-// Paràmetres: id (identificador de la sala), token d'autenticació
-// Retorna: les dades detallades de la sala (US2)
 export const getRoomById = async (
   id: number,
   token: string | null,
 ): Promise<Room> => {
-  // Validar que existeix un token
   if (!token) throw new Error('Token no disponible');
 
   try {
-    // Realitzar petició GET a l'API per obtenir una sala concreta
     const res = await fetch(`${API_URL}/rooms/${id}`, {
       method: 'GET',
       cache: 'no-store',
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    // Verificar que la resposta és correcta (ex: 404 si la sala no existeix)
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
       throw new Error(
@@ -82,10 +100,9 @@ export const getRoomById = async (
       );
     }
 
-    // Retornar les dades de la sala
     return await res.json();
   } catch (error) {
-    console.error(`Exception en getRoomById (ID: ${id}):`, error);
+    console.error(`Excepció en getRoomById (ID: ${id}):`, error);
     throw error;
   }
 };
@@ -104,29 +121,45 @@ export const addNewRoom = async (
   // Validar que existeix un token
   if (!token) throw new Error('Token no disponible');
 
-  // Crear FormData per enviar fitxer + dades
-  const formData = new FormData();
-  formData.append('name', name);
-  formData.append('capacity', capacity.toString());
-  formData.append('equipment', JSON.stringify(equipment));
-  formData.append('description', description);
+  let imageUrl: string | null = null;
+
+  // Si hi ha imatge, pujar-la a Supabase
   if (imageFile) {
-    formData.append('image', imageFile); // Afegir fitxer si existeix
+    try {
+      imageUrl = await uploadImageToSupabase(imageFile);
+      console.log('Imatge pujada a Supabase:', imageUrl);
+    } catch (error) {
+      console.error('Error pujant imatge:', error);
+      throw new Error(
+        error instanceof Error ? error.message : 'Error pujant imatge',
+      );
+    }
   }
 
-  // Realitzar petició POST a l'API per crear una nova sala
+  // Enviar dades al backend com a JSON
   const res = await fetch(`${API_URL}/rooms`, {
     method: 'POST',
     headers: {
-      Authorization: `Bearer ${token}`, // NO incloure Content-Type, el navegador ho fa automàticament
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
     },
-    body: formData, // Enviar FormData en lloc de JSON
+    body: JSON.stringify({
+      name,
+      capacity,
+      equipment,
+      description,
+      imageUrl, // URL de la imatge a Supabase
+    }),
   });
 
   // Verificar que la resposta és correcta
   if (!res.ok) {
-    // Afegim captura d'error del backend per si de cas
     const errorData = await res.json().catch(() => ({}));
+    console.error('Error addNewRoom:', {
+      status: res.status,
+      statusText: res.statusText,
+      serverMessage: errorData,
+    });
     throw new Error(
       errorData.message || `Error: ${res.status} ${res.statusText}`,
     );
@@ -137,22 +170,27 @@ export const addNewRoom = async (
 };
 
 // Funció per eliminar una sala existent
-// Paràmetres: id (id de la sala a eliminar), token (autenticació)
-// Retorna: resposta del servidor confirmant l'eliminació
 export const deleteRoom = async (id: number, token: string | null) => {
-  // Validar que existeix un token
   if (!token) throw new Error('Token no disponible');
 
-  // Realitzar petició DELETE a l'API per eliminar la sala
   const res = await fetch(`${API_URL}/rooms/${id}`, {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${token}`, // Incloure token al encapçalament
+      Authorization: `Bearer ${token}`,
     },
   });
 
-  // Verificar que la resposta és correcta
   if (!res.ok) {
-    throw new Error(`Error: ${res.status} ${res.statusText}`);
+    const errorData = await res.json().catch(() => ({}));
+    console.error('Error deleteRoom:', {
+      status: res.status,
+      statusText: res.statusText,
+      serverMessage: errorData,
+    });
+    throw new Error(
+      errorData.message || `Error: ${res.status} ${res.statusText}`,
+    );
   }
+
+  return res.json();
 };

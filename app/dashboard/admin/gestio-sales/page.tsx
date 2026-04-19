@@ -11,8 +11,9 @@ type Room = {
   id: number;
   name: string;
   capacity: number;
-  equipment: string;
+  equipment: ('projector' | 'whiteboard' | 'tv' | 'ac')[];
   description: string;
+  imageUrl?: string | null;
 };
 
 const GestioSales = () => {
