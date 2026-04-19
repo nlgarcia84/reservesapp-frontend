@@ -7,15 +7,25 @@ import { useAuth } from '@/app/hooks/useAuth';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
 import { LoaderCircle } from 'lucide-react';
 import { InputForm } from '../ui/InputForm';
+import { InputSelectForm } from '../ui/InputSelectForm';
 
 export const AddRoomForm = () => {
+  // Equipaments disponibles per a les sales amb les seves descripcions
+  const equipementOptions = {
+    projector: 'Projector + pantalla',
+    whiteboard: 'Pissarra blanca interactiva',
+    tv: 'Televisor 55" 4K',
+    ac: 'Aire acondicionat',
+  };
+
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState('');
   const [equipment, setEquipment] = useState('');
   const [description, setDescription] = useState('');
-  
+
   const { token } = useAuth();
-  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } = useLoadingState();
+  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
+    useLoadingState();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,11 +59,17 @@ export const AddRoomForm = () => {
 
   return (
     <div className="mb-10">
-      <h2 className="mb-6 text-2xl font-semibold text-zinc-100">Afegir nova sala</h2>
-      <form onSubmit={handleSubmit} className="flex flex-col w-full max-w-md mx-auto gap-4">
-        
+      <h2 className="mb-6 text-2xl font-semibold text-zinc-100">
+        Afegir nova sala
+      </h2>
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col w-full max-w-md mx-auto gap-4"
+      >
         <div className="flex flex-col gap-1 text-left">
-          <label className="text-base font-medium text-zinc-300">Nom de la sala</label>
+          <label className="text-base font-medium text-zinc-300">
+            Nom de la sala
+          </label>
           <InputForm
             type="text"
             placeholder="Ex: Sala de reunions A"
@@ -64,29 +80,40 @@ export const AddRoomForm = () => {
         </div>
 
         <div className="flex flex-col gap-1 text-left">
-          <label className="text-base font-medium text-zinc-300">Capacitat</label>
+          <label className="text-base font-medium text-zinc-300">
+            Capacitat
+          </label>
           <InputForm
             type="number"
             placeholder="Capacitat (núm de persones)"
             value={capacity}
             onChange={(e) => setCapacity(e.target.value)}
             disabled={isLoading}
+            min={0}
           />
         </div>
 
         <div className="flex flex-col gap-1 text-left">
-          <label className="text-base font-medium text-zinc-300">Equipament</label>
-          <InputForm
-            type="text"
-            placeholder="Ex: Projector, Pissarra..."
-            value={equipment}
-            onChange={(e) => setEquipment(e.target.value)}
-            disabled={isLoading}
-          />
+          <label className="text-base font-medium text-zinc-300">
+            Equipament
+          </label>
+          <div className="space-y-3">
+            {Object.entries(equipementOptions).map(([key, value]) => (
+              <InputSelectForm
+                key={key}
+                id={key}
+                name={key}
+                value={value}
+                label={value}
+              />
+            ))}
+          </div>
         </div>
 
         <div className="flex flex-col gap-1 text-left">
-          <label className="text-base font-medium text-zinc-300">Descripció</label>
+          <label className="text-base font-medium text-zinc-300">
+            Descripció
+          </label>
           <textarea
             className="block w-full rounded-lg border border-white/15 bg-black px-3 py-3 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Descripció de la sala"
@@ -105,8 +132,25 @@ export const AddRoomForm = () => {
           {isLoading ? 'Afegint...' : 'Afegir Sala'}
         </button>
 
-        {error && <p className="text-red-400 mt-2">{error}</p>}
-        {showSuccess && <p className="text-green-400 mt-2">Sala afegida correctament!</p>}
+        {/* Error */}
+        {error ? <p className="text-center text-red-400">{error}</p> : null}
+
+        {/* Loading */}
+        {isLoading ? (
+          <div className="text-center mt-4">
+            <span className="block text-lg mb-3 text-slate-300">
+              Afegint sala...
+            </span>
+            <LoaderCircle
+              className="mx-auto h-8 w-8 animate-spin text-blue-400 motion-reduce:animate-none"
+              aria-label="Carregant"
+            />
+          </div>
+        ) : null}
+
+        {showSuccess && (
+          <p className="text-green-400 mt-2">Sala afegida correctament!</p>
+        )}
       </form>
     </div>
   );

@@ -14,7 +14,8 @@ export const AddUserForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPasswords, setShowPasswords] = useState(false);
-  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } = useLoadingState();
+  const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
+    useLoadingState();
   const { token } = useAuth();
 
   // Funció per validar la contrasenya amb les mateixes regles que el registre
@@ -33,7 +34,7 @@ export const AddUserForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     // Netegem qualsevol missatge d'error o èxit previ
     setError('');
 

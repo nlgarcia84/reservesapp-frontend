@@ -5,6 +5,7 @@ type InputFormProps = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   disabled?: boolean;
+  min?: number;
 };
 
 export const InputForm = ({
@@ -14,7 +15,13 @@ export const InputForm = ({
   onChange,
   required,
   disabled,
+  min,
 }: InputFormProps) => {
+  const baseStyles =
+    'block w-full rounded-lg border border-white/15 bg-black px-3 py-3  text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500';
+
+  const conditionalStyles = type === 'number' ? '' : 'pr-11';
+
   return (
     <input
       type={type}
@@ -23,7 +30,8 @@ export const InputForm = ({
       onChange={onChange}
       required={required}
       disabled={disabled}
-      className="block w-full rounded-lg border border-white/15 bg-black px-3 py-3 pr-11 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      min={min}
+      className={`${baseStyles} ${conditionalStyles}`}
     />
   );
 };
