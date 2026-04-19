@@ -126,7 +126,7 @@ export const updateRoom = async (
 ) => {
   if (!token) throw new Error('Token no disponible');
 
-  // De moment deixem el teu codi amb FormData per no trencar-ho, 
+  // De moment deixem el teu codi amb FormData per no trencar-ho,
   // però l'haurem d'actualitzar perquè utilitzi Supabase com l'addNewRoom.
   const formData = new FormData();
   formData.append('name', name);
@@ -138,7 +138,7 @@ export const updateRoom = async (
   }
 
   const res = await fetch(`${API_URL}/rooms/${id}`, {
-    method: 'PUT', 
+    method: 'PUT',
     headers: { Authorization: `Bearer ${token}` },
     body: formData,
   });
@@ -146,9 +146,9 @@ export const updateRoom = async (
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     console.error('Error del Backend a updateRoom:', errorData);
-    
+
     throw new Error(
-      errorData.message || errorData.error || 'Error actualitzant la sala'
+      errorData.message || errorData.error || 'Error actualitzant la sala',
     );
   }
 
@@ -191,7 +191,7 @@ export const addNewRoom = async (
       capacity,
       equipment,
       description,
-      imageUrl, 
+      imageUrl,
     }),
   });
 
