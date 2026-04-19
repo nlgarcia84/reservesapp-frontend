@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image'; // Canviem l'import
+import Image from 'next/image';
 import { Users, Image as ImageIcon } from 'lucide-react';
 import { DeleteButton } from '@/components/ui/DeleteButton';
 import { type Room } from '@/app/services/rooms';

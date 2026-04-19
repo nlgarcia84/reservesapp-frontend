@@ -8,7 +8,7 @@ type RoomListProps = {
 };
 
 export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
-
+  // Gestionem l'estat buit
   if (!rooms || rooms.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-zinc-950/50 p-10 text-center">
