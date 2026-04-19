@@ -1,22 +1,14 @@
 import { RoomCard } from './RoomCard';
-
-type Room = {
-  id: number;
-  name: string;
-  capacity: number;
-  equipment: string;
-  description: string;
-};
+import { type Room } from '@/app/services/rooms'; 
 
 type RoomListProps = {
-  rooms: Room[];
+  rooms: Room[]; 
   isAdmin: boolean;
   onRefresh?: () => void;
 };
 
 export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
 
-  // Gestionem l'estat buit
   if (!rooms || rooms.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-2xl border border-white/10 bg-zinc-950/50 p-10 text-center">
@@ -32,7 +24,6 @@ export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
     );
   }
 
-  // Graella responsive
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {rooms.map((room) => (

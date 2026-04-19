@@ -160,7 +160,7 @@ export const AddRoomForm = () => {
                   key={key}
                   id={key}
                   name={key}
-                  value={equipmentKey} // ✅ Pasa la clave (el identificador único)
+                  value={equipmentKey} // Pasa la clave (el identificador único)
                   label={value}
                   checked={selectedEquipment.includes(equipmentKey)}
                   onChange={() => handleEquipmentChange(equipmentKey)}

@@ -1,11 +1,13 @@
 // URL base de l'API obtinguda de les variables d'entorn
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Tipus de dada que representa una sala amb el seu identificador, nom, capacitat, equipament, descripció i imatge
-type Room = {
+// Tipus de dada que representa una sala amb el seu identificador, nom, capacitat, equipament, descripció i imatge.
+// S'exporta perquè es pugui utilitzar a qualsevol component o pàgina de l'aplicació.
+export type Room = {
   id: number;
   name: string;
   capacity: number;
+  // Equipament definit com a array d'opcions tancades segons el component InputSelectForm del Norman
   equipment: ('projector' | 'whiteboard' | 'tv' | 'ac')[];
   description: string;
   imageUrl?: string | null;
@@ -14,7 +16,7 @@ type Room = {
 // Funció per obtenir totes les sales disponibles
 // Paràmetres: token d'autenticació de l'usuari
 // Retorna: llista de sales ordenades alfabèticament per nom
-export const getRooms = async (token: string | null) => {
+export const getRooms = async (token: string | null): Promise<Room[]> => {
   // Validar que existeix un token, sinó llançar un error
   if (!token) throw new Error('Token no disponible');
 
@@ -23,7 +25,7 @@ export const getRooms = async (token: string | null) => {
     const res = await fetch(`${API_URL}/rooms`, {
       method: 'GET',
       cache: 'no-store', // No utilitzar cache per sempre obtenir dades actualitzades
-      headers: { Authorization: `Bearer ${token}` }, // Incloure token al encapçalament
+      headers: { Authorization: `Bearer ${token}` }, // Incloure token a l'encapçalament
     });
 
     // Verificar que la resposta és correcta
@@ -39,9 +41,7 @@ export const getRooms = async (token: string | null) => {
         status: res.status,
         statusText: res.statusText,
         serverMessage: errorMessage,
-        fullResponse: errorData,
         apiUrl: API_URL,
-        token: token ? `${token.substring(0, 20)}...` : 'null',
       });
 
       throw new Error(errorMessage);
@@ -60,7 +60,7 @@ export const getRooms = async (token: string | null) => {
 // Paràmetres: id (identificador de la sala), token d'autenticació
 // Retorna: les dades detallades de la sala (US2)
 export const getRoomById = async (
-  id: number,
+  id: string | number,
   token: string | null,
 ): Promise<Room> => {
   // Validar que existeix un token
@@ -90,13 +90,56 @@ export const getRoomById = async (
   }
 };
 
+// Funció per actualitzar/modificar una sala existent (Nova implementació per a Edició)
+// Paràmetres: id (identificador), name, capacity, equipment (array), description, token, i imatge opcional
+// Retorna: resposta del servidor amb les dades actualitzades
+export const updateRoom = async (
+  id: string,
+  name: string,
+  capacity: number,
+  equipment: string[],
+  description: string,
+  token: string | null,
+  imageFile?: File,
+) => {
+  if (!token) throw new Error('Token no disponible');
+
+  // Crear FormData per enviar fitxer + dades igual que en la creació
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('capacity', capacity.toString());
+  // Transformem l'array a string format JSON perquè el backend ho pugui interpretar
+  formData.append('equipment', JSON.stringify(equipment));
+  formData.append('description', description);
+  if (imageFile) {
+    formData.append('image', imageFile);
+  }
+
+  const res = await fetch(`${API_URL}/rooms/${id}`, {
+    method: 'PUT', 
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    console.error('Error del Backend a updateRoom:', errorData);
+    
+    throw new Error(
+      errorData.message || errorData.error || 'Error actualitzant la sala'
+    );
+  }
+
+  return res.json();
+};
+
 // Funció per crear una nova sala
 // Paràmetres: name (nom), capacity (capacitat), equipment (equipaments), description (descripció), token (autenticació), imageFile (imatge opcional)
 // Retorna: resposta del servidor amb les dades de la sala creada
 export const addNewRoom = async (
   name: string,
   capacity: number,
-  equipment: ('projector' | 'whiteboard' | 'tv' | 'ac')[],
+  equipment: string[],
   description: string,
   token: string | null,
   imageFile?: File,
@@ -125,7 +168,6 @@ export const addNewRoom = async (
 
   // Verificar que la resposta és correcta
   if (!res.ok) {
-    // Afegim captura d'error del backend per si de cas
     const errorData = await res.json().catch(() => ({}));
     throw new Error(
       errorData.message || `Error: ${res.status} ${res.statusText}`,
@@ -147,7 +189,7 @@ export const deleteRoom = async (id: number, token: string | null) => {
   const res = await fetch(`${API_URL}/rooms/${id}`, {
     method: 'DELETE',
     headers: {
-      Authorization: `Bearer ${token}`, // Incloure token al encapçalament
+      Authorization: `Bearer ${token}`, // Incloure token a l'encapçalament
     },
   });
 

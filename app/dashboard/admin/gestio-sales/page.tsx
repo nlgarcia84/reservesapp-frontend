@@ -4,22 +4,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 import { useAuth } from '@/app/hooks/useAuth';
-import { getRooms } from '@/app/services/rooms';
+// Importem el tipus centralitzat Room des dels serveis
+import { getRooms, type Room } from '@/app/services/rooms';
 import { RoomList } from '@/components/ui/RoomList';
 
-type Room = {
-  id: number;
-  name: string;
-  capacity: number;
-  equipment: string;
-  description: string;
-};
-
 const GestioSales = () => {
+  // Estat per guardar les sales (fent servir el tipus importat)
   const [rooms, setRooms] = useState<Room[]>([]);
+  // Estat per controlar si estem descarregant dades del backend
   const [isLoading, setIsLoading] = useState(true);
   const { token } = useAuth();
 
+  // Funció per anar a buscar les sales al backend
   const fetchRooms = useCallback(async () => {
     if (!token) return;
     try {
@@ -33,6 +29,7 @@ const GestioSales = () => {
     }
   }, [token]);
 
+  // S'executa al carregar la pàgina
   useEffect(() => {
     fetchRooms();
   }, [fetchRooms]);
@@ -43,7 +40,7 @@ const GestioSales = () => {
         Panell administrador de sales
       </h1>
 
-      {/* Ara només deixem el botó d'afegir, l'esborrat es fa des de cada sala */}
+      {/* Ara només deixem el botó d'afegir, la lògica d'esborrar es gestiona des de cada RoomCard a través del DeleteButton */}
       <div className="mb-12 flex justify-center">
         <Link href="/dashboard/admin/gestio-sales/afegir-sala">
           <Button className="px-10">Afegir nova sala</Button>
@@ -60,6 +57,7 @@ const GestioSales = () => {
           </span>
         </div>
 
+        {/* Mostrem indicador de càrrega o la graella de targetes segons l'estat */}
         {isLoading ? (
           <div className="flex justify-center p-20 text-zinc-400">
             <div className="flex flex-col items-center gap-3">
