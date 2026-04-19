@@ -8,6 +8,7 @@ import { useLoadingState } from '@/app/hooks/useLoadingState';
 import { LoaderCircle } from 'lucide-react';
 import { InputForm } from '../ui/InputForm';
 import { InputSelectForm } from '../ui/InputSelectForm';
+import { InputFileForm } from '../ui/InputFileForm';
 
 export const AddRoomForm = () => {
   // Equipaments disponibles per a les sales amb les seves descripcions
@@ -22,10 +23,25 @@ export const AddRoomForm = () => {
   const [capacity, setCapacity] = useState('');
   const [equipment, setEquipment] = useState('');
   const [description, setDescription] = useState('');
-
+  const [imageFile, setImageFile] = useState<File | null>(null); // Nuevo estado para la imagen
+  const [imagePreview, setImagePreview] = useState<string>(''); // Preview de la imagen
   const { token } = useAuth();
   const { isLoading, showSuccess, error, setError, startLoading, stopLoading } =
     useLoadingState();
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setImageFile(file);
+      // Crear preview de la imagen
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +67,8 @@ export const AddRoomForm = () => {
       setCapacity('');
       setEquipment('');
       setDescription('');
+      setImageFile(null);
+      setImagePreview('');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error afegint la sala');
       stopLoading(false);
@@ -108,6 +126,15 @@ export const AddRoomForm = () => {
               />
             ))}
           </div>
+        </div>
+
+        <div className="flex flex-col gap-1 text-left">
+          <label className="text-base font-medium text-zinc-300">Imatge</label>
+          <InputFileForm
+            onChange={handleImageChange}
+            disabled={isLoading}
+            preview={imagePreview}
+          />
         </div>
 
         <div className="flex flex-col gap-1 text-left">
