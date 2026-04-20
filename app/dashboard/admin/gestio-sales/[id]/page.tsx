@@ -115,7 +115,7 @@ export default function EditRoomPage() {
     e.preventDefault();
     setError('');
 
-    // 1. Neteja bàsica de buits
+    // Neteja bàsica de buits
     const cleanName = name.trim();
     if (!cleanName) {
       setError('El nom de la sala és obligatori.');
@@ -125,7 +125,7 @@ export default function EditRoomPage() {
     startLoading();
 
     try {
-      // 2. Obtenim totes les sales per comparar
+      // Obtenim totes les sales per comparar
       const allRooms = await getRooms(token);
 
       // Busquem si hi ha algun duplicat comparant-ho tot en minúscules
@@ -143,7 +143,7 @@ export default function EditRoomPage() {
         return;
       }
 
-      // 3. Si tot està OK, procedim a guardar
+      // Si tot està OK, procedim a guardar
       await updateRoom(
         id,
         cleanName,

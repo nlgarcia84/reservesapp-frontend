@@ -20,7 +20,6 @@ export const RoomCard = ({
   onRefresh,
   isSelected,
   onClick,
-  direction,
 }: RoomCardProps) => {
   const detailsUrl = isAdmin
     ? `/dashboard/admin/gestio-sales/${room.id}`

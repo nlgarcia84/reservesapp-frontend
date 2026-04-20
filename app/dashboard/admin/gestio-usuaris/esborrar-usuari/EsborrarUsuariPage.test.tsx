@@ -1,7 +1,22 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import EsborrarUsuari from './page'; 
+import EsborrarUsuari from './page';
 import { useAuth } from '@/app/hooks/useAuth';
 import { getUsers } from '@/app/services/users';
+
+
+jest.mock('@supabase/supabase-js', () => ({
+    createClient: jest.fn(() => ({
+        storage: {
+            from: jest.fn(() => ({
+                upload: jest.fn(),
+                getPublicUrl: jest.fn(() => ({ data: { publicUrl: 'http://fake-url.com' } })),
+            })),
+        },
+    })),
+}));
+
+process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://fake.supabase.co';
+process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'fake-key';
 
 jest.mock('@/app/hooks/useAuth', () => ({
     useAuth: jest.fn(),

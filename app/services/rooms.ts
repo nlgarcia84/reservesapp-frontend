@@ -14,12 +14,11 @@ export type Room = {
   capacity: number;
   equipment: ('projector' | 'whiteboard' | 'tv' | 'ac')[];
   description: string;
-  imageUrl?: string | null;
-  hasProjector?: boolean;
-  hasWhiteboard?: boolean;
-  hasTv?: boolean;
-  hasAirConditioning?: boolean;
-  // Mantenim els camps en snake_case per compatibilitat amb el backend, tot i que el frontend utilitza camelCase
+  imageUrl: string | null;
+  hasProjector: boolean;
+  hasWhiteboard: boolean;
+  hasTv: boolean;
+  hasAirConditioning: boolean;
   has_projector?: boolean;
   has_whiteboard?: boolean;
   has_tv?: boolean;
@@ -92,6 +91,11 @@ export const getRooms = async (token: string | null): Promise<Room[]> => {
     // Cada objecte Room provinent del backend té els camps booleans en camelCase
     const mappedRooms = rooms.map((room) => ({
       ...room,
+      imageUrl: room.imageUrl || null,
+      hasProjector: !!(room.hasProjector || room.has_projector),
+      hasWhiteboard: !!(room.hasWhiteboard || room.has_whiteboard),
+      hasTv: !!(room.hasTv || room.has_tv),
+      hasAirConditioning: !!(room.hasAirConditioning || room.has_air_conditioning),
       equipment: [
         ...(room.hasProjector || room.has_projector ? ['projector' as const] : []),
         ...(room.hasWhiteboard || room.has_whiteboard ? ['whiteboard' as const] : []),
@@ -247,7 +251,7 @@ export const addNewRoom = async (
     name,
     capacity,
     description,
-    imageUrl: imageUrl, 
+    imageUrl: imageUrl,
     hasProjector: equipment.includes('projector'),
     hasWhiteboard: equipment.includes('whiteboard'),
     hasTv: equipment.includes('tv'),

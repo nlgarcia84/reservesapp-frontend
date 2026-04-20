@@ -111,8 +111,9 @@ export const AddRoomForm = () => {
         Afegir nova sala
       </h2>
       <form
-        onSubmit={handleSubmit}
         className="flex flex-col w-full max-w-md mx-auto gap-4"
+        onSubmit={handleSubmit}
+        noValidate
       >
         {/* Camp de nom de la sala */}
         <div className="flex flex-col gap-1 text-left">
