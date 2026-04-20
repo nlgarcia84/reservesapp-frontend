@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Configurar cliente de Supabase
+// Configurar client de Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -13,10 +13,14 @@ export type Room = {
   id: number;
   name: string;
   capacity: number;
-  // Equipament definit com a array d'opcions tancades segons el component InputSelectForm del Norman
   equipment: ('projector' | 'whiteboard' | 'tv' | 'ac')[];
   description: string;
   imageUrl?: string | null;
+  // Nous camps booleans per a la base de dades
+  has_projector?: boolean;
+  has_whiteboard?: boolean;
+  has_tv?: boolean;
+  has_air_conditioning?: boolean;
 };
 
 // Funció per pujar una imatge a Supabase Storage
@@ -79,7 +83,19 @@ export const getRooms = async (token: string | null): Promise<Room[]> => {
     }
 
     const rooms: Room[] = await res.json();
-    return rooms.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Reconstruïm l'array 'equipment' per a cada sala perquè el frontend el pugui llegir
+    const mappedRooms = rooms.map(room => ({
+      ...room,
+      equipment: [
+        ...(room.has_projector ? ['projector' as const] : []),
+        ...(room.has_whiteboard ? ['whiteboard' as const] : []),
+        ...(room.has_tv ? ['tv' as const] : []),
+        ...(room.has_air_conditioning ? ['ac' as const] : []),
+      ]
+    }));
+
+    return mappedRooms.sort((a, b) => a.name.localeCompare(b.name));
   } catch (error) {
     console.error('Excepció en getRooms:', error);
     throw error;
@@ -107,7 +123,18 @@ export const getRoomById = async (
       );
     }
 
-    return await res.json();
+    const room: Room = await res.json();
+    
+    // Reconstruïm l'array 'equipment' per al formulari d'edició
+    return {
+      ...room,
+      equipment: [
+        ...(room.has_projector ? ['projector' as const] : []),
+        ...(room.has_whiteboard ? ['whiteboard' as const] : []),
+        ...(room.has_tv ? ['tv' as const] : []),
+        ...(room.has_air_conditioning ? ['ac' as const] : []),
+      ]
+    };
   } catch (error) {
     console.error(`Excepció en getRoomById (ID: ${id}):`, error);
     throw error;
@@ -123,33 +150,49 @@ export const updateRoom = async (
   description: string,
   token: string | null,
   imageFile?: File,
+  existingImageUrl?: string 
 ) => {
   if (!token) throw new Error('Token no disponible');
 
-  // De moment deixem el teu codi amb FormData per no trencar-ho,
-  // però l'haurem d'actualitzar perquè utilitzi Supabase com l'addNewRoom.
-  const formData = new FormData();
-  formData.append('name', name);
-  formData.append('capacity', capacity.toString());
-  formData.append('equipment', JSON.stringify(equipment));
-  formData.append('description', description);
+  let finalImageUrl: string | undefined = existingImageUrl;
+
+  // 1. Si l'usuari ha seleccionat una fotografia nova, la pugem a Supabase
   if (imageFile) {
-    formData.append('image', imageFile);
+    try {
+      finalImageUrl = await uploadImageToSupabase(imageFile);
+    } catch (error) {
+      console.error('Error pujant la nova imatge:', error);
+      throw new Error('Error en pujar la imatge a Supabase.');
+    }
   }
 
+  // 2. Preparem el cos de la petició amb les dades actualitzades, incloent la nova URL de la imatge si s'ha pujat una nova
+  // Traduim l'array d'strings als booleans de la BD
+  const requestBody = {
+    name,
+    capacity,
+    description,
+    imageUrl: finalImageUrl,
+    has_projector: equipment.includes('projector'),
+    has_whiteboard: equipment.includes('whiteboard'),
+    has_tv: equipment.includes('tv'),
+    has_air_conditioning: equipment.includes('ac')
+  };
+
+  // 3. Enviem la petició PUT com a JSON
   const res = await fetch(`${API_URL}/rooms/${id}`, {
     method: 'PUT',
-    headers: { Authorization: `Bearer ${token}` },
-    body: formData,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(requestBody),
   });
 
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     console.error('Error del Backend a updateRoom:', errorData);
-
-    throw new Error(
-      errorData.message || errorData.error || 'Error actualitzant la sala',
-    );
+    throw new Error(errorData.message || errorData.error || 'Error actualitzant la sala');
   }
 
   return res.json();
@@ -180,19 +223,31 @@ export const addNewRoom = async (
     }
   }
 
+  // Traduim l'array d'strings als booleans de la BD
+  const bodyData = {
+  name,
+  capacity,
+  description,
+  imageUrl: imageUrl, // o imageUrl en el cas de addNewRoom
+  // Format snake_case (el de la teva captura de Supabase)
+  has_projector: equipment.includes('projector'),
+  has_whiteboard: equipment.includes('whiteboard'),
+  has_tv: equipment.includes('tv'),
+  has_air_conditioning: equipment.includes('ac'),
+  // Format camelCase (el que sol esperar Java per defecte)
+  hasProjector: equipment.includes('projector'),
+  hasWhiteboard: equipment.includes('whiteboard'),
+  hasTv: equipment.includes('tv'),
+  hasAirConditioning: equipment.includes('ac')
+};
+
   const res = await fetch(`${API_URL}/rooms`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      name,
-      capacity,
-      equipment,
-      description,
-      imageUrl,
-    }),
+    body: JSON.stringify(bodyData),
   });
 
   if (!res.ok) {

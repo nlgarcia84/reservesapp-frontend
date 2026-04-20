@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/app/hooks/useAuth';
 import { useLoadingState } from '@/app/hooks/useLoadingState';
-import { getRoomById, updateRoom } from '@/app/services/rooms';
+import { getRoomById, getRooms, updateRoom } from '@/app/services/rooms';
 import { InputForm } from '@/components/ui/InputForm';
 import { InputSelectForm } from '@/components/ui/InputSelectForm';
 import { InputFileForm } from '@/components/ui/InputFileForm';
-import { BackButton } from '@/components/ui/BackButton'; // Importem el component existent
+import { BackButton } from '@/components/ui/BackButton';
 import { LoaderCircle } from 'lucide-react';
 
 export default function EditRoomPage() {
@@ -50,7 +50,7 @@ export default function EditRoomPage() {
                     } else if (typeof room.equipment === 'string') {
                         try {
                             parsedEquipment = JSON.parse(room.equipment);
-                        } catch (e) {
+                        } catch { 
                             parsedEquipment = (room.equipment as string).split(',').map(item => item.trim());
                         }
                     }
@@ -64,7 +64,7 @@ export default function EditRoomPage() {
                         : `${API_URL}${room.imageUrl}`;
                     setImagePreview(fullImageUrl);
                 }
-            } catch (err) {
+            } catch {
                 setError('No s’ha pogut carregar la informació de la sala.');
             }
         };
@@ -94,32 +94,48 @@ export default function EditRoomPage() {
         e.preventDefault();
         setError('');
 
-        if (!name.trim()) {
+        // 1. Neteja bàsica de buits
+        const cleanName = name.trim();
+        if (!cleanName) {
             setError('El nom de la sala és obligatori.');
             return;
         }
 
-        const capacityNum = parseInt(capacity);
-        if (isNaN(capacityNum) || capacityNum <= 0) {
-            setError('La capacitat ha de ser un número vàlid.');
-            return;
-        }
-
         startLoading();
+
         try {
+            // 2. Obtenim totes les sales per comparar
+            const allRooms = await getRooms(token);
+
+            // Busquem si hi ha algun duplicat comparant-ho tot en minúscules
+            const isDuplicate = allRooms.some(room =>
+                room.name.toLowerCase() === cleanName.toLowerCase() &&
+                room.id.toString() !== id
+            );
+
+            if (isDuplicate) {
+                setError(`Ja existeix una sala amb el nom "${cleanName}" (no es permeten duplicats per majúscules/minúscules).`);
+                stopLoading(false);
+                return;
+            }
+
+            // 3. Si tot està OK, procedim a guardar
             await updateRoom(
                 id,
-                name,
-                capacityNum,
+                cleanName,
+                parseInt(capacity),
                 selectedEquipment,
                 description,
                 token as string,
-                imageFile || undefined
+                imageFile || undefined,
+                imagePreview
             );
+
             stopLoading(true);
             router.push('/dashboard/admin/gestio-sales');
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Error al guardar els canvis.');
+            const errorMessage = err instanceof Error ? err.message : 'Error al guardar.';
+            setError(errorMessage.includes('duplicate') ? 'Aquest nom ja està registrat.' : errorMessage);
             stopLoading(false);
         }
     };
@@ -211,7 +227,7 @@ export default function EditRoomPage() {
                 </button>
 
                 {error && <p className="text-center text-red-400 mt-2">{error}</p>}
-                
+
                 {isLoading && (
                     <div className="text-center mt-4">
                         <LoaderCircle className="mx-auto h-8 w-8 animate-spin text-blue-400" />
@@ -219,7 +235,6 @@ export default function EditRoomPage() {
                 )}
             </form>
 
-            {/* Component BackButton unificat */}
             <div className="mt-8">
                 <BackButton previouspage="/dashboard/admin/gestio-sales" />
             </div>
