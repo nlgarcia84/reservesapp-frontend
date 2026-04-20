@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Configurar client de Supabase
+// Configuració del client de Supabase
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -8,7 +8,6 @@ const supabase = createClient(supabaseUrl, supabaseAnonKey);
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Tipus de dada que representa una sala amb el seu identificador, nom, capacitat, equipament, descripció i imatge.
-// S'exporta perquè es pugui utilitzar a qualsevol component o pàgina de l'aplicació.
 export type Room = {
   id: number;
   name: string;
@@ -16,7 +15,11 @@ export type Room = {
   equipment: ('projector' | 'whiteboard' | 'tv' | 'ac')[];
   description: string;
   imageUrl?: string | null;
-  // Nous camps booleans per a la base de dades
+  hasProjector?: boolean;
+  hasWhiteboard?: boolean;
+  hasTv?: boolean;
+  hasAirConditioning?: boolean;
+  // Mantenim els camps en snake_case per compatibilitat amb el backend, tot i que el frontend utilitza camelCase
   has_projector?: boolean;
   has_whiteboard?: boolean;
   has_tv?: boolean;
@@ -86,14 +89,14 @@ export const getRooms = async (token: string | null): Promise<Room[]> => {
     const rooms: Room[] = await res.json();
 
     // Reconstruïm l'array 'equipment' per a cada sala perquè el frontend el pugui llegir
-    // Cada objecte Room provinent del backend té els camps booleans
+    // Cada objecte Room provinent del backend té els camps booleans en camelCase
     const mappedRooms = rooms.map((room) => ({
       ...room,
       equipment: [
-        ...(room.has_projector ? ['projector' as const] : []),
-        ...(room.has_whiteboard ? ['whiteboard' as const] : []),
-        ...(room.has_tv ? ['tv' as const] : []),
-        ...(room.has_air_conditioning ? ['ac' as const] : []),
+        ...(room.hasProjector || room.has_projector ? ['projector' as const] : []),
+        ...(room.hasWhiteboard || room.has_whiteboard ? ['whiteboard' as const] : []),
+        ...(room.hasTv || room.has_tv ? ['tv' as const] : []),
+        ...(room.hasAirConditioning || room.has_air_conditioning ? ['ac' as const] : []),
       ],
     }));
 
@@ -137,10 +140,10 @@ export const getRoomById = async (
     return {
       ...room,
       equipment: [
-        ...(room.has_projector ? ['projector' as const] : []),
-        ...(room.has_whiteboard ? ['whiteboard' as const] : []),
-        ...(room.has_tv ? ['tv' as const] : []),
-        ...(room.has_air_conditioning ? ['ac' as const] : []),
+        ...(room.hasProjector || room.has_projector ? ['projector' as const] : []),
+        ...(room.hasWhiteboard || room.has_whiteboard ? ['whiteboard' as const] : []),
+        ...(room.hasTv || room.has_tv ? ['tv' as const] : []),
+        ...(room.hasAirConditioning || room.has_air_conditioning ? ['ac' as const] : []),
       ],
     };
   } catch (error) {
@@ -177,12 +180,17 @@ export const updateRoom = async (
   }
 
   // 2. Preparem el cos de la petició amb les dades actualitzades, incloent la nova URL de la imatge si s'ha pujat una nova
-  // Traduim l'array d'strings als booleans de la BD
+  // Traduim l'array d'strings als booleans de la BD (coincidint amb RoomRequest.java)
   const requestBody = {
     name,
     capacity,
     description,
     imageUrl: finalImageUrl,
+    hasProjector: equipment.includes('projector'),
+    hasWhiteboard: equipment.includes('whiteboard'),
+    hasTv: equipment.includes('tv'),
+    hasAirConditioning: equipment.includes('ac'),
+    // Mantenim snake_case per si la BD encara ho demana directament
     has_projector: equipment.includes('projector'),
     has_whiteboard: equipment.includes('whiteboard'),
     has_tv: equipment.includes('tv'),
@@ -235,22 +243,19 @@ export const addNewRoom = async (
     }
   }
 
-  // Traduim l'array d'strings als booleans de la BD
   const bodyData = {
     name,
     capacity,
     description,
-    imageUrl: imageUrl, // o imageUrl en el cas de addNewRoom
-    // Format snake_case (el de la teva captura de Supabase)
-    has_projector: equipment.includes('projector'),
-    has_whiteboard: equipment.includes('whiteboard'),
-    has_tv: equipment.includes('tv'),
-    has_air_conditioning: equipment.includes('ac'),
-    // Format camelCase (el que sol esperar Java per defecte)
+    imageUrl: imageUrl, 
     hasProjector: equipment.includes('projector'),
     hasWhiteboard: equipment.includes('whiteboard'),
     hasTv: equipment.includes('tv'),
     hasAirConditioning: equipment.includes('ac'),
+    has_projector: equipment.includes('projector'),
+    has_whiteboard: equipment.includes('whiteboard'),
+    has_tv: equipment.includes('tv'),
+    has_air_conditioning: equipment.includes('ac'),
   };
 
   const res = await fetch(`${API_URL}/rooms`, {
