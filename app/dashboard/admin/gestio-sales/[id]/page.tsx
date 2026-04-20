@@ -206,18 +206,21 @@ export default function EditRoomPage() {
             Equipament
           </label>
           <div className="space-y-3">
-            {Object.entries(equipementOptions).map(([key, value]) => (
-              <InputSelectForm
-                key={key}
-                id={key}
-                name={key}
-                value={key}
-                label={value}
-                checked={selectedEquipment.includes(key)}
-                onChange={() => handleEquipmentChange(key)}
-                disabled={isLoading}
-              />
-            ))}
+            {Object.entries(equipementOptions).map(([key, value]) => {
+              const typedKey = key as 'projector' | 'whiteboard' | 'tv' | 'ac';
+              return (
+                <InputSelectForm
+                  key={typedKey}
+                  id={typedKey}
+                  name={typedKey}
+                  value={typedKey}
+                  label={value}
+                  checked={selectedEquipment.includes(typedKey)}
+                  onChange={() => handleEquipmentChange(typedKey)}
+                  disabled={isLoading}
+                />
+              );
+            })}
           </div>
         </div>
 
