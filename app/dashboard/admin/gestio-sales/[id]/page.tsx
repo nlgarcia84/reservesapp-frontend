@@ -42,25 +42,33 @@ export default function EditRoomPage() {
     const fetchRoomData = async () => {
       try {
         const room = await getRoomById(id as string, token);
+
+        // Assigna el nom, la capacitat i la descripció de la sala (si no hi ha descripció, posa cadena buida)
         setName(room.name);
         setCapacity(room.capacity.toString());
         setDescription(room.description || '');
 
+        // Reconstrueix l'array d'equipament a partir del format rebut del backend
+        // Pot ser un array, un JSON stringificat o una llista separada per comes
         const validEquipment = ['projector', 'whiteboard', 'tv', 'ac'] as const;
         let parsedEquipment: string[] = [];
         if (room.equipment) {
           if (Array.isArray(room.equipment)) {
+            // Si ja és un array, el copiem directament
             parsedEquipment = room.equipment;
           } else if (typeof room.equipment === 'string') {
             try {
+              // Intentem parsejar com a JSON
               parsedEquipment = JSON.parse(room.equipment);
             } catch {
+              // Si falla, ho separem per comes i netegem espais
               parsedEquipment = (room.equipment as string)
                 .split(',')
                 .map((item) => item.trim());
             }
           }
         }
+        // Filtra només els valors vàlids d'equipament
         setSelectedEquipment(
           parsedEquipment.filter(
             (item): item is (typeof validEquipment)[number] =>
