@@ -5,7 +5,7 @@ import { useTimeGreeting } from '@/app/hooks/useTimeGreeting';
 import { Hand } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
-import { getRooms } from '@/app/services/rooms';
+import { getRooms, type Room } from '@/app/services/rooms';
 import { RoomList } from '@/components/ui/RoomList';
 
 const EmployeePage = () => {
@@ -13,15 +13,6 @@ const EmployeePage = () => {
   // Extraiem també el token per poder fer la crida a l'API
   const { name, isAuthenticated, token } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
-
-  // Tipus de dada per a les sales: identificador, nom, capacitat, equipament i descripció
-  type Room = {
-    id: number;
-    name: string;
-    capacity: number;
-    equipment: string;
-    description: string;
-  };
 
   // Estats per a la llista de sales del catàleg
   const [rooms, setRooms] = useState<Room[]>([]);
