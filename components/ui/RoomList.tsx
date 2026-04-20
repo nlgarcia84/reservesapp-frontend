@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { RoomCard } from './RoomCard';
 import { type Room } from '@/app/services/rooms';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -19,6 +19,29 @@ export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
     (page - 1) * itemsPerPage,
     page * itemsPerPage,
   );
+
+  // No seleccionem cap sala per defecte
+  const [selectedRoomId, setSelectedRoomId] = useState<number | null>(null);
+  const prevSelectedRoomId = useRef<number | null>(selectedRoomId);
+  const [direction, setDirection] = useState<'left' | 'right'>('right');
+
+  // Detecta la direcció del moviment
+  const handleSelectRoom = (roomId: number) => {
+    const prevIdx = paginatedItems.findIndex((r) => r.id === selectedRoomId);
+    const nextIdx = paginatedItems.findIndex((r) => r.id === roomId);
+    setDirection(nextIdx > prevIdx ? 'right' : 'left');
+    setSelectedRoomId(roomId);
+  };
+
+  // Quan canvïi la pàgina, deselecciona qualsevol sala
+  useEffect(() => {
+    setSelectedRoomId(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, rooms]);
+
+  useEffect(() => {
+    prevSelectedRoomId.current = selectedRoomId;
+  }, [selectedRoomId]);
 
   // Gestionem l'estat buit
   if (!rooms || rooms.length === 0) {
@@ -59,6 +82,9 @@ export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
             room={room}
             isAdmin={isAdmin}
             onRefresh={onRefresh}
+            isSelected={room.id === selectedRoomId}
+            onClick={() => handleSelectRoom(room.id)}
+            direction={room.id === selectedRoomId ? direction : undefined}
           />
         ))}
       </div>

@@ -3,14 +3,25 @@ import Image from 'next/image';
 import { Users, Image as ImageIcon } from 'lucide-react';
 import { DeleteButton } from '@/components/ui/DeleteButton';
 import { type Room } from '@/app/services/rooms';
+import { motion } from 'framer-motion';
 
 type RoomCardProps = {
   room: Room;
   isAdmin: boolean;
   onRefresh?: () => void;
+  isSelected: boolean;
+  onClick: () => void;
+  direction?: 'left' | 'right';
 };
 
-export const RoomCard = ({ room, isAdmin, onRefresh }: RoomCardProps) => {
+export const RoomCard = ({
+  room,
+  isAdmin,
+  onRefresh,
+  isSelected,
+  onClick,
+  direction,
+}: RoomCardProps) => {
   const detailsUrl = isAdmin
     ? `/dashboard/admin/gestio-sales/${room.id}`
     : `/dashboard/employee/sales/${room.id}`;
@@ -23,7 +34,25 @@ export const RoomCard = ({ room, isAdmin, onRefresh }: RoomCardProps) => {
       : null;
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/80 shadow-[0_4px_20px_rgba(0,0,0,0.2)] transition-all hover:border-white/20 hover:bg-zinc-900">
+    <motion.div
+      onClick={onClick}
+      animate={{
+        opacity: isSelected ? 1 : 0.55,
+        scale: isSelected ? 1.03 : 0.97,
+        boxShadow: isSelected
+          ? '0 0 0 4px #3b82f6, 0 4px 16px 0 rgba(0,0,0,0.10)'
+          : '0 1px 4px 0 rgba(0,0,0,0.04)',
+        zIndex: isSelected ? 2 : 1,
+        y: 0,
+        x: 0,
+        transition: {
+          duration: 0.5,
+          ease: [0.4, 0.0, 0.2, 1],
+        },
+      }}
+      className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/80 shadow-[0_4px_20px_rgba(0,0,0,0.2)] transition-all hover:border-white/20 hover:bg-zinc-900 cursor-pointer"
+      style={{ position: 'relative' }}
+    >
       {/* Contenidor de la imatge amb posició relativa per al 'fill' */}
       <div className="relative h-48 w-full shrink-0 bg-zinc-950/80 border-b border-white/5 overflow-hidden">
         {imageSrc ? (
@@ -86,6 +115,6 @@ export const RoomCard = ({ room, isAdmin, onRefresh }: RoomCardProps) => {
           </button>
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 };
