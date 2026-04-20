@@ -77,7 +77,9 @@ export default function EditRoomPage() {
     fetchRoomData();
   }, [id, token, setError]);
 
-  const handleEquipmentChange = (key: string) => {
+  const handleEquipmentChange = (
+    key: 'projector' | 'whiteboard' | 'tv' | 'ac',
+  ) => {
     setSelectedEquipment((prev) =>
       prev.includes(key) ? prev.filter((item) => item !== key) : [...prev, key],
     );
