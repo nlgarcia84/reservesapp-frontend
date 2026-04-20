@@ -297,4 +297,6 @@ export const deleteRoom = async (id: number, token: string | null) => {
       errorData.message || `Error: ${res.status} ${res.statusText}`,
     );
   }
+  // Afegir per evitar l'error de bulding a Vercel
+  return null;
 };
