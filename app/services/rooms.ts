@@ -85,14 +85,14 @@ export const getRooms = async (token: string | null): Promise<Room[]> => {
     const rooms: Room[] = await res.json();
 
     // Reconstruïm l'array 'equipment' per a cada sala perquè el frontend el pugui llegir
-    const mappedRooms = rooms.map(room => ({
+    const mappedRooms = rooms.map((room) => ({
       ...room,
       equipment: [
         ...(room.has_projector ? ['projector' as const] : []),
         ...(room.has_whiteboard ? ['whiteboard' as const] : []),
         ...(room.has_tv ? ['tv' as const] : []),
         ...(room.has_air_conditioning ? ['ac' as const] : []),
-      ]
+      ],
     }));
 
     return mappedRooms.sort((a, b) => a.name.localeCompare(b.name));
@@ -104,28 +104,34 @@ export const getRooms = async (token: string | null): Promise<Room[]> => {
 
 // Funció per obtenir els detalls d'una sala específica
 export const getRoomById = async (
-  id: string | number,
-  token: string | null,
+  id: string | number, // id: identificador únic de la sala (pot ser string o number)
+  token: string | null, // token: token JWT d'autenticació de l'usuari
 ): Promise<Room> => {
+  // Comprovem que el token existeix, si no, llancem un error
   if (!token) throw new Error('Token no disponible');
 
   try {
+    // Fem una petició GET a l'API per obtenir la sala amb l'id indicat
     const res = await fetch(`${API_URL}/rooms/${id}`, {
-      method: 'GET',
-      cache: 'no-store',
-      headers: { Authorization: `Bearer ${token}` },
+      method: 'GET', // Mètode HTTP GET per obtenir dades
+      cache: 'no-store', // No utilitzar cache, sempre obtenir dades fresques del servidor
+      headers: { Authorization: `Bearer ${token}` }, // Afegim el token JWT a l'encapçalament per autorització
     });
 
+    // Si la resposta no és correcta (ex: sala no trobada o error del servidor)
     if (!res.ok) {
+      // Intentem obtenir el missatge d'error del servidor (si és JSON)
       const errorData = await res.json().catch(() => ({}));
+      // Llancem un error amb el missatge del servidor o amb el codi d'estat HTTP
       throw new Error(
         errorData.message || `Error: ${res.status} ${res.statusText}`,
       );
     }
 
+    // Parsejem la resposta JSON a un objecte Room
     const room: Room = await res.json();
-    
-    // Reconstruïm l'array 'equipment' per al formulari d'edició
+
+    // Reconstruïm l'array 'equipment' a partir dels camps booleans per facilitar el tractament al frontend
     return {
       ...room,
       equipment: [
@@ -133,10 +139,12 @@ export const getRoomById = async (
         ...(room.has_whiteboard ? ['whiteboard' as const] : []),
         ...(room.has_tv ? ['tv' as const] : []),
         ...(room.has_air_conditioning ? ['ac' as const] : []),
-      ]
+      ],
     };
   } catch (error) {
+    // Si hi ha qualsevol error (de xarxa, parsing, etc.), el mostrem per consola per debugging
     console.error(`Excepció en getRoomById (ID: ${id}):`, error);
+    // Relancem l'error perquè el component que crida la funció el pugui gestionar
     throw error;
   }
 };
@@ -150,7 +158,7 @@ export const updateRoom = async (
   description: string,
   token: string | null,
   imageFile?: File,
-  existingImageUrl?: string 
+  existingImageUrl?: string,
 ) => {
   if (!token) throw new Error('Token no disponible');
 
@@ -176,7 +184,7 @@ export const updateRoom = async (
     has_projector: equipment.includes('projector'),
     has_whiteboard: equipment.includes('whiteboard'),
     has_tv: equipment.includes('tv'),
-    has_air_conditioning: equipment.includes('ac')
+    has_air_conditioning: equipment.includes('ac'),
   };
 
   // 3. Enviem la petició PUT com a JSON
@@ -184,7 +192,7 @@ export const updateRoom = async (
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(requestBody),
   });
@@ -192,7 +200,9 @@ export const updateRoom = async (
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     console.error('Error del Backend a updateRoom:', errorData);
-    throw new Error(errorData.message || errorData.error || 'Error actualitzant la sala');
+    throw new Error(
+      errorData.message || errorData.error || 'Error actualitzant la sala',
+    );
   }
 
   return res.json();
@@ -225,21 +235,21 @@ export const addNewRoom = async (
 
   // Traduim l'array d'strings als booleans de la BD
   const bodyData = {
-  name,
-  capacity,
-  description,
-  imageUrl: imageUrl, // o imageUrl en el cas de addNewRoom
-  // Format snake_case (el de la teva captura de Supabase)
-  has_projector: equipment.includes('projector'),
-  has_whiteboard: equipment.includes('whiteboard'),
-  has_tv: equipment.includes('tv'),
-  has_air_conditioning: equipment.includes('ac'),
-  // Format camelCase (el que sol esperar Java per defecte)
-  hasProjector: equipment.includes('projector'),
-  hasWhiteboard: equipment.includes('whiteboard'),
-  hasTv: equipment.includes('tv'),
-  hasAirConditioning: equipment.includes('ac')
-};
+    name,
+    capacity,
+    description,
+    imageUrl: imageUrl, // o imageUrl en el cas de addNewRoom
+    // Format snake_case (el de la teva captura de Supabase)
+    has_projector: equipment.includes('projector'),
+    has_whiteboard: equipment.includes('whiteboard'),
+    has_tv: equipment.includes('tv'),
+    has_air_conditioning: equipment.includes('ac'),
+    // Format camelCase (el que sol esperar Java per defecte)
+    hasProjector: equipment.includes('projector'),
+    hasWhiteboard: equipment.includes('whiteboard'),
+    hasTv: equipment.includes('tv'),
+    hasAirConditioning: equipment.includes('ac'),
+  };
 
   const res = await fetch(`${API_URL}/rooms`, {
     method: 'POST',
