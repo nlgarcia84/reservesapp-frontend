@@ -46,6 +46,7 @@ export default function EditRoomPage() {
         setCapacity(room.capacity.toString());
         setDescription(room.description || '');
 
+        const validEquipment = ['projector', 'whiteboard', 'tv', 'ac'] as const;
         let parsedEquipment: string[] = [];
         if (room.equipment) {
           if (Array.isArray(room.equipment)) {
@@ -60,7 +61,12 @@ export default function EditRoomPage() {
             }
           }
         }
-        setSelectedEquipment(parsedEquipment);
+        setSelectedEquipment(
+          parsedEquipment.filter(
+            (item): item is (typeof validEquipment)[number] =>
+              validEquipment.includes(item as (typeof validEquipment)[number]),
+          ),
+        );
 
         if (room.imageUrl) {
           const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
