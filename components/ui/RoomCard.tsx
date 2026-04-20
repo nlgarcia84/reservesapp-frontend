@@ -19,12 +19,11 @@ export const RoomCard = ({ room, isAdmin, onRefresh }: RoomCardProps) => {
   const imageSrc = room.imageUrl?.startsWith('http')
     ? room.imageUrl
     : room.imageUrl
-    ? `${API_URL}${room.imageUrl}`
-    : null;
+      ? `${API_URL}${room.imageUrl}`
+      : null;
 
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/80 shadow-[0_4px_20px_rgba(0,0,0,0.2)] transition-all hover:border-white/20 hover:bg-zinc-900">
-      
       {/* Contenidor de la imatge amb posició relativa per al 'fill' */}
       <div className="relative h-48 w-full shrink-0 bg-zinc-950/80 border-b border-white/5 overflow-hidden">
         {imageSrc ? (
@@ -39,7 +38,9 @@ export const RoomCard = ({ room, isAdmin, onRefresh }: RoomCardProps) => {
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center text-zinc-600">
             <ImageIcon size={40} className="mb-2 opacity-30" />
-            <span className="text-xs font-medium uppercase tracking-wider opacity-50">Sense imatge</span>
+            <span className="text-xs font-medium uppercase tracking-wider opacity-50">
+              Sense imatge
+            </span>
           </div>
         )}
       </div>
@@ -47,10 +48,13 @@ export const RoomCard = ({ room, isAdmin, onRefresh }: RoomCardProps) => {
       <div className="flex flex-1 flex-col justify-between p-5">
         <div>
           <div className="mb-4 flex items-start justify-between gap-2">
-            <h3 className="text-xl font-bold tracking-tight text-zinc-100 line-clamp-1" title={room.name}>
+            <h3
+              className="text-xl font-bold tracking-tight text-zinc-100 line-clamp-1"
+              title={room.name}
+            >
               {room.name}
             </h3>
-            
+
             {isAdmin && (
               <DeleteButton
                 codi={room.id}
@@ -66,6 +70,13 @@ export const RoomCard = ({ room, isAdmin, onRefresh }: RoomCardProps) => {
               <Users size={18} className="text-blue-400 shrink-0" />
               <span>Capacitat per a {room.capacity} persones</span>
             </div>
+            {/* Mostra l'equipament com a llista separada per comes */}
+            {room.equipment.length > 0 && (
+              <div>
+                <span className="font-semibold">Equipament:</span>{' '}
+                {room.equipment.join(', ')}
+              </div>
+            )}
           </div>
         </div>
 
