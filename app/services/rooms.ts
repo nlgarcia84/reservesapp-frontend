@@ -82,9 +82,11 @@ export const getRooms = async (token: string | null): Promise<Room[]> => {
       throw new Error(errorMessage);
     }
 
+    // Obtenim les dades des del Backend, es converteix el JSON rebut en un array d'objectes Room
     const rooms: Room[] = await res.json();
 
     // Reconstruïm l'array 'equipment' per a cada sala perquè el frontend el pugui llegir
+    // Cada objecte Room provinent del backend té els camps booleans
     const mappedRooms = rooms.map((room) => ({
       ...room,
       equipment: [
@@ -154,7 +156,7 @@ export const updateRoom = async (
   id: string,
   name: string,
   capacity: number,
-  equipment: string[],
+  equipment: ('projector' | 'whiteboard' | 'tv' | 'ac')[],
   description: string,
   token: string | null,
   imageFile?: File,
