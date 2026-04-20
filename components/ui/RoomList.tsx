@@ -12,7 +12,7 @@ type RoomListProps = {
 export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
   // Estats per pagina les sales
   const [page, setPage] = useState(1);
-  const itemsPerPage = 3;
+  const itemsPerPage = 6;
   const totalPages = Math.ceil(rooms.length / itemsPerPage);
 
   const paginatedItems = rooms.slice(
