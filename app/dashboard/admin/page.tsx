@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/app/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
-import { getRooms } from '@/app/services/rooms';
+import { getRooms, type Room } from '@/app/services/rooms';
 import {
   Hand,
   UsersRound,
@@ -14,8 +14,6 @@ import {
   CalendarClock,
 } from 'lucide-react';
 import { useTimeGreeting } from '@/app/hooks/useTimeGreeting';
-
-type Room = { id: number; name: string; capacity: number };
 
 const AdminPage = () => {
   const { token } = useAuth();
