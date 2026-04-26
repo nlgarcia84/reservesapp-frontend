@@ -5,6 +5,7 @@ import {
   getToken,
   getRole,
   getName,
+  getUserId, // Importem la nova funció
   isTokenExpired,
   clearToken,
 } from '@/app/services/saveToken';
@@ -37,6 +38,7 @@ export const useAuth = () => {
         token: null as string | null,
         role: null as string | null,
         name: null as string | null,
+        userId: null as string | null, // Nova propietat
         isAuthenticated: false,
       };
     }
@@ -53,6 +55,7 @@ export const useAuth = () => {
         token: null,
         role: null,
         name: null,
+        userId: null, // Nova propietat
         isAuthenticated: false,
       };
     }
@@ -66,6 +69,7 @@ export const useAuth = () => {
       token,
       role: getRole(),
       name: getName(),
+      userId: getUserId(), // Nova propietat
       isAuthenticated: !!token,
     };
   });
@@ -87,6 +91,7 @@ export const useAuth = () => {
           token: null,
           role: null,
           name: null,
+          userId: null, // Nova propietat
           isAuthenticated: false,
         });
         return;
@@ -97,6 +102,7 @@ export const useAuth = () => {
         token,
         role: getRole(),
         name: getName(),
+        userId: getUserId(), // Nova propietat
         isAuthenticated: !!token,
       });
     };

@@ -201,7 +201,7 @@ export const isTokenExpired = (token: string | null): boolean => {
 
   // Si el JWT no es pot decodificar o no té el camp 'exp', considerar expirat
   if (!payload || !payload.exp) {
-    console.log('❌ Token inválid o sense camp exp');
+    console.log('Token inválid o sense camp exp');
     return true;
   }
 
@@ -212,7 +212,7 @@ export const isTokenExpired = (token: string | null): boolean => {
   const isExpired = currentTime > payload.exp;
 
   // Logging per a debugging
-  console.log('🔐 Token expiration check:');
+  console.log('Token expiration check:');
   console.log(
     '   Current time:',
     new Date(currentTime * 1000).toLocaleString(),
@@ -221,6 +221,11 @@ export const isTokenExpired = (token: string | null): boolean => {
   console.log('   Is expired?:', isExpired);
 
   return isExpired;
+};
+
+export const getUserId = () => {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('userId');
 };
 
 /**

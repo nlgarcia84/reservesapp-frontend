@@ -23,7 +23,7 @@ export const RoomCard = ({
 }: RoomCardProps) => {
   const detailsUrl = isAdmin
     ? `/dashboard/admin/gestio-sales/${room.id}`
-    : `/dashboard/employee/sales/${room.id}`;
+    : `/dashboard/employee/gestio-reserves/${room.id}`;
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
   const imageSrc = room.imageUrl?.startsWith('http')
