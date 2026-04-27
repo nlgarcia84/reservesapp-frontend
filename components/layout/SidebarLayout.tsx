@@ -30,7 +30,7 @@ const roleLinks: Record<'admin' | 'employee', SidebarLink[]> = {
   ],
   employee: [
     { href: '/dashboard/employee', label: 'Dashboard' },
-    { href: '/dashboard/employee/gestio-reserves', label: 'Gestió Reserves' },
+    { href: '/dashboard/employee/les-meves-reserves', label: 'La meva agenda' },
   ],
 };
 
