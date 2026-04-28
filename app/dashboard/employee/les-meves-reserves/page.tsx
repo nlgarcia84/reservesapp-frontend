@@ -133,7 +133,7 @@ const LesMevesReservesPage = () => {
 
                                             <div className="flex flex-wrap gap-x-5 gap-y-1 text-xs text-zinc-500">
                                                 <span className="flex items-center gap-1.5 font-medium">
-                                                    <Clock size={14} className="text-zinc-600" /> {reserva.startTime} - {reserva.endTime}
+                                                    <Clock size={14} className="text-zinc-600" /> {reserva.start_time} - {reserva.end_time}
                                                 </span>
                                                 <span className="flex items-center gap-1.5 font-medium">
                                                     <Users size={14} className="text-zinc-600" /> {reserva.guests?.length || 0} assistents

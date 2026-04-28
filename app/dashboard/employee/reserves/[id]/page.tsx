@@ -48,16 +48,13 @@ const DetallReservaPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-    // Generador d'hores(Horari laboral: 07:00 a 22:00)
     const generateTimeOptions = () => {
         const options = [];
         for (let hour = 7; hour <= 22; hour++) {
-            // Si l'hora és la 22, només afegim "22:00" i parem
             if (hour === 22) {
                 options.push("22:00");
                 break;
             }
-            // Per a la resta d'hores, afegim els intervals de 15 minuts
             for (let min = 0; min < 60; min += 15) {
                 const h = hour.toString().padStart(2, '0');
                 const m = min.toString().padStart(2, '0');
@@ -106,14 +103,16 @@ const DetallReservaPage = () => {
     const handleReserva = async () => {
         if (!token || !id || !userId) return;
         try {
+            // Actualitzat per fer servir start_time i end_time
             await createReservation({
                 room_id: id as string,
                 user_id: userId,
                 date: reservaDate,
-                startTime,
-                endTime,
+                start_time: startTime,
+                end_time: endTime,
                 guests: selectedGuests.map(g => g.toString())
             }, token);
+
             alert('Reserva realitzada correctament!');
             setReservaDate(''); setStartTime(''); setEndTime(''); setSelectedGuests([]);
         } catch (error) {
@@ -142,8 +141,6 @@ const DetallReservaPage = () => {
     return (
         <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
             <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch">
-
-                {/* Columna esquerra */}
                 <div className="flex flex-col gap-6 lg:w-1/2">
                     <div className="relative h-[300px] w-full overflow-hidden rounded-3xl border-2 border-white/20 bg-zinc-900 sm:h-[400px] shadow-[0_0_15px_rgba(255,255,255,0.05)]">
                         {imageSrc ? <Image src={imageSrc} alt={room.name} fill className="object-cover" priority /> : <div className="flex h-full items-center justify-center text-zinc-700"><Info size={64} opacity={0.2} /></div>}
@@ -164,12 +161,10 @@ const DetallReservaPage = () => {
                     </div>
                 </div>
 
-                {/* Columna dreta */}
                 <div className="flex flex-col lg:w-1/2">
                     <div className="flex h-full flex-col justify-between rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl">
                         <div>
                             <h1 className="text-3xl font-bold tracking-tight text-white mb-6">{room.name}</h1>
-
                             <div className="mb-8 space-y-4 border-y border-white/5 py-6">
                                 <h3 className="text-sm font-medium uppercase tracking-widest text-zinc-500 font-bold">Equipament inclòs</h3>
                                 <div className="flex flex-wrap gap-3">
@@ -179,16 +174,13 @@ const DetallReservaPage = () => {
                                     {room.hasAirConditioning && <Badge icon={<Wind size={14} />} text="Climatitzada" />}
                                 </div>
                             </div>
-
                             <div className="space-y-6 rounded-3xl border border-white/5 bg-zinc-900/30 p-6">
                                 <h3 className="text-sm font-medium uppercase tracking-widest text-zinc-500 flex items-center gap-2"><CalendarDays size={18} className="text-blue-400" /> Fes una reserva</h3>
-
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-[10px] text-zinc-500 mb-1 ml-1 font-bold uppercase tracking-widest">Data</label>
                                         <input type="date" className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-zinc-200 outline-none focus:border-blue-500/50 [color-scheme:dark]" value={reservaDate} onChange={(e) => setReservaDate(e.target.value)} />
                                     </div>
-
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-[10px] text-zinc-500 mb-1 ml-1 font-bold uppercase tracking-widest">Hora Inici</label>
@@ -219,8 +211,6 @@ const DetallReservaPage = () => {
                                             </div>
                                         </div>
                                     </div>
-
-                                    {/* Assistents */}
                                     <div className="space-y-3 pt-2" ref={dropdownRef}>
                                         <label className="block text-[10px] text-zinc-500 ml-1 font-bold flex items-center gap-2 uppercase tracking-widest"><UserPlus size={14} className="text-blue-400" /> Afegeix assistents</label>
                                         {selectedGuestObjects.length > 0 && (
@@ -251,7 +241,6 @@ const DetallReservaPage = () => {
                                 </div>
                             </div>
                         </div>
-
                         <Button className="mt-8 w-full py-4 text-lg font-bold shadow-lg shadow-blue-500/10 enabled:hover:bg-blue-600 disabled:opacity-50" disabled={!reservaDate || !startTime || !endTime} onClick={handleReserva}>Confirmar reserva</Button>
                     </div>
                 </div>

@@ -6,8 +6,8 @@ export interface Reservation {
     room_id: string;
     user_id: string;
     date: string;
-    startTime: string;
-    endTime: string;
+    start_time: string; 
+    end_time: string;   
     room_name?: string;
     is_organizer?: boolean;
     guests?: { id: number; name: string }[];
@@ -18,9 +18,9 @@ export interface ReservationRequest {
     room_id: string;
     user_id: string;
     date: string;
-    startTime: string;
-    endTime: string;
-    guests: string[]; // IDs dels convidats com a strings
+    start_time: string; 
+    end_time: string;   
+    guests: string[];
 }
 
 // Crear una nova reserva
@@ -40,7 +40,7 @@ export const createReservation = async (data: ReservationRequest, token: string)
     }
 };
 
-// Llegir totes les reserves de l'usuari (les propies i les que m'han convidat)
+// Llegir totes les reserves de l'usuari
 export const getMyReservations = async (token: string): Promise<Reservation[]> => {
     const res = await fetch(`${API_URL}/reservations/my-bookings`, {
         method: 'GET',

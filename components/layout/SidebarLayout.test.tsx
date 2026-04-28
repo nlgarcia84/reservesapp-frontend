@@ -15,6 +15,8 @@ describe('SidebarLayout', () => {
 
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
       expect(screen.getByText('Gestió de Sales')).toBeInTheDocument();
+      // Si l'admin encara diu "Gestió Reserves", ho deixem així. 
+      // Si l'has canviat també a l'admin, canvia-ho per 'La meva agenda'
       expect(screen.getByText('Gestió Reserves')).toBeInTheDocument();
     });
 
@@ -55,7 +57,7 @@ describe('SidebarLayout', () => {
       );
 
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
-      expect(screen.getByText('Gestió Reserves')).toBeInTheDocument();
+      expect(screen.getByText('La meva agenda')).toBeInTheDocument();
     });
 
     it('should not render Gestió de Sales link for employee', () => {
@@ -75,17 +77,17 @@ describe('SidebarLayout', () => {
       expect(dashboardLink).toHaveAttribute('href', '/dashboard/employee');
     });
 
-    it('should have correct href for employee Gestió Reserves link', () => {
+    it('should have correct href for employee La meva agenda link', () => {
       render(
         <SidebarLayout role="employee" open={true} onClose={mockOnClose} />,
       );
-
+      
       const reservesLink = screen.getByRole('link', {
-        name: /Gestió Reserves/i,
+        name: /La meva agenda/i,
       });
       expect(reservesLink).toHaveAttribute(
         'href',
-        '/dashboard/employee/gestio-reserves',
+        '/dashboard/employee/les-meves-reserves',
       );
     });
   });
