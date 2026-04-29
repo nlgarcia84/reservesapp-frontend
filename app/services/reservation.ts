@@ -1,29 +1,29 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-// Interfície per a les dades que rebem del backend (lectura)
+// Dades de lectura del backend
 export interface Reservation {
     id: number;
-    room_id: string;
-    user_id: string;
-    date: string;
+    room_id: number; 
+    user_id: number; 
+    date: string;    
     start_time: string; 
     end_time: string;   
     room_name?: string;
     is_organizer?: boolean;
-    guests?: { id: number; name: string }[];
+    guests?: { id: string; name: string }[]; // El ID del convidat és un UUID (string)
 }
 
-// Interfície per a les dades que enviem (creació i edició)
+// Dades per enviar al backend
 export interface ReservationRequest {
-    room_id: string;
-    user_id: string;
+    room_id: number;
+    user_id: number;
     date: string;
-    start_time: string; 
-    end_time: string;   
-    guests: string[];
+    start_time: string;
+    end_time: string;
+    guests: string[]; // IDs dels convidats (UUIDs) enviats com strings
 }
 
-// Crear una nova reserva
+// Funció per crear una nova reserva
 export const createReservation = async (data: ReservationRequest, token: string): Promise<void> => {
     const res = await fetch(`${API_URL}/reservations`, {
         method: 'POST',
@@ -40,7 +40,7 @@ export const createReservation = async (data: ReservationRequest, token: string)
     }
 };
 
-// Llegir totes les reserves de l'usuari
+// Funció per obtenir les reserves de l'usuari actual
 export const getMyReservations = async (token: string): Promise<Reservation[]> => {
     const res = await fetch(`${API_URL}/reservations/my-bookings`, {
         method: 'GET',
@@ -50,14 +50,11 @@ export const getMyReservations = async (token: string): Promise<Reservation[]> =
         },
     });
 
-    if (!res.ok) {
-        throw new Error('No s’han pogut carregar les teves reserves');
-    }
-
+    if (!res.ok) throw new Error('No s’han pogut carregar les teves reserves');
     return res.json();
 };
 
-// Editar una reserva existent
+// Funció per actualitzar una reserva
 export const updateReservation = async (
     id: number,
     data: Partial<ReservationRequest>,
@@ -72,12 +69,10 @@ export const updateReservation = async (
         body: JSON.stringify(data),
     });
 
-    if (!res.ok) {
-        throw new Error('Error en actualitzar la reserva');
-    }
+    if (!res.ok) throw new Error('Error en actualitzar la reserva');
 };
 
-// Eliminar una reserva
+// Funció per eliminar una reserva
 export const deleteReservation = async (id: number, token: string): Promise<void> => {
     const res = await fetch(`${API_URL}/reservations/${id}`, {
         method: 'DELETE',

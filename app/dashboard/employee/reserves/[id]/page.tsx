@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '@/app/hooks/useAuth';
 import { getRoomById, type Room } from '@/app/services/rooms';
-import { createReservation } from '@/app/services/reservation';
+import { createReservation, type Reservation } from '@/app/services/reservation';
 import { getUsers } from '@/app/services/users';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
@@ -21,11 +21,12 @@ import {
     Clock,
     UserPlus,
     X,
-    Search
+    Search,
+    CalendarRange
 } from 'lucide-react';
 
 interface User {
-    id: number;
+    id: string | number;
     name: string;
     email: string;
     role?: string;
@@ -38,23 +39,20 @@ const DetallReservaPage = () => {
 
     const [room, setRoom] = useState<Room | null>(null);
     const [allUsers, setAllUsers] = useState<User[]>([]);
+    const [roomReservations, setRoomReservations] = useState<Reservation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const [reservaDate, setReservaDate] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
-    const [selectedGuests, setSelectedGuests] = useState<number[]>([]);
-
+    const [selectedGuests, setSelectedGuests] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     const generateTimeOptions = () => {
         const options = [];
         for (let hour = 7; hour <= 22; hour++) {
-            if (hour === 22) {
-                options.push("22:00");
-                break;
-            }
+            if (hour === 22) { options.push("22:00"); break; }
             for (let min = 0; min < 60; min += 15) {
                 const h = hour.toString().padStart(2, '0');
                 const m = min.toString().padStart(2, '0');
@@ -74,13 +72,21 @@ const DetallReservaPage = () => {
                 getRoomById(id as string, token),
                 getUsers(token)
             ]);
+
             setRoom(roomData);
             const validUsers = usersData.filter((u: User) =>
-                u.id.toString() !== userId && u.role?.toLowerCase() !== 'admin'
+                u.id.toString() !== userId?.toString() && u.role?.toLowerCase() !== 'admin'
             );
             setAllUsers(validUsers);
+
+            setRoomReservations([
+                { id: 1, room_id: Number(id), user_id: 10, date: '2024-05-10', start_time: '09:00', end_time: '11:00' },
+                { id: 2, room_id: Number(id), user_id: 11, date: '2024-05-10', start_time: '13:00', end_time: '14:30' },
+                { id: 3, room_id: Number(id), user_id: 12, date: '2024-05-11', start_time: '10:00', end_time: '12:00' },
+            ]);
+
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Error carregant dades:', error);
         } finally {
             setIsLoading(false);
         }
@@ -90,168 +96,195 @@ const DetallReservaPage = () => {
         fetchData();
     }, [fetchData]);
 
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsDropdownOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, []);
-
     const handleReserva = async () => {
         if (!token || !id || !userId) return;
         try {
-            // Actualitzat per fer servir start_time i end_time
             await createReservation({
-                room_id: id as string,
-                user_id: userId,
+                room_id: Number(id),
+                user_id: Number(userId),
                 date: reservaDate,
                 start_time: startTime,
                 end_time: endTime,
-                guests: selectedGuests.map(g => g.toString())
+                guests: selectedGuests
             }, token);
-
             alert('Reserva realitzada correctament!');
             setReservaDate(''); setStartTime(''); setEndTime(''); setSelectedGuests([]);
+            fetchData();
         } catch (error) {
             alert(error instanceof Error ? error.message : 'Error al reservar');
         }
     };
 
-    const toggleGuest = (guestId: number) => {
+    const toggleGuest = (guestId: string) => {
         setSelectedGuests(prev => prev.includes(guestId) ? prev.filter(id => id !== guestId) : [...prev, guestId]);
     };
 
     const filteredUsers = allUsers.filter(user =>
         (user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             user.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
-        !selectedGuests.includes(user.id)
+        !selectedGuests.includes(user.id.toString())
     );
 
-    const selectedGuestObjects = allUsers.filter(u => selectedGuests.includes(u.id));
+    const selectedGuestObjects = allUsers.filter(u => selectedGuests.includes(u.id.toString()));
 
     if (isLoading) return <div className="flex min-h-screen items-center justify-center"><div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-500 border-t-transparent"></div></div>;
     if (!room) return <div className="text-center p-10 text-zinc-400">No s&apos;ha trobat la sala.</div>;
+
+    const hasEquipment = room.hasTv || room.hasProjector || room.hasWhiteboard || room.hasAirConditioning;
 
     const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
     const imageSrc = room.imageUrl?.startsWith('http') ? room.imageUrl : room.imageUrl ? `${API_URL}${room.imageUrl}` : null;
 
     return (
-        <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
-            <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch">
-                <div className="flex flex-col gap-6 lg:w-1/2">
-                    <div className="relative h-[300px] w-full overflow-hidden rounded-3xl border-2 border-white/20 bg-zinc-900 sm:h-[400px] shadow-[0_0_15px_rgba(255,255,255,0.05)]">
-                        {imageSrc ? <Image src={imageSrc} alt={room.name} fill className="object-cover" priority /> : <div className="flex h-full items-center justify-center text-zinc-700"><Info size={64} opacity={0.2} /></div>}
+        <div className="mx-auto max-w-6xl px-0 py-0">
+
+            {/* Titol de la sala */}
+            <header className="mb-6 text-center">
+                <h1 className="text-4xl font-black tracking-tighter text-white uppercase">{room.name}</h1>
+            </header>
+
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+                {/* Fila 1 esquerra: Imatge */}
+                <div className="relative h-[380px] w-full overflow-hidden rounded-3xl border-2 border-white/10 bg-zinc-900 shadow-2xl">
+                    {imageSrc ? <Image src={imageSrc} alt={room.name} fill className="object-cover" priority /> : <div className="flex h-full items-center justify-center text-zinc-700"><Info size={64} opacity={0.2} /></div>}
+                </div>
+
+                {/* Fila 1 dreta: Detalls */}
+                <div className="h-[380px] rounded-3xl border border-white/10 bg-zinc-900/40 p-8 backdrop-blur-md flex flex-col">
+                    <h2 className="mb-4 text-xl font-bold text-white uppercase tracking-tighter flex items-center gap-2">
+                        <Info size={20} className="text-blue-400" /> Detalls de la sala
+                    </h2>
+                    <p className="text-sm leading-relaxed text-zinc-400 mb-6 italic">&quot;{room.description || "Sense descripció."}&quot;</p>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="flex items-center gap-3 rounded-2xl bg-zinc-950/50 p-4 border border-white/5">
+                            <Users className="text-blue-400" size={24} />
+                            <div><p className="text-[9px] text-zinc-500 font-bold uppercase">Capacitat</p><p className="text-sm font-semibold text-zinc-200">{room.capacity} persones</p></div>
+                        </div>
+                        <div className="flex items-center gap-3 rounded-2xl bg-zinc-950/50 p-4 border border-white/5">
+                            <CheckCircle2 className="text-green-400" size={24} />
+                            <div><p className="text-[9px] text-zinc-500 font-bold uppercase">Disponibilitat</p><p className="text-sm font-semibold text-green-400">Lliure ara</p></div>
+                        </div>
                     </div>
-                    <div className="flex-1 rounded-3xl border border-white/10 bg-zinc-900/50 p-6 shadow-xl backdrop-blur-md">
-                        <h2 className="mb-4 text-xl font-semibold text-white">Sobre aquesta sala</h2>
-                        <p className="leading-relaxed text-zinc-400 mb-8">{room.description || "Sense descripció."}</p>
-                        <div className="grid grid-cols-2 gap-4 mt-auto">
-                            <div className="flex items-center gap-3 rounded-2xl bg-zinc-800/40 p-4 border border-white/5">
-                                <Users className="text-blue-400" size={24} />
-                                <div><p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Capacitat</p><p className="text-sm font-semibold text-zinc-200">{room.capacity} persones</p></div>
-                            </div>
-                            <div className="flex items-center gap-3 rounded-2xl bg-zinc-800/40 p-4 border border-white/5">
-                                <CheckCircle2 className="text-green-400" size={24} />
-                                <div><p className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Estat</p><p className="text-sm font-semibold text-green-400">Lliure ara</p></div>
+
+                    {/* CONDICIONAL EQUIPAMENT */}
+                    {hasEquipment && (
+                        <div className="mt-2">
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-2">Equipament disponible</p>
+                            <div className="flex flex-wrap gap-3">
+                                {room.hasTv && <Badge icon={<Tv size={18} />} text="Smart TV" />}
+                                {room.hasProjector && <Badge icon={<Projector size={18} />} text="Projector" />}
+                                {room.hasWhiteboard && <Badge icon={<PenTool size={18} />} text="Pissarra" />}
+                                {room.hasAirConditioning && <Badge icon={<Wind size={18} />} text="AC" />}
                             </div>
                         </div>
+                    )}
+                </div>
+
+                {/* Fila 2 esquerra: Formulari de reserva */}
+                <div className="min-h-[480px] rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl flex flex-col">
+                    <h2 className="mb-6 text-xl font-bold text-white uppercase tracking-tighter flex items-center gap-2">
+                        <CalendarDays size={20} className="text-blue-400" /> Fes una reserva
+                    </h2>
+
+                    <div className="space-y-6 flex-1">
+                        <div className="grid grid-cols-1 gap-4">
+                            <div>
+                                <label className="block text-[10px] text-zinc-500 mb-1 ml-1 font-bold uppercase tracking-widest">Data</label>
+                                <input type="date" className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-sm text-zinc-200 outline-none focus:border-blue-500/50 [color-scheme:dark]" value={reservaDate} onChange={(e) => setReservaDate(e.target.value)} />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] text-zinc-500 mb-1 ml-1 font-bold uppercase tracking-widest">Hora Inici</label>
+                                    <select className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-sm text-zinc-200 outline-none focus:border-blue-500/50 appearance-none cursor-pointer" value={startTime} onChange={(e) => setStartTime(e.target.value)}>
+                                        <option value="">Tria...</option>
+                                        {timeOptions.map(t => <option key={`start-${t}`} value={t}>{t}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] text-zinc-500 mb-1 ml-1 font-bold uppercase tracking-widest">Hora Fi</label>
+                                    <select className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-sm text-zinc-200 outline-none focus:border-blue-500/50 appearance-none cursor-pointer" value={endTime} onChange={(e) => setEndTime(e.target.value)}>
+                                        <option value="">Tria...</option>
+                                        {timeOptions.map(t => <option key={`end-${t}`} value={t}>{t}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3 pt-2" ref={dropdownRef}>
+                                <label className="block text-[10px] text-zinc-500 ml-1 font-bold flex items-center gap-2 uppercase tracking-widest"><UserPlus size={14} className="text-blue-400" /> Assistents</label>
+                                <div className="relative">
+                                    <input type="text" placeholder="Cerca companys..." className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 pl-10 text-sm text-zinc-200 outline-none focus:border-blue-500/50" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setIsDropdownOpen(true); }} onFocus={() => setIsDropdownOpen(true)} />
+                                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                                    {isDropdownOpen && searchQuery.length > 0 && (
+                                        <div className="absolute z-50 mt-2 w-full max-h-40 overflow-y-auto rounded-xl border border-white/10 bg-zinc-900 shadow-2xl">
+                                            {filteredUsers.length > 0 ? filteredUsers.map(user => (
+                                                <button key={user.id} onClick={() => { toggleGuest(user.id.toString()); setSearchQuery(''); setIsDropdownOpen(false); }} className="flex w-full items-center justify-between px-4 py-2 text-xs text-zinc-300 hover:bg-white/5 border-b border-white/5 last:border-0 text-left">
+                                                    <div><span className="block font-medium">{user.name}</span><span className="text-[9px] text-zinc-500 italic">{user.email}</span></div>
+                                                </button>
+                                            )) : <div className="px-4 py-2 text-[10px] text-zinc-500 italic">Cap resultat</div>}
+                                        </div>
+                                    )}
+                                </div>
+                                {selectedGuestObjects.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 pt-1">
+                                        {selectedGuestObjects.map(user => (
+                                            <span key={user.id} className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-300 text-[10px] rounded-full">
+                                                {user.name} <button onClick={() => toggleGuest(user.id.toString())} className="hover:text-white"><X size={10} /></button>
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                    <Button className="mt-8 w-full py-4 text-md font-bold shadow-lg shadow-blue-500/10" disabled={!reservaDate || !startTime || !endTime} onClick={handleReserva}>Confirmar Reserva</Button>
+                </div>
+
+                {/* Fila 2 dreta: Agenda de la sala */}
+                <div className="min-h-[480px] rounded-3xl border border-white/10 bg-zinc-900/20 p-8 flex flex-col">
+                    <h2 className="text-xl font-bold text-white uppercase tracking-tighter flex items-center gap-2 mb-6">
+                        <CalendarRange size={20} className="text-blue-400" /> Agenda de la sala
+                    </h2>
+
+                    <div className="flex-1 space-y-3 overflow-y-auto pr-2 scrollbar-hide">
+                        {roomReservations.length > 0 ? (
+                            roomReservations.map((res) => (
+                                <div key={res.id} className="rounded-2xl border border-white/5 bg-zinc-950/40 p-4 flex items-center justify-between transition-all hover:bg-zinc-900/60">
+                                    <div className="flex flex-col gap-1">
+                                        <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
+                                            {new Date(res.date).toLocaleDateString('ca-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
+                                        </span>
+                                        <p className="text-[11px] font-medium text-zinc-400 italic flex items-center gap-2">
+                                            <div className="h-1.5 w-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                                            Ocupat
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-zinc-300 bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-white/5">
+                                        <Clock size={12} className="text-blue-400" />
+                                        <span className="text-[10px] font-bold">{res.start_time} - {res.end_time}</span>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="h-full flex items-center justify-center text-center opacity-40">
+                                <p className="text-xs">No hi ha reserves programades.</p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                <div className="flex flex-col lg:w-1/2">
-                    <div className="flex h-full flex-col justify-between rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl">
-                        <div>
-                            <h1 className="text-3xl font-bold tracking-tight text-white mb-6">{room.name}</h1>
-                            <div className="mb-8 space-y-4 border-y border-white/5 py-6">
-                                <h3 className="text-sm font-medium uppercase tracking-widest text-zinc-500 font-bold">Equipament inclòs</h3>
-                                <div className="flex flex-wrap gap-3">
-                                    {room.hasTv && <Badge icon={<Tv size={14} />} text="Smart TV" />}
-                                    {room.hasProjector && <Badge icon={<Projector size={14} />} text="Projector" />}
-                                    {room.hasWhiteboard && <Badge icon={<PenTool size={14} />} text="Pissarra" />}
-                                    {room.hasAirConditioning && <Badge icon={<Wind size={14} />} text="Climatitzada" />}
-                                </div>
-                            </div>
-                            <div className="space-y-6 rounded-3xl border border-white/5 bg-zinc-900/30 p-6">
-                                <h3 className="text-sm font-medium uppercase tracking-widest text-zinc-500 flex items-center gap-2"><CalendarDays size={18} className="text-blue-400" /> Fes una reserva</h3>
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-[10px] text-zinc-500 mb-1 ml-1 font-bold uppercase tracking-widest">Data</label>
-                                        <input type="date" className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-zinc-200 outline-none focus:border-blue-500/50 [color-scheme:dark]" value={reservaDate} onChange={(e) => setReservaDate(e.target.value)} />
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-[10px] text-zinc-500 mb-1 ml-1 font-bold uppercase tracking-widest">Hora Inici</label>
-                                            <div className="relative">
-                                                <select
-                                                    className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 pl-10 text-sm text-zinc-200 outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
-                                                    value={startTime}
-                                                    onChange={(e) => setStartTime(e.target.value)}
-                                                >
-                                                    <option value="">Tria hora</option>
-                                                    {timeOptions.map(t => <option key={`start-${t}`} value={t}>{t}</option>)}
-                                                </select>
-                                                <Clock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <label className="block text-[10px] text-zinc-500 mb-1 ml-1 font-bold uppercase tracking-widest">Hora Fi</label>
-                                            <div className="relative">
-                                                <select
-                                                    className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 pl-10 text-sm text-zinc-200 outline-none focus:border-blue-500/50 appearance-none cursor-pointer"
-                                                    value={endTime}
-                                                    onChange={(e) => setEndTime(e.target.value)}
-                                                >
-                                                    <option value="">Tria hora</option>
-                                                    {timeOptions.map(t => <option key={`end-${t}`} value={t}>{t}</option>)}
-                                                </select>
-                                                <Clock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 pointer-events-none" />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-3 pt-2" ref={dropdownRef}>
-                                        <label className="block text-[10px] text-zinc-500 ml-1 font-bold flex items-center gap-2 uppercase tracking-widest"><UserPlus size={14} className="text-blue-400" /> Afegeix assistents</label>
-                                        {selectedGuestObjects.length > 0 && (
-                                            <div className="flex flex-wrap gap-2 mb-2">
-                                                {selectedGuestObjects.map(user => (
-                                                    <span key={user.id} className="flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-300 text-[11px] rounded-full">
-                                                        {user.name} <button onClick={() => toggleGuest(user.id)} className="hover:text-white"><X size={12} /></button>
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        )}
-                                        <div className="relative">
-                                            <div className="relative">
-                                                <input type="text" placeholder="Cerca companys..." className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 pl-10 text-sm text-zinc-200 outline-none focus:border-blue-500/50 transition-all" value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setIsDropdownOpen(true); }} onFocus={() => setIsDropdownOpen(true)} />
-                                                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
-                                            </div>
-                                            {isDropdownOpen && searchQuery.length > 0 && (
-                                                <div className="absolute z-50 mt-2 w-full max-h-48 overflow-y-auto rounded-xl border border-white/10 bg-zinc-900 shadow-2xl">
-                                                    {filteredUsers.length > 0 ? filteredUsers.map(user => (
-                                                        <button key={user.id} onClick={() => { toggleGuest(user.id); setSearchQuery(''); setIsDropdownOpen(false); }} className="flex w-full items-center justify-between px-4 py-3 text-sm text-zinc-300 hover:bg-white/5 border-b border-white/5 last:border-0 text-left">
-                                                            <div><span className="block font-medium">{user.name}</span><span className="text-[10px] text-zinc-500 italic">{user.email}</span></div>
-                                                        </button>
-                                                    )) : <div className="px-4 py-3 text-xs text-zinc-500 italic text-center">Sense resultats</div>}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <Button className="mt-8 w-full py-4 text-lg font-bold shadow-lg shadow-blue-500/10 enabled:hover:bg-blue-600 disabled:opacity-50" disabled={!reservaDate || !startTime || !endTime} onClick={handleReserva}>Confirmar reserva</Button>
-                    </div>
-                </div>
             </div>
-            <div className="mt-12 flex justify-center"><BackButton previouspage="/dashboard/employee" /></div>
+            <div className="mt-8 flex justify-center"><BackButton previouspage="/dashboard/employee" /></div>
         </div>
     );
 };
 
 const Badge = ({ icon, text }: { icon: React.ReactNode, text: string }) => (
-    <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-300">{icon} {text}</div>
+    <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-zinc-950/70 px-4 py-2.5 text-sm font-bold text-zinc-200 uppercase tracking-tight">
+        {icon} {text}
+    </div>
 );
 
 export default DetallReservaPage;
