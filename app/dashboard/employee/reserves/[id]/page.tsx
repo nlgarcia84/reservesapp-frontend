@@ -97,21 +97,43 @@ const DetallReservaPage = () => {
     }, [fetchData]);
 
     const handleReserva = async () => {
-        if (!token || !id || !userId) return;
+        // Recuperem el userId (creador)
+        const creatorId = userId || localStorage.getItem('userId');
+
+        if (!token || !id || !creatorId) {
+            alert("Falten dades per crear la reserva.");
+            return;
+        }
+
         try {
-            await createReservation({
+            // Preparem la llista final de convidats
+            // Convertim tots a número i afegim el creador automàticament
+            const finalGuests = [
+                Number(creatorId), // Afegim el creador
+                ...selectedGuests.map(guestId => Number(guestId)) // Afegim els seleccionats
+            ];
+
+            // Eliminem duplicats (per seguretat, per si el creador s'ha auto-seleccionat)
+            const uniqueGuests = [...new Set(finalGuests)];
+
+            const reservationData = {
                 room_id: Number(id),
-                user_id: Number(userId),
+                user_id: Number(creatorId),
                 date: reservaDate,
                 start_time: startTime,
                 end_time: endTime,
-                guests: selectedGuests
-            }, token);
+                guests: uniqueGuests 
+            };
+
+            console.log("Enviant reserva amb creador inclòs:", reservationData);
+
+            await createReservation(reservationData, token);
+
             alert('Reserva realitzada correctament!');
-            setReservaDate(''); setStartTime(''); setEndTime(''); setSelectedGuests([]);
-            fetchData();
+
         } catch (error) {
-            alert(error instanceof Error ? error.message : 'Error al reservar');
+            console.error("Error:", error);
+            alert('No s’ha pogut crear la reserva.');
         }
     };
 
@@ -239,7 +261,7 @@ const DetallReservaPage = () => {
                             </div>
                         </div>
                     </div>
-                    <Button className="mt-8 w-full py-4 text-md font-bold shadow-lg shadow-blue-500/10" disabled={!reservaDate || !startTime || !endTime} onClick={handleReserva}>Confirmar Reserva</Button>
+                    <Button className="mt-8 w-full py-4 text-md font-bold shadow-lg shadow-blue-500/10" onClick={handleReserva}> Confirmar Reserva</Button>
                 </div>
 
                 {/* Fila 2 dreta: Agenda de la sala */}
@@ -256,10 +278,10 @@ const DetallReservaPage = () => {
                                         <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
                                             {new Date(res.date).toLocaleDateString('ca-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
                                         </span>
-                                        <p className="text-[11px] font-medium text-zinc-400 italic flex items-center gap-2">
+                                        <div className="text-[11px] font-medium text-zinc-400 italic flex items-center gap-2">
                                             <div className="h-1.5 w-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
                                             Ocupat
-                                        </p>
+                                        </div>
                                     </div>
                                     <div className="flex items-center gap-1.5 text-zinc-300 bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-white/5">
                                         <Clock size={12} className="text-blue-400" />

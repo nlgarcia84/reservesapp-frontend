@@ -22,6 +22,7 @@ const TOKEN_KEY = 'auth_token'; // Token JWT amb expiració (24h o 7 dies)
 const ROLE_KEY = 'auth_role'; // Rol de l'usuari: 'ADMIN' o 'EMPLOYEE'
 const NAME_KEY = 'auth_name'; // Nom de l'usuari per mostrar en interfície
 const REMEMBER_ME_KEY = 'auth_remember_me'; // Flag: 'true' si sessió de 7 dies, 'false' si 24h
+const USER_ID_KEY = 'userId';
 
 /**
  * Guarda les dades de la sessió al localStorage després del login
@@ -44,6 +45,7 @@ export const saveToken = (
   token: string,
   role: string,
   name: string,
+  userId: string | number,
   rememberMe: boolean = false,
 ) => {
   // Pas 1: Guardar el token JWT
@@ -62,7 +64,11 @@ export const saveToken = (
   // NO activarà automatment la sessió de 7 dies (això es controla a l'equip de backend)
   // Estem emmagatzemant aquest flag per a lògica futura
   localStorage.setItem(REMEMBER_ME_KEY, rememberMe ? 'true' : 'false');
-  console.log('Remember Me:', localStorage.getItem('auth_remember_me'));
+
+  // Pas 5: Guardar el ID de l'usuari
+  // S'utilitza per identificar l'usuari en les peticions
+  localStorage.setItem(USER_ID_KEY, userId.toString());
+  console.log('Sessió guardada per a l\'usuari ID:', userId);
 };
 
 /**
@@ -223,9 +229,9 @@ export const isTokenExpired = (token: string | null): boolean => {
   return isExpired;
 };
 
-export const getUserId = () => {
+export const getUserId = (): string | null => {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('userId');
+  return localStorage.getItem(USER_ID_KEY);
 };
 
 /**
@@ -262,4 +268,6 @@ export const clearToken = () => {
 
   // Pas 4: Esborrar el flag de Remember Me
   localStorage.removeItem(REMEMBER_ME_KEY);
+  
+  localStorage.removeItem(USER_ID_KEY);
 };

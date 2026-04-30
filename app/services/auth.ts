@@ -12,6 +12,7 @@ export type AuthResponse = {
   token: string; // JWT token per a peticions protegides
   role: 'ADMIN' | 'EMPLOYEE'; // Rol de l'usuari (administrador o empleat)
   name: string; // Nom de l'usuari
+  id: number; // ID de l'usuari
 };
 
 // Funció de login: envia les credencials (email i contrasenya) al servidor

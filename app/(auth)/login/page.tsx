@@ -24,15 +24,17 @@ const LoginPage = () => {
     setIsSubmitting(true);
 
     try {
-      const data: AuthResponse = await login(email, password, rememberMe);
-      saveToken(data.token, data.role, data.name, rememberMe);
+  const data: AuthResponse = await login(email, password, rememberMe);
+  
+  // Afegim data.id com a quart paràmetre
+  saveToken(data.token, data.role, data.name, data.id, rememberMe);
 
-      if (data.role === 'ADMIN') {
-        router.replace('/dashboard/admin');
-      } else {
-        router.replace('/dashboard/employee');
-      }
-    } catch (err: unknown) {
+  if (data.role === 'ADMIN') {
+    router.replace('/dashboard/admin');
+  } else {
+    router.replace('/dashboard/employee');
+  }
+} catch (err: unknown) {
       console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Error de login');
     } finally {

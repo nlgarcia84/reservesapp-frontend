@@ -20,7 +20,7 @@ export interface ReservationRequest {
     date: string;
     start_time: string;
     end_time: string;
-    guests: string[]; // IDs dels convidats (UUIDs) enviats com strings
+    guests: number[]; 
 }
 
 // Funció per crear una nova reserva
