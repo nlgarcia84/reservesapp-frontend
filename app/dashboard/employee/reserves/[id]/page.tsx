@@ -145,17 +145,24 @@ const DetallReservaPage = () => {
   };
 
   const handleReserva = async () => {
-    // Log para depuración:
-    console.log(
-      'Intentando procesar reserva. ID de edición actual:',
-      editingId,
-    );
-
     const creatorId = userId || localStorage.getItem('userId');
+    // Usamos el ID de la URL como fuente de verdad absoluta
+    const editReservationId = searchParams.get('editReservationId');
+
     if (!token || !id || !creatorId) return;
 
-    // Construimos el objeto exacto que espera tu ReservationRequest
-    const reservationData = {
+    interface ReservationPayload {
+      id?: number; // Opcional para creación, obligatorio para edición
+      room_id: number;
+      user_id: number;
+      date: string;
+      start_time: string;
+      end_time: string;
+      guests: number[];
+    }
+
+    // Creamos el objeto siguiendo la interfaz
+    const reservationData: ReservationPayload = {
       room_id: Number(id),
       user_id: Number(creatorId),
       date: reservaDate,
@@ -165,20 +172,27 @@ const DetallReservaPage = () => {
     };
 
     try {
-      if (editingId && editingId !== null) {
-        console.log('Llamando a updateReservation con ID:', editingId);
-        await updateReservation(editingId, reservationData, token);
+      if (editReservationId) {
+        // MODO EDICIÓN
+        const idParaActualizar = Number(editReservationId);
+
+        // Añadimos el ID al objeto (TypeScript ahora nos deja porque está en la interfaz)
+        reservationData.id = idParaActualizar;
+
+        console.log('Actualizando reserva existente:', idParaActualizar);
+        await updateReservation(idParaActualizar, reservationData, token);
         alert('Reserva actualitzada correctament!');
       } else {
-        console.log('Llamando a createReservation (POST)');
+        // MODO CREACIÓN
+        console.log('Creando nueva reserva...');
         await createReservation(reservationData, token);
         alert('Reserva realitzada correctament!');
       }
 
-      // Redirigir a la lista de "Mis Reservas" para ver el cambio
       router.push('/dashboard/employee/les-meves-reserves');
+      router.refresh();
     } catch (error) {
-      console.error('Error en el proceso:', error);
+      console.error('Error en la petición:', error);
       alert('Error al processar la reserva');
     }
   };
