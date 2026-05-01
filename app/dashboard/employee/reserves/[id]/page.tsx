@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '@/app/hooks/useAuth';
 import { getRoomById, type Room } from '@/app/services/rooms';
-import { createReservation, type Reservation } from '@/app/services/reservation';
+import { createReservation, type Reservation, getReservationsByRoom } from '@/app/services/reservation';
 import { getUsers } from '@/app/services/users';
 import { Button } from '@/components/ui/Button';
 import { BackButton } from '@/components/ui/BackButton';
@@ -37,11 +37,13 @@ const DetallReservaPage = () => {
     const { token, userId } = useAuth();
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    // Estats per gestionar les dades de la sala i l'agenda
     const [room, setRoom] = useState<Room | null>(null);
     const [allUsers, setAllUsers] = useState<User[]>([]);
     const [roomReservations, setRoomReservations] = useState<Reservation[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    // Estats del formulari de reserva
     const [reservaDate, setReservaDate] = useState('');
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
@@ -49,6 +51,7 @@ const DetallReservaPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+    // Generació de franges horàries de 15 minuts per al selector
     const generateTimeOptions = () => {
         const options = [];
         for (let hour = 7; hour <= 22; hour++) {
@@ -64,29 +67,32 @@ const DetallReservaPage = () => {
 
     const timeOptions = generateTimeOptions();
 
+    // Carrega inicial de dades des del backend
     const fetchData = useCallback(async () => {
         if (!token || !id) return;
         try {
             setIsLoading(true);
+
+            // Carreguem la info bàsica de la sala i la llista d'usuaris
             const [roomData, usersData] = await Promise.all([
                 getRoomById(id as string, token),
                 getUsers(token)
             ]);
 
             setRoom(roomData);
-            const validUsers = usersData.filter((u: User) =>
-                u.id.toString() !== userId?.toString() && u.role?.toLowerCase() !== 'admin'
-            );
-            setAllUsers(validUsers);
+            setAllUsers(usersData.filter((u: User) => u.id.toString() !== userId?.toString()));
 
-            setRoomReservations([
-                { id: 1, room_id: Number(id), user_id: 10, date: '2024-05-10', start_time: '09:00', end_time: '11:00' },
-                { id: 2, room_id: Number(id), user_id: 11, date: '2024-05-10', start_time: '13:00', end_time: '14:30' },
-                { id: 3, room_id: Number(id), user_id: 12, date: '2024-05-11', start_time: '10:00', end_time: '12:00' },
-            ]);
+            // Obtenim les reserves reals de la sala (ordenades per data des del back)
+            try {
+                const reservationsData = await getReservationsByRoom(Number(id), token);
+                setRoomReservations(reservationsData);
+            } catch (agendaError) {
+                console.error("L'agenda no s'ha pogut carregar:", agendaError);
+                setRoomReservations([]);
+            }
 
         } catch (error) {
-            console.error('Error carregant dades:', error);
+            console.error('Error carregant dades de la sala:', error);
         } finally {
             setIsLoading(false);
         }
@@ -97,7 +103,6 @@ const DetallReservaPage = () => {
     }, [fetchData]);
 
     const handleReserva = async () => {
-        // Recuperem el userId (creador)
         const creatorId = userId || localStorage.getItem('userId');
 
         if (!token || !id || !creatorId) {
@@ -106,14 +111,11 @@ const DetallReservaPage = () => {
         }
 
         try {
-            // Preparem la llista final de convidats
-            // Convertim tots a número i afegim el creador automàticament
             const finalGuests = [
-                Number(creatorId), // Afegim el creador
-                ...selectedGuests.map(guestId => Number(guestId)) // Afegim els seleccionats
+                Number(creatorId),
+                ...selectedGuests.map(guestId => Number(guestId))
             ];
 
-            // Eliminem duplicats (per seguretat, per si el creador s'ha auto-seleccionat)
             const uniqueGuests = [...new Set(finalGuests)];
 
             const reservationData = {
@@ -122,14 +124,19 @@ const DetallReservaPage = () => {
                 date: reservaDate,
                 start_time: startTime,
                 end_time: endTime,
-                guests: uniqueGuests 
+                guests: uniqueGuests
             };
-
-            console.log("Enviant reserva amb creador inclòs:", reservationData);
 
             await createReservation(reservationData, token);
 
             alert('Reserva realitzada correctament!');
+
+            // Netegem el formulari i refresquem l'agenda visual
+            setReservaDate('');
+            setStartTime('');
+            setEndTime('');
+            setSelectedGuests([]);
+            fetchData();
 
         } catch (error) {
             console.error("Error:", error);
@@ -160,19 +167,18 @@ const DetallReservaPage = () => {
     return (
         <div className="mx-auto max-w-6xl px-0 py-0">
 
-            {/* Titol de la sala */}
             <header className="mb-6 text-center">
                 <h1 className="text-4xl font-black tracking-tighter text-white uppercase">{room.name}</h1>
             </header>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
-                {/* Fila 1 esquerra: Imatge */}
+                {/* Secció visual de la sala */}
                 <div className="relative h-[380px] w-full overflow-hidden rounded-3xl border-2 border-white/10 bg-zinc-900 shadow-2xl">
                     {imageSrc ? <Image src={imageSrc} alt={room.name} fill className="object-cover" priority /> : <div className="flex h-full items-center justify-center text-zinc-700"><Info size={64} opacity={0.2} /></div>}
                 </div>
 
-                {/* Fila 1 dreta: Detalls */}
+                {/* Detalls tècnics i equipament */}
                 <div className="h-[380px] rounded-3xl border border-white/10 bg-zinc-900/40 p-8 backdrop-blur-md flex flex-col">
                     <h2 className="mb-4 text-xl font-bold text-white uppercase tracking-tighter flex items-center gap-2">
                         <Info size={20} className="text-blue-400" /> Detalls de la sala
@@ -186,11 +192,10 @@ const DetallReservaPage = () => {
                         </div>
                         <div className="flex items-center gap-3 rounded-2xl bg-zinc-950/50 p-4 border border-white/5">
                             <CheckCircle2 className="text-green-400" size={24} />
-                            <div><p className="text-[9px] text-zinc-500 font-bold uppercase">Disponibilitat</p><p className="text-sm font-semibold text-green-400">Lliure ara</p></div>
+                            <div><p className="text-[9px] text-zinc-500 font-bold uppercase">Estat</p><p className="text-sm font-semibold text-green-400">Operativa</p></div>
                         </div>
                     </div>
 
-                    {/* CONDICIONAL EQUIPAMENT */}
                     {hasEquipment && (
                         <div className="mt-2">
                             <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mb-2">Equipament disponible</p>
@@ -204,7 +209,7 @@ const DetallReservaPage = () => {
                     )}
                 </div>
 
-                {/* Fila 2 esquerra: Formulari de reserva */}
+                {/* Formulari de nova reserva */}
                 <div className="min-h-[480px] rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl flex flex-col">
                     <h2 className="mb-6 text-xl font-bold text-white uppercase tracking-tighter flex items-center gap-2">
                         <CalendarDays size={20} className="text-blue-400" /> Fes una reserva
@@ -264,7 +269,7 @@ const DetallReservaPage = () => {
                     <Button className="mt-8 w-full py-4 text-md font-bold shadow-lg shadow-blue-500/10" onClick={handleReserva}> Confirmar Reserva</Button>
                 </div>
 
-                {/* Fila 2 dreta: Agenda de la sala */}
+                {/* Agenda cronològica de la sala */}
                 <div className="min-h-[480px] rounded-3xl border border-white/10 bg-zinc-900/20 p-8 flex flex-col">
                     <h2 className="text-xl font-bold text-white uppercase tracking-tighter flex items-center gap-2 mb-6">
                         <CalendarRange size={20} className="text-blue-400" /> Agenda de la sala
@@ -278,14 +283,16 @@ const DetallReservaPage = () => {
                                         <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
                                             {new Date(res.date).toLocaleDateString('ca-ES', { weekday: 'short', day: 'numeric', month: 'short' })}
                                         </span>
-                                        <div className="text-[11px] font-medium text-zinc-400 italic flex items-center gap-2">
+                                        <div className="text-[11px] font-medium text-zinc-200 flex items-center gap-2">
                                             <div className="h-1.5 w-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
-                                            Ocupat
+                                            {/* Mostrem l'interval horari i l'estat */}
+                                            <span className="font-bold">{res.start_time} - {res.end_time}</span>
+                                            <span className="text-zinc-500 italic ml-1">• Ocupat</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-1.5 text-zinc-300 bg-zinc-800/50 px-3 py-1.5 rounded-lg border border-white/5">
                                         <Clock size={12} className="text-blue-400" />
-                                        <span className="text-[10px] font-bold">{res.start_time} - {res.end_time}</span>
+                                        <span className="text-[10px] font-bold">{res.start_time}</span>
                                     </div>
                                 </div>
                             ))
@@ -303,6 +310,7 @@ const DetallReservaPage = () => {
     );
 };
 
+// Component auxiliar per a les etiquetes d'equipament
 const Badge = ({ icon, text }: { icon: React.ReactNode, text: string }) => (
     <div className="flex items-center gap-2 rounded-xl border border-white/5 bg-zinc-950/70 px-4 py-2.5 text-sm font-bold text-zinc-200 uppercase tracking-tight">
         {icon} {text}

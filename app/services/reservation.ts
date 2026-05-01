@@ -3,14 +3,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 // Dades de lectura del backend
 export interface Reservation {
     id: number;
-    room_id: number; 
-    user_id: number; 
-    date: string;    
-    start_time: string; 
-    end_time: string;   
+    room_id: number;
+    user_id: number;
+    date: string;
+    start_time: string;
+    end_time: string;
     room_name?: string;
     is_organizer?: boolean;
-    guests?: { id: string; name: string }[]; // El ID del convidat és un UUID (string)
+    guests?: { id: string; name: string }[];
 }
 
 // Dades per enviar al backend
@@ -20,7 +20,7 @@ export interface ReservationRequest {
     date: string;
     start_time: string;
     end_time: string;
-    guests: number[]; 
+    guests: number[];
 }
 
 // Funció per crear una nova reserva
@@ -85,4 +85,20 @@ export const deleteReservation = async (id: number, token: string): Promise<void
         const errorData = await res.json();
         throw new Error(errorData.message || 'Error en cancel·lar la reserva');
     }
+};
+
+export const getReservationsByRoom = async (roomId: number, token: string) => {
+    const response = await fetch(`http://localhost:8080/reservations/room/${roomId}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    });
+
+    if (!response.ok) {
+        throw new Error('Error en recuperar les reserves de la sala');
+    }
+
+    return response.json();
 };
