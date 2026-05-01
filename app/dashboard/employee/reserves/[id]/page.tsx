@@ -507,7 +507,7 @@ const DetallReservaPage = () => {
       </div>
 
       <div className="mt-8 flex justify-center">
-        <BackButton previouspage="/dashboard/employee" />
+        <BackButton previouspage="/dashboard/employee/les-meves-reserves" />
       </div>
     </div>
   );
