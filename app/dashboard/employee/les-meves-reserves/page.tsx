@@ -27,6 +27,7 @@ const LesMevesReservesPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Porta totes les reserves del servidor
     const fetchReserves = async () => {
       if (!token) return;
       try {
@@ -42,6 +43,7 @@ const LesMevesReservesPage = () => {
     fetchReserves();
   }, [token]);
 
+  // Métode per cancelar reserva
   const handleCancel = async (id: number) => {
     if (!confirm('Segur que vols cancel·lar aquesta reserva?')) return;
     try {
@@ -66,7 +68,14 @@ const LesMevesReservesPage = () => {
     );
   };
 
+  // Filtra per tipus de reserva, propia o invitada
   const filteredReserves = reserves.filter((r) => {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0); // Ponemos a las 00:00 para comparar solo el día
+    // Filtre de seguretat (frontend) de data de la reserva per si no s'ha esborrat al backend
+    const fechaReserva = new Date(r.date);
+    if (fechaReserva < hoy) return false;
+    // Filtre per separar les reserves propues a les invidades
     if (filter === 'mine') return r.userId?.toString() === userId;
     if (filter === 'invited') return r.userId?.toString() !== userId;
     return true;

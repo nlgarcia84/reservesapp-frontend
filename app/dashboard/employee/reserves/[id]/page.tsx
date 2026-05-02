@@ -254,19 +254,6 @@ const DetallReservaPage = () => {
       ? `${API_URL}${room.imageUrl}`
       : null;
 
-  const autoDeletePassedReservation = async () => {
-    if (!token) return;
-
-    try {
-      const reserves = await getMyReservations(token);
-      for (const r of reserves) {
-        console.log(r);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleConditionalNavigation = async () => {
     if (!token || isLoading) return; // Si ya está cargando, no hacer nada
 
