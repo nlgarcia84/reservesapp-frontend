@@ -1,7 +1,6 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // Dades de lectura del backend
-// Dades de lectura del backend
 export interface Reservation {
   id: number;
   date: string;
@@ -16,8 +15,6 @@ export interface Reservation {
   };
   roomId?: number;
   room_id?: number;
-
-  // AÑADE ESTA LÍNEA:
   guests?: number[] | string[];
 }
 
@@ -120,4 +117,18 @@ export const getReservationsByRoom = async (roomId: number, token: string) => {
   }
 
   return response.json();
+};
+
+// Funció per a l'admin: recupera totes les reserves de tots els usuaris
+export const getAllReservations = async (token: string): Promise<Reservation[]> => {
+  const res = await fetch(`${API_URL}/reservations`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Cache-Control': 'no-store',
+    },
+  });
+
+  if (!res.ok) throw new Error('No s’han pogut carregar les reserves del sistema');
+  return res.json();
 };

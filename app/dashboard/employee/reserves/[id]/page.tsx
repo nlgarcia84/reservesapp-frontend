@@ -38,8 +38,8 @@ interface User {
 }
 
 const DetallReservaPage = () => {
-  const { id } = useParams(); // ID de la sala
-  const { token, userId } = useAuth();
+  const { id } = useParams(); 
+  const { token, userId, role } = useAuth(); // Afegim role per gestionar permisos i redireccions
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [room, setRoom] = useState<Room | null>(null);
@@ -59,6 +59,13 @@ const DetallReservaPage = () => {
   const editIdFromUrl = searchParams.get('editReservationId');
 
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  // Autorització d'accés: permetem que Admin i Employee vegin la pàgina
+  useEffect(() => {
+    if (role && role !== 'EMPLOYEE' && role !== 'ADMIN') {
+      router.push('/dashboard'); // Redirigim si el rol no és apte
+    }
+  }, [role, router]);
 
   const generateTimeOptions = () => {
     const options = [];
@@ -109,7 +116,6 @@ const DetallReservaPage = () => {
     fetchData();
   }, [fetchData]);
 
-  // CORRECCIÓN 1: Lógica de detección de edición mejorada
   useEffect(() => {
     if (editIdFromUrl && roomReservations.length > 0) {
       const idParaEditar = Number(editIdFromUrl);
@@ -140,7 +146,6 @@ const DetallReservaPage = () => {
     setStartTime('');
     setEndTime('');
     setSelectedGuests([]);
-    // CORRECCIÓN 2: Redirección limpia a la ruta base de la sala
     router.replace(`/dashboard/employee/reserves/${id}`);
   };
 
@@ -173,23 +178,28 @@ const DetallReservaPage = () => {
 
     try {
       if (editReservationId) {
-        // MODO EDICIÓN
+        // Modo edición
         const idParaActualizar = Number(editReservationId);
 
-        // Añadimos el ID al objeto (TypeScript ahora nos deja porque está en la interfaz)
+        // Añadimos el ID al objeto 
         reservationData.id = idParaActualizar;
 
         console.log('Actualizando reserva existente:', idParaActualizar);
         await updateReservation(idParaActualizar, reservationData, token);
         alert('Reserva actualitzada correctament!');
       } else {
-        // MODO CREACIÓN
+        // Modo creación
         console.log('Creando nueva reserva...');
         await createReservation(reservationData, token);
         alert('Reserva realitzada correctament!');
       }
 
-      router.push('/dashboard/employee/les-meves-reserves');
+      // Redirecció segons el rol de l'usuari (Admin torna al panell global, Empleat a la seva agenda)
+      if (role === 'ADMIN') {
+        router.push('/dashboard/admin/gestio-reserves');
+      } else {
+        router.push('/dashboard/employee/les-meves-reserves');
+      }
       router.refresh();
     } catch (error) {
       console.error('Error en la petición:', error);
@@ -521,7 +531,9 @@ const DetallReservaPage = () => {
       </div>
 
       <div className="mt-8 flex justify-center">
-        <BackButton previouspage="/dashboard/employee/les-meves-reserves" />
+        <BackButton
+          previouspage={role === 'ADMIN' ? "/dashboard/admin/gestio-reserves" : "/dashboard/employee/les-meves-reserves"}
+        />
       </div>
     </div>
   );
