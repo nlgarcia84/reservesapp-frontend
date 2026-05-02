@@ -10,6 +10,7 @@ import {
   type Reservation,
   getReservationsByRoom,
   updateReservation,
+  getMyReservations,
 } from '@/app/services/reservation';
 import { getUsers } from '@/app/services/users';
 import { Button } from '@/components/ui/Button';
@@ -39,7 +40,7 @@ interface User {
 
 const DetallReservaPage = () => {
   const { id } = useParams(); 
-  const { token, userId, role } = useAuth(); // Afegim role per gestionar permisos i redireccions
+  const { token, userId, role } = useAuth(); // Afegim rol per gestionar permisos i redireccions
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [room, setRoom] = useState<Room | null>(null);
@@ -252,6 +253,52 @@ const DetallReservaPage = () => {
     : room.imageUrl
       ? `${API_URL}${room.imageUrl}`
       : null;
+
+  const autoDeletePassedReservation = async () => {
+    if (!token) return;
+
+    try {
+      const reserves = await getMyReservations(token);
+      for (const r of reserves) {
+        console.log(r);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleConditionalNavigation = async () => {
+    if (!token || isLoading) return; // Si ya está cargando, no hacer nada
+
+    // Lògica per a Administradors: Tornar directament a la gestió global
+    if (role === 'ADMIN') {
+      router.push('/dashboard/admin/gestio-reserves');
+      return;
+    }
+
+    try {
+      setIsLoading(true); // Esto debería mostrar un spinner o deshabilitar el botón
+      const reserves = await getMyReservations(token);
+      console.log(reserves);
+      
+      // Comprobación clara
+      if (reserves && reserves.length > 0) {
+        // Tiene reservas -> Ir a su lista personal
+        router.push('/dashboard/employee/les-meves-reserves');
+      } else {
+        // No tiene -> Volver al buscador o panel de inicio
+        router.push('/dashboard/employee');
+      }
+    } catch (error) {
+      console.error('Error al comprobar reservas:', error);
+      // IMPORTANTE: Si falla la API, lo mejor es enviarlo a la raíz del dashboard
+      // para que no se quede atrapado en una página de error.
+      router.push('/dashboard/employee');
+    } finally {
+      // Es vital apagar el loading, aunque router.push ya cambie la página
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="mx-auto max-w-6xl px-0 py-0">
@@ -531,9 +578,7 @@ const DetallReservaPage = () => {
       </div>
 
       <div className="mt-8 flex justify-center">
-        <BackButton
-          previouspage={role === 'ADMIN' ? "/dashboard/admin/gestio-reserves" : "/dashboard/employee/les-meves-reserves"}
-        />
+        <BackButton conditionalNav={handleConditionalNavigation} />
       </div>
     </div>
   );
