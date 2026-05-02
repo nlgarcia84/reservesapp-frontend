@@ -120,7 +120,10 @@ const EsborrarUsuari = () => {
         </Card>
         {/* Formulari per esborrar usuaris amb callback per actualitzar la llista */}
 
-        <BackButton previouspage={'/dashboard/admin/gestio-usuaris'} />
+        <BackButton
+          text="Tornar"
+          previouspage={'/dashboard/admin/gestio-usuaris'}
+        />
       </div>
     </>
   );

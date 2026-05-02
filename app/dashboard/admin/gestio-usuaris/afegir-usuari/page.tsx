@@ -13,7 +13,10 @@ const AfegirUsuaris = () => {
         <div className="text-center mb-2">
           <AddUserForm />
         </div>
-        <BackButton previouspage={'/dashboard/admin/gestio-usuaris'} />
+        <BackButton
+          text="Tornar"
+          previouspage={'/dashboard/admin/gestio-usuaris'}
+        />
       </div>
     </>
   );
