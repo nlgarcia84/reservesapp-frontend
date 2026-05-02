@@ -276,7 +276,10 @@ export default function EditRoomPage() {
       </form>
 
       <div className="mt-8 flex justify-center">
-        <BackButton previouspage="/dashboard/admin/gestio-sales" />
+        <BackButton
+          text="Tornar"
+          previouspage="/dashboard/admin/gestio-sales"
+        />
       </div>
     </div>
   );
