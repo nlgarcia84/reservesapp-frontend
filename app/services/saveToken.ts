@@ -45,8 +45,8 @@ export const saveToken = (
   token: string,
   role: string,
   name: string,
-  userId: string | number,
   rememberMe: boolean = false,
+  userId: string | number = '',
 ) => {
   // Pas 1: Guardar el token JWT
   // Aquest token s'utilitzarà en totes les peticions (header: Authorization: Bearer <token>)
@@ -68,7 +68,7 @@ export const saveToken = (
   // Pas 5: Guardar el ID de l'usuari
   // S'utilitza per identificar l'usuari en les peticions
   localStorage.setItem(USER_ID_KEY, userId.toString());
-  console.log('Sessió guardada per a l\'usuari ID:', userId);
+  console.log("Sessió guardada per a l'usuari ID:", userId);
 };
 
 /**
@@ -268,6 +268,6 @@ export const clearToken = () => {
 
   // Pas 4: Esborrar el flag de Remember Me
   localStorage.removeItem(REMEMBER_ME_KEY);
-  
+
   localStorage.removeItem(USER_ID_KEY);
 };
