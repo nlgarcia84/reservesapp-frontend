@@ -15,6 +15,8 @@ export interface Reservation {
   };
   roomId?: number;
   room_id?: number;
+
+  // AÑADE ESTA LÍNEA:
   guests?: number[] | string[];
 }
 
@@ -27,6 +29,24 @@ export interface ReservationRequest {
   end_time: string;
   guests: number[];
 }
+
+// Funció per portar totes les reserves
+export const getAllReservations = async (
+  data: ReservationRequest,
+  token: string,
+): Promise<Reservation[]> => {
+  const res = await fetch(`${API_URL}/reservations`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+    },
+  });
+
+  if (!res.ok) throw new Error('No s’han pogut carregar les teves reserves');
+  return res.json();
+};
 
 // Funció per crear una nova reserva
 export const createReservation = async (
@@ -117,18 +137,4 @@ export const getReservationsByRoom = async (roomId: number, token: string) => {
   }
 
   return response.json();
-};
-
-// Funció per a l'admin: recupera totes les reserves de tots els usuaris
-export const getAllReservations = async (token: string): Promise<Reservation[]> => {
-  const res = await fetch(`${API_URL}/reservations`, {
-    method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Cache-Control': 'no-store',
-    },
-  });
-
-  if (!res.ok) throw new Error('No s’han pogut carregar les reserves del sistema');
-  return res.json();
 };
