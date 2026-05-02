@@ -45,8 +45,8 @@ export const saveToken = (
   token: string,
   role: string,
   name: string,
-  rememberMe: boolean = false,
-  userId: string | number = '',
+  userId: string | number = '', // Valor por defecto
+  rememberMe: boolean = false, // Valor por defecto
 ) => {
   // Pas 1: Guardar el token JWT
   // Aquest token s'utilitzarà en totes les peticions (header: Authorization: Bearer <token>)
