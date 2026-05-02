@@ -12,7 +12,9 @@ const AfegirSala = () => {
       <div className="text-center mb-2">
         <AddRoomForm />
       </div>
-      <BackButton previouspage={'/dashboard/admin/gestio-sales'} />
+      <div className="flex justify-center">
+        <BackButton previouspage={'/dashboard/admin/gestio-sales'} />
+      </div>
     </div>
   );
 };

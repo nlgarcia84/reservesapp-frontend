@@ -32,7 +32,6 @@ export interface ReservationRequest {
 
 // Funció per portar totes les reserves
 export const getAllReservations = async (
-  data: ReservationRequest,
   token: string,
 ): Promise<Reservation[]> => {
   const res = await fetch(`${API_URL}/reservations`, {

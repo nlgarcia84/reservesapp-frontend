@@ -39,7 +39,7 @@ interface User {
 }
 
 const DetallReservaPage = () => {
-  const { id } = useParams(); 
+  const { id } = useParams();
   const { token, userId, role } = useAuth(); // Afegim rol per gestionar permisos i redireccions
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -182,7 +182,7 @@ const DetallReservaPage = () => {
         // Modo edición
         const idParaActualizar = Number(editReservationId);
 
-        // Añadimos el ID al objeto 
+        // Añadimos el ID al objeto
         reservationData.id = idParaActualizar;
 
         console.log('Actualizando reserva existente:', idParaActualizar);
@@ -267,7 +267,7 @@ const DetallReservaPage = () => {
       setIsLoading(true); // Esto debería mostrar un spinner o deshabilitar el botón
       const reserves = await getMyReservations(token);
       console.log(reserves);
-      
+
       // Comprobación clara
       if (reserves && reserves.length > 0) {
         // Tiene reservas -> Ir a su lista personal
@@ -565,7 +565,10 @@ const DetallReservaPage = () => {
       </div>
 
       <div className="mt-8 flex justify-center">
-        <BackButton conditionalNav={handleConditionalNavigation} />
+        <BackButton
+          text="Tornar"
+          conditionalNav={handleConditionalNavigation}
+        />
       </div>
     </div>
   );

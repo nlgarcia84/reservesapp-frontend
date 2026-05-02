@@ -2,11 +2,13 @@ import { SquareChevronLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type BackButtonProps = {
+  text: string;
   previouspage?: string;
   conditionalNav?: () => void;
 };
 
 export const BackButton = ({
+  text,
   previouspage,
   conditionalNav,
 }: BackButtonProps) => {
@@ -34,7 +36,7 @@ export const BackButton = ({
         className="flex flex-row items-center justify-center text-blue-500 font-semibold hover:text-blue-400 cursor-pointer bg-transparent border-none outline-none"
       >
         <SquareChevronLeft />
-        <span className="pl-2">Tornar</span>
+        <span className="pl-2">{text}</span>
       </button>
     </>
   );

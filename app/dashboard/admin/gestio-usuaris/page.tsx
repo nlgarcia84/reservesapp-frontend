@@ -1,5 +1,6 @@
 'use client';
 
+import { BackButton } from '@/components/ui/BackButton';
 import { Button } from '@/components/ui/Button';
 import Link from 'next/link';
 
@@ -11,16 +12,22 @@ const GestioUsuaris = () => {
         Panell administrador d&apos;usuaris
       </h1>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto flex flex-col justify-center">
         {/* Botons afegir i esborrar */}
         <div className="mb-12 flex flex-wrap justify-center gap-4">
           <Link href="/dashboard/admin/gestio-usuaris/afegir-usuari">
             <Button className="px-10">Afegir usuari</Button>
           </Link>
           <Link href="/dashboard/admin/gestio-usuaris/esborrar-usuari">
-            <Button className="px-10 border-red-500/50 text-red-500 hover:bg-red-500/10">Esborrar usuari</Button>
+            <Button className="px-10 border-red-500/50 text-red-500 hover:bg-red-500/10">
+              Esborrar usuari
+            </Button>
           </Link>
         </div>
+        <BackButton
+          text={'Tornar al Dashboard'}
+          previouspage={'/dashboard/admin'}
+        />
       </div>
     </div>
   );

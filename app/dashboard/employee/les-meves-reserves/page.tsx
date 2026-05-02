@@ -18,6 +18,7 @@ import {
   Inbox,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { motion } from 'framer-motion';
 
 const LesMevesReservesPage = () => {
   const router = useRouter();
@@ -102,24 +103,42 @@ const LesMevesReservesPage = () => {
           </p>
         </div>
 
-        <div className="flex gap-1 rounded-2xl bg-zinc-900/80 p-1 border border-white/5 backdrop-blur-md">
-          {(['all', 'mine', 'invited'] as const).map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-4 py-2 rounded-xl text-[10px] font-bold tracking-widest transition-all ${
-                filter === f
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/20'
-                  : 'text-zinc-500 hover:text-zinc-300'
-              }`}
-            >
-              {f === 'all'
-                ? 'TOTES'
-                : f === 'mine'
-                  ? 'LES MEVES'
-                  : 'INVITACIONS'}
-            </button>
-          ))}
+        <div className="relative flex gap-1 rounded-2xl bg-zinc-900/80 p-1 border border-white/5 backdrop-blur-md">
+          {(['all', 'mine', 'invited'] as const).map((f) => {
+            const isActive = filter === f;
+
+            return (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`relative px-4 py-2 rounded-xl text-[10px] font-bold tracking-widest transition-colors duration-300 ${
+                  isActive ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-blue-600 rounded-xl shadow-lg shadow-blue-900/20"
+                    // Configuración sin rebote
+                    transition={{
+                      type: 'tween',
+                      ease: 'easeInOut',
+                      duration: 0.3,
+                    }}
+                    style={{ zIndex: 0 }}
+                  />
+                )}
+
+                <span className="relative z-10">
+                  {f === 'all'
+                    ? 'TOTES'
+                    : f === 'mine'
+                      ? 'LES MEVES'
+                      : 'INVITACIONS'}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -233,7 +252,10 @@ const LesMevesReservesPage = () => {
       </div>
 
       <div className="mt-12 flex justify-center">
-        <BackButton previouspage="/dashboard/employee" />
+        <BackButton
+          text="Retornar al Dashboard"
+          previouspage="/dashboard/employee"
+        />
       </div>
     </div>
   );

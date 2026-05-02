@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/app/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
 import { getRooms, type Room } from '@/app/services/rooms';
+import { useTimeGreeting } from '@/app/hooks/useTimeGreeting';
+import {
+  getAllReservations,
+  type Reservation,
+} from '@/app/services/reservation';
+
 import {
   Hand,
   UsersRound,
@@ -13,13 +19,13 @@ import {
   Clock,
   CalendarClock,
 } from 'lucide-react';
-import { useTimeGreeting } from '@/app/hooks/useTimeGreeting';
 
 const AdminPage = () => {
   const { token } = useAuth();
   const { greeting, icon } = useTimeGreeting();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [total, setTotal] = useState(0);
+  const [reservation, setReservation] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -47,7 +53,21 @@ const AdminPage = () => {
       }
     };
 
+    const fetReserves = async () => {
+      try {
+        setError('');
+        const data = await getAllReservations(token);
+        setReservation(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : 'Error carregant reserves',
+        );
+        setReservation([]);
+      }
+    };
+
     fetchRooms();
+    fetReserves();
   }, [token]);
 
   if (loading) return <div>Carregant...</div>;
@@ -67,7 +87,7 @@ const AdminPage = () => {
           </div>
 
           <h2 className="text-base text-zinc-400 sm:text-lg font-light">
-            Aqui tens un resum de les teves sales i reserves.
+            Aqui tens el catàleg de sales y les reserves
           </h2>
         </div>
 
@@ -89,8 +109,8 @@ const AdminPage = () => {
               </Card>
             </div>
             <Card
-              title="Sales disponibles"
-              subtitle="Llistat de totes les sales del sistema"
+              title="Cataleg de sales"
+              subtitle="Llistat de totes les modalitats de sales"
               icon={SearchCheck}
             >
               {rooms.map((room) => (
@@ -113,7 +133,9 @@ const AdminPage = () => {
             <div className="xl:grid xl:grid-col-2">
               <Card title="Reserves Totals" icon={Clipboard}>
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold">{0}</span>
+                  <span className="text-2xl font-bold">
+                    {reservation.length}
+                  </span>
                   <span>Reserves</span>
                 </div>
               </Card>
