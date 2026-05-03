@@ -8,7 +8,7 @@ export interface Reservation {
   endTime: string;
   userId: number | string;
 
-  // Relaciones y datos adicionales
+  // Relacions i dades addicionals
   room?: {
     id: number;
     name?: string;
@@ -16,7 +16,7 @@ export interface Reservation {
   roomId?: number;
   room_id?: number;
 
-  // AÑADE ESTA LÍNEA:
+  // Llista d'assistents vinculats a la reserva
   guests?: number[] | string[];
 }
 

@@ -40,7 +40,7 @@ interface User {
 
 const DetallReservaPage = () => {
   const { id } = useParams();
-  const { token, userId, role } = useAuth(); // Afegim rol per gestionar permisos i redireccions
+  const { token, userId, role } = useAuth(); // Incloem el rol per controlar permisos i redireccions
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const [room, setRoom] = useState<Room | null>(null);
@@ -71,7 +71,7 @@ const DetallReservaPage = () => {
     }
   }, [role, router]);
 
-  // --- Nova funcionalitat: validació de disponibilitat i temps real ---
+  // Validacions de disponibilitat en temps real
 
   // Comprova si una hora específica ja ha passat (només per a la data d'avui)
   const isTimeInPast = (time: string) => {
@@ -338,7 +338,7 @@ const DetallReservaPage = () => {
           )}
         </div>
 
-        {/* Detalles */}
+        {/* Detalls */}
         <div className="h-[380px] rounded-3xl border border-white/10 bg-zinc-900/40 p-8 backdrop-blur-md flex flex-col">
           <h2 className="mb-4 text-xl font-bold text-white uppercase tracking-tighter flex items-center gap-2">
             <Info size={20} className="text-blue-400" /> Detalls de la sala
@@ -395,7 +395,7 @@ const DetallReservaPage = () => {
           )}
         </div>
 
-        {/* Formulario */}
+        {/* Formulari */}
         <div className="min-h-[480px] rounded-3xl border border-white/10 bg-zinc-950 p-8 shadow-2xl flex flex-col">
           <h2 className="mb-6 text-xl font-bold text-white uppercase tracking-tighter flex items-center gap-2">
             <CalendarDays size={20} className="text-blue-400" />
@@ -440,10 +440,10 @@ const DetallReservaPage = () => {
                           disabled={isBlocked}
                           className={
                             blocked
-                              ? "text-red-500 bg-zinc-800" // Vermell si està ocupada
+                              ? 'text-red-500 bg-zinc-800' // Vermell si està ocupada
                               : inPast
-                                ? "text-zinc-600 bg-zinc-800" // Gris si ja ha passat
-                                : "text-zinc-200"
+                                ? 'text-zinc-600 bg-zinc-800' // Gris si ja ha passat
+                                : 'text-zinc-200'
                           }
                         >
                           {t} {blocked ? '(Ocupada)' : ''}
@@ -474,10 +474,10 @@ const DetallReservaPage = () => {
                           disabled={isBlocked}
                           className={
                             blocked
-                              ? "text-red-500 bg-zinc-800"
+                              ? 'text-red-500 bg-zinc-800'
                               : inPast
-                                ? "text-zinc-600 bg-zinc-800"
-                                : "text-zinc-200"
+                                ? 'text-zinc-600 bg-zinc-800'
+                                : 'text-zinc-200'
                           }
                         >
                           {t} {blocked ? '(Ocupada)' : ''}
@@ -488,7 +488,7 @@ const DetallReservaPage = () => {
                 </div>
               </div>
 
-              {/* Secció d'assistents mantenint la teva lògica de dropdown i cerca */}
+              {/* Secció d'assistents amb cerca i selecció */}
               <div className="space-y-3 pt-2" ref={dropdownRef}>
                 <label className="block text-[10px] text-zinc-500 ml-1 font-bold flex items-center gap-2 uppercase tracking-widest">
                   <UserPlus size={14} className="text-blue-400" /> Assistents

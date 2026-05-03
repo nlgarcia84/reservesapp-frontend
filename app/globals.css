@@ -1,11 +1,11 @@
 @import 'tailwindcss';
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Colores de fondo */
+  /* Colors de fons */
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
   --bg-tertiary: rgba(24, 24, 27, 0.3);
@@ -13,23 +13,23 @@
   --bg-card-hover: rgba(24, 24, 27, 0.8);
   --bg-accent-light: rgba(59, 130, 246, 0.2);
 
-  /* Colores de texto */
+  /* Colors de text */
   --text-primary: #f4f4f5;
   --text-secondary: #a1a1a5;
   --text-muted: #71717a;
 
-  /* Colores de bordes */
+  /* Colors de vores */
   --border-primary: rgba(255, 255, 255, 0.3);
   --border-secondary: rgba(255, 255, 255, 0.1);
   --border-light: rgba(255, 255, 255, 0.05);
 
-  /* Colores de acento */
+  /* Colors d'accent */
   --accent-primary: #3b82f6;
   --accent-primary-dark: #2563eb;
   --accent-primary-hover: #60a5fa;
   --accent-secondary: #1e40af;
 
-  /* Transiciones */
+  /* Transicions */
   --transition-fast: all 150ms ease-in-out;
   --transition-smooth: all 200ms ease-in-out;
   --background: oklch(1 0 0);
@@ -127,7 +127,7 @@ body {
   color: var(--accent-primary-hover);
 }
 
-/* Animaciones modernas */
+/* Animacions */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -168,7 +168,7 @@ body {
   }
 }
 
-/* Clases de animación */
+/* Classes d'animació */
 .animate-fade-in-up {
   animation: fadeInUp 0.8s ease-out forwards;
 }
@@ -186,7 +186,7 @@ body {
   animation: pulseScale 2s ease-in-out infinite;
 }
 
-/* Delays para efecto staggered */
+/* Retards per a l'efecte esglaonat */
 .delay-100 {
   animation-delay: 100ms;
 }

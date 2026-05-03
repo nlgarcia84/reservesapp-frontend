@@ -45,8 +45,8 @@ export const saveToken = (
   token: string,
   role: string,
   name: string,
-  userId: string | number = '', // Valor por defecto
-  rememberMe: boolean = false, // Valor por defecto
+  userId: string | number = '', // Valor per defecte
+  rememberMe: boolean = false, // Valor per defecte
 ) => {
   // Pas 1: Guardar el token JWT
   // Aquest token s'utilitzarà en totes les peticions (header: Authorization: Bearer <token>)
@@ -117,7 +117,7 @@ export const getName = (): string | null => {
  *
  * @returns true si la sessió és de 7 dies, false si és de 24h
  *
- * NOTA: Esta és informació visual
+ * NOTA: És informació de suport a la interfície
  * La verificació real d'expiració es fa per timestamp JWT (camp 'exp')
  */
 export const isRememberMeSession = (): boolean => {

@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react';
 
 /**
- * Funció auxiliar que retorna el salut i icona apropiat segons l'hora del dia
+ * Retorna la salutació i la icona segons l'hora del dia.
  *
- * Horaris:
- * - 05:00 - 11:59 → "Bon dia" 🌅
- * - 12:00 - 17:59 → "Bona tarda" ☀️
- * - 18:00 - 20:59 → "Bona nit" 🌆
- * - 21:00 - 04:59 → "Bona nit" 🌙
+ * Franges horàries:
+ * - 05:00 - 11:59: Bon dia
+ * - 12:00 - 19:59: Bona tarda
+ * - 20:00 - 04:59: Bona nit
  *
- * @returns {Object} Objecte amb propietats greeting (string) i icon (emoji)
+ * @returns Objecte amb greeting i icon.
  */
 const getGreeting = () => {
-  // crea un objecte Data amb la data/hora actual
-  // extreu només l'hora (0-23)
-  // guarda l'hora en una variable
+  // Agafem l'hora actual (0-23)
   const hour = new Date().getHours();
 
   if (hour >= 5 && hour < 12) {
@@ -27,49 +24,44 @@ const getGreeting = () => {
 };
 
 /**
- * Hook personalitzat que gestiona els saludos dinàmics segons la hora del dia
+ * Hook que actualitza la salutació dinàmica segons l'hora del dia.
  *
- * Característiques:
- * - Calcula el salut correcte al carregador el component (sense flash)
- * - Actualitza automàticament cada minut per detectar canvis d'hora
- * - Neteja l'interval al desmontar el component
+ * - Calcula el valor inicial en muntar el component.
+ * - Recalcula la salutació cada minut.
+ * - Neteja l'interval en desmuntar.
  *
  * Exemple d'ús:
  * ```typescript
  * const { greeting, icon } = useTimeGreeting();
- * return <h1>{icon} {greeting}, usuari!</h1>; // 🌅 Bon dia, usuari!
+ * return <h1>{icon} {greeting}, usuari!</h1>;
  * ```
  *
- * @returns {Object} Objecte amb dos propietats:
- *   - greeting: string amb el salut en català (Bon dia, Bona tarda, Bona nit)
- *   - icon: string amb l'emoji corresponent a la part del dia
+ * @returns Objecte amb `greeting` i `icon`.
  */
 
 // export: permet usar aquest hook en altres fitxers
 export const useTimeGreeting = () => {
-  // Inicialitza els estats amb el salut correcte en aquest moment
-  // Crida getGreeting() una sola vegada i destrueix l'objecte
+  // Inicialitzem amb la salutació corresponent al moment actual
   const initialGreeting = getGreeting();
   const [greeting, setGreeting] = useState(initialGreeting.greeting);
   const [icon, setIcon] = useState(initialGreeting.icon);
 
-  // Effect que s'executa una sola vegada al montar el component
+  // Aquest efecte s'executa només en muntar el component
   useEffect(() => {
-    // Funció per actualitzar el salut i l'icona
+    // Actualitza la salutació i la icona
     const updateGreeting = () => {
       const { greeting: newGreeting, icon: newIcon } = getGreeting();
       setGreeting(newGreeting);
       setIcon(newIcon);
     };
 
-    // Configura un interval que s'executa cada 60 segons (1 minut)
+    // Recalcula cada minut
     const interval = setInterval(updateGreeting, 60000);
 
-    // Funció de neteja: es crida quan el component es desmonta
-    // Neteja l'interval per evitar memory leaks
+    // Netegem l'interval en desmuntar
     return () => clearInterval(interval);
-  }, []); // [] significa que s'executa només una vegada al montar
+  }, []); // Amb dependències buides, es dispara una sola vegada
 
-  // Retorna l'objecte amb el salut i la icona actuals
+  // Retorna la salutació i la icona actuals
   return { greeting, icon };
 };

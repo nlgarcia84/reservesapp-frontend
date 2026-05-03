@@ -28,7 +28,7 @@ const LesMevesReservesPage = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Porta totes les reserves del servidor
+    // Carrega les reserves de l'usuari
     const fetchReserves = async () => {
       if (!token) return;
       try {
@@ -44,7 +44,7 @@ const LesMevesReservesPage = () => {
     fetchReserves();
   }, [token]);
 
-  // Métode per cancelar reserva
+  // Cancel·la una reserva
   const handleCancel = async (id: number) => {
     if (!confirm('Segur que vols cancel·lar aquesta reserva?')) return;
     try {
@@ -57,27 +57,26 @@ const LesMevesReservesPage = () => {
     }
   };
 
-  // Archivo: .../les-meves-reserves/page.tsx
   const handleEdit = async (reserva: Reservation) => {
     const idSala = reserva.room?.id ?? reserva.roomId ?? reserva.room_id;
 
     if (!idSala) return;
 
-    // IMPORTANTE: Incluir '/employee/' en la ruta
+    // La ruta d'edició passa pel dashboard d'employee
     router.push(
       `/dashboard/employee/reserves/${idSala}?editReservationId=${reserva.id}`,
     );
   };
 
-  // Filtra per tipus de reserva, propia o invitada
+  // Filtra per tipus de reserva: meves, convidades o totes
   const filteredReserves = reserves
     .filter((r) => {
       const hoy = new Date();
-      hoy.setHours(0, 0, 0, 0); // Ponemos a las 00:00 para comparar solo el día
-      // Filtre de seguretat (frontend) de data de la reserva per si no s'ha esborrat al backend
+      hoy.setHours(0, 0, 0, 0); // Comparem només la data
+      // Evitem mostrar reserves passades si el backend encara no les ha netejat
       const fechaReserva = new Date(r.date);
       if (fechaReserva < hoy) return false;
-      // Filtre per separar les reserves propues a les invidades
+      // Separem les reserves pròpies de les convidades
       if (filter === 'mine') return r.userId?.toString() === userId;
       if (filter === 'invited') return r.userId?.toString() !== userId;
       return true;
@@ -124,7 +123,7 @@ const LesMevesReservesPage = () => {
                   <motion.div
                     layoutId="activeTab"
                     className="absolute inset-0 bg-blue-600 rounded-xl shadow-lg shadow-blue-900/20"
-                    // Configuración sin rebote
+                    // Animació suau sense efecte de rebot
                     transition={{
                       type: 'tween',
                       ease: 'easeInOut',
@@ -164,7 +163,7 @@ const LesMevesReservesPage = () => {
               >
                 <div className="flex flex-col p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                   <div className="flex items-center gap-5">
-                    {/* Data Block */}
+                    {/* Bloc de data */}
                     <div
                       className={`flex flex-col items-center justify-center rounded-2xl px-4 py-3 text-center min-w-[75px] ${
                         isOrganizer

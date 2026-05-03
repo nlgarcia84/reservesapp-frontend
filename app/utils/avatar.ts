@@ -1,6 +1,6 @@
 // Utilitats per a la gestió d'avatars de perfil
 
-// Funció per generar la URL del avatar a partir del nombre
+// Funció per generar la URL de l'avatar a partir del nom
 // Es genera dinàmicament sense necessitat de guardar-la
 export const getAvatarUrl = (name: string | null): string => {
   if (name === null)

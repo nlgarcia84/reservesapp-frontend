@@ -19,9 +19,9 @@ const SignUpPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPasswords, setShowPasswords] = useState(false);
 
-  // Funció para validar la contrasenya
+  // Valida la contrasenya abans d'enviar el formulari
   const validatePassword = (pwd: string): string | null => {
-    // Comprobem longitud mínima de 6 caràcters
+    // Comprova una longitud mínima de 6 caràcters
     if (pwd.length < 6) {
       return 'La contrasenya ha de tenir almenys 6 caràcters.';
     }
@@ -74,11 +74,11 @@ const SignUpPage = () => {
     setIsLoading(true);
 
     try {
-      // Cridem a la funció register del servei d'autenticació, ens retorna la data de tipus AuthResponse amb el token, el role i el name
+      // Registrem l'usuari i recuperem les dades de sessió
       const data: AuthResponse = await register(name, email, password);
-      // Guardem el token al ls
+      // Guardem la sessió al localStorage
       saveToken(data.token, data.role, data.name);
-      // Si tot va bé, entra el dashboard
+      // Si tot ha anat bé, redirigim al dashboard
       router.push('/dashboard/employee');
     } catch (err: unknown) {
       console.error('Signup error:', err);
