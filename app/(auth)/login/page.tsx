@@ -110,8 +110,21 @@ const LoginPage = () => {
         </div>
 
         <div className="w-full">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Entrant...' : 'Entrar'}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            aria-busy={isSubmitting}
+            className="w-full bg-white text-black font-semibold py-3 rounded-2xl shadow-[0_8px_24px_rgba(2,6,23,0.6)] hover:opacity-95"
+          >
+            {isSubmitting ? (
+              <div className="flex items-center justify-center gap-3">
+                {/* Loader rectangular arrodonit */}
+                <span className="h-3.5 w-10 rounded-md bg-zinc-300/60 animate-pulse inline-block" />
+                <span>Entrant...</span>
+              </div>
+            ) : (
+              'Entrar'
+            )}
           </Button>
         </div>
 
