@@ -87,7 +87,7 @@ const EmployeePage = () => {
         {/* Capçalera del catàleg amb contador de sales */}
         <div className="mb-6 flex items-center justify-between">
           <h3 className="text-xl font-semibold text-zinc-200">
-            Catàleg de Sales
+            Catàleg de sales
           </h3>
           <span className="rounded-full bg-blue-500/10 px-3 py-1 text-sm font-medium text-blue-400">
             {rooms.length} disponibles

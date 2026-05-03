@@ -61,12 +61,55 @@ const DetallReservaPage = () => {
 
   const [editingId, setEditingId] = useState<number | null>(null);
 
+  // Calculem la data d'avui en format YYYY-MM-DD per limitar el calendari
+  const today = new Date().toISOString().split('T')[0];
+
   // Autorització d'accés: permetem que Admin i Employee vegin la pàgina
   useEffect(() => {
     if (role && role !== 'EMPLOYEE' && role !== 'ADMIN') {
       router.push('/dashboard'); // Redirigim si el rol no és apte
     }
   }, [role, router]);
+
+  // --- Nova funcionalitat: validació de disponibilitat i temps real ---
+
+  // Comprova si una hora específica ja ha passat (només per a la data d'avui)
+  const isTimeInPast = (time: string) => {
+    if (reservaDate !== today) return false;
+
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    const [h, m] = time.split(':').map(Number);
+    const optionMinutes = h * 60 + m;
+
+    return optionMinutes < currentMinutes;
+  };
+
+  // Comprova si una hora específica està ocupada per una reserva existent
+  const isTimeBlocked = (time: string) => {
+    if (!reservaDate) return false;
+
+    return roomReservations.some((res) => {
+      // Si estem editant, no bloquegem la franja de la pròpia reserva
+      if (editingId && Number(res.id) === editingId) return false;
+
+      // Només comparem amb reserves del mateix dia seleccionat
+      if (res.date !== reservaDate) return false;
+
+      // Convertim les hores a minuts per facilitar la comparació
+      const [checkH, checkM] = time.split(':').map(Number);
+      const [startH, startM] = res.startTime.split(':').map(Number);
+      const [endH, endM] = res.endTime.split(':').map(Number);
+
+      const checkMinutes = checkH * 60 + checkM;
+      const startMinutes = startH * 60 + startM;
+      const endMinutes = endH * 60 + endM;
+
+      // Una hora està ocupada si cau dins del rang (inici, fi)
+      return checkMinutes >= startMinutes && checkMinutes < endMinutes;
+    });
+  };
 
   const generateTimeOptions = () => {
     const options = [];
@@ -132,7 +175,6 @@ const DetallReservaPage = () => {
         setEndTime(resToEdit.endTime);
 
         if (resToEdit.guests && Array.isArray(resToEdit.guests)) {
-          // Definimos g como number o string para que el .toString() sea válido
           setSelectedGuests(
             resToEdit.guests.map((g: number | string) => g.toString()),
           );
@@ -152,13 +194,12 @@ const DetallReservaPage = () => {
 
   const handleReserva = async () => {
     const creatorId = userId || localStorage.getItem('userId');
-    // Usamos el ID de la URL como fuente de verdad absoluta
     const editReservationId = searchParams.get('editReservationId');
 
     if (!token || !id || !creatorId) return;
 
     interface ReservationPayload {
-      id?: number; // Opcional para creación, obligatorio para edición
+      id?: number;
       room_id: number;
       user_id: number;
       date: string;
@@ -167,7 +208,6 @@ const DetallReservaPage = () => {
       guests: number[];
     }
 
-    // Creamos el objeto siguiendo la interfaz
     const reservationData: ReservationPayload = {
       room_id: Number(id),
       user_id: Number(creatorId),
@@ -179,23 +219,17 @@ const DetallReservaPage = () => {
 
     try {
       if (editReservationId) {
-        // Modo edición
         const idParaActualizar = Number(editReservationId);
-
-        // Añadimos el ID al objeto
         reservationData.id = idParaActualizar;
-
         console.log('Actualizando reserva existente:', idParaActualizar);
         await updateReservation(idParaActualizar, reservationData, token);
         alert('Reserva actualitzada correctament!');
       } else {
-        // Modo creación
         console.log('Creando nueva reserva...');
         await createReservation(reservationData, token);
         alert('Reserva realitzada correctament!');
       }
 
-      // Redirecció segons el rol de l'usuari (Admin torna al panell global, Empleat a la seva agenda)
       if (role === 'ADMIN') {
         router.push('/dashboard/admin/gestio-reserves');
       } else {
@@ -255,34 +289,25 @@ const DetallReservaPage = () => {
       : null;
 
   const handleConditionalNavigation = async () => {
-    if (!token || isLoading) return; // Si ya está cargando, no hacer nada
+    if (!token || isLoading) return;
 
-    // Lògica per a Administradors: Tornar directament a la gestió global
     if (role === 'ADMIN') {
       router.push('/dashboard/admin/gestio-reserves');
       return;
     }
 
     try {
-      setIsLoading(true); // Esto debería mostrar un spinner o deshabilitar el botón
+      setIsLoading(true);
       const reserves = await getMyReservations(token);
-      console.log(reserves);
-
-      // Comprobación clara
       if (reserves && reserves.length > 0) {
-        // Tiene reservas -> Ir a su lista personal
         router.push('/dashboard/employee/les-meves-reserves');
       } else {
-        // No tiene -> Volver al buscador o panel de inicio
         router.push('/dashboard/employee');
       }
     } catch (error) {
       console.error('Error al comprobar reservas:', error);
-      // IMPORTANTE: Si falla la API, lo mejor es enviarlo a la raíz del dashboard
-      // para que no se quede atrapado en una página de error.
       router.push('/dashboard/employee');
     } finally {
-      // Es vital apagar el loading, aunque router.push ya cambie la página
       setIsLoading(false);
     }
   };
@@ -385,6 +410,7 @@ const DetallReservaPage = () => {
                 </label>
                 <input
                   type="date"
+                  min={today} // Limitem la tria perquè no es puguin seleccionar dies passats
                   className="w-full rounded-xl border border-white/10 bg-zinc-900 p-3 text-sm text-zinc-200 outline-none focus:border-blue-500/50 [color-scheme:dark]"
                   value={reservaDate}
                   onChange={(e) => setReservaDate(e.target.value)}
@@ -402,11 +428,28 @@ const DetallReservaPage = () => {
                     onChange={(e) => setStartTime(e.target.value)}
                   >
                     <option value="">Tria...</option>
-                    {timeOptions.map((t) => (
-                      <option key={`start-${t}`} value={t}>
-                        {t}
-                      </option>
-                    ))}
+                    {timeOptions.map((t) => {
+                      const blocked = isTimeBlocked(t);
+                      const inPast = isTimeInPast(t);
+                      const isBlocked = blocked || inPast;
+
+                      return (
+                        <option
+                          key={`start-${t}`}
+                          value={t}
+                          disabled={isBlocked}
+                          className={
+                            blocked
+                              ? "text-red-500 bg-zinc-800" // Vermell si està ocupada
+                              : inPast
+                                ? "text-zinc-600 bg-zinc-800" // Gris si ja ha passat
+                                : "text-zinc-200"
+                          }
+                        >
+                          {t} {blocked ? '(Ocupada)' : ''}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
                 <div>
@@ -419,15 +462,33 @@ const DetallReservaPage = () => {
                     onChange={(e) => setEndTime(e.target.value)}
                   >
                     <option value="">Tria...</option>
-                    {timeOptions.map((t) => (
-                      <option key={`end-${t}`} value={t}>
-                        {t}
-                      </option>
-                    ))}
+                    {timeOptions.map((t) => {
+                      const blocked = isTimeBlocked(t);
+                      const inPast = isTimeInPast(t);
+                      const isBlocked = blocked || inPast;
+
+                      return (
+                        <option
+                          key={`end-${t}`}
+                          value={t}
+                          disabled={isBlocked}
+                          className={
+                            blocked
+                              ? "text-red-500 bg-zinc-800"
+                              : inPast
+                                ? "text-zinc-600 bg-zinc-800"
+                                : "text-zinc-200"
+                          }
+                        >
+                          {t} {blocked ? '(Ocupada)' : ''}
+                        </option>
+                      );
+                    })}
                   </select>
                 </div>
               </div>
 
+              {/* Secció d'assistents mantenint la teva lògica de dropdown i cerca */}
               <div className="space-y-3 pt-2" ref={dropdownRef}>
                 <label className="block text-[10px] text-zinc-500 ml-1 font-bold flex items-center gap-2 uppercase tracking-widest">
                   <UserPlus size={14} className="text-blue-400" /> Assistents
@@ -514,12 +575,12 @@ const DetallReservaPage = () => {
               className="mt-8 flex-[2] py-4 text-md font-bold shadow-lg shadow-blue-500/10"
               onClick={handleReserva}
             >
-              {editingId ? 'Actualitzar Reserva' : 'Confirmar Reserva'}
+              {editingId ? 'Actualitzar reserva' : 'Confirmar reserva'}
             </Button>
           </div>
         </div>
 
-        {/* Agenda */}
+        {/* Agenda de la sala */}
         <div className="min-h-[480px] rounded-3xl border border-white/10 bg-zinc-900/20 p-8 flex flex-col">
           <h2 className="text-xl font-bold text-white uppercase tracking-tighter flex items-center gap-2 mb-6">
             <CalendarRange size={20} className="text-blue-400" /> Agenda de la

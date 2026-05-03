@@ -24,13 +24,13 @@ type SidebarLayoutProps = {
 const roleLinks: Record<'admin' | 'employee', SidebarLink[]> = {
   admin: [
     { href: '/dashboard/admin', label: 'Dashboard' },
-    { href: '/dashboard/admin/gestio-sales', label: 'Gestió de Sales' },
-    { href: '/dashboard/admin/gestio-reserves', label: 'Gestió Reserves' },
-    { href: '/dashboard/admin/gestio-usuaris', label: "Gestió d'Usuaris" },
+    { href: '/dashboard/admin/gestio-sales', label: 'Gestió de sales' },
+    { href: '/dashboard/admin/gestio-reserves', label: 'Gestió reserves' },
+    { href: '/dashboard/admin/gestio-usuaris', label: "Gestió d'usuaris" },
   ],
   employee: [
     { href: '/dashboard/employee', label: 'Dashboard' },
-    { href: '/dashboard/employee/les-meves-reserves', label: 'La meva agenda' },
+    { href: '/dashboard/employee/les-meves-reserves', label: 'Agenda de reserves' },
   ],
 };
 

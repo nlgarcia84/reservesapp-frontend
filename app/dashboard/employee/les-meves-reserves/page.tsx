@@ -92,14 +92,14 @@ const LesMevesReservesPage = () => {
 
   return (
     <div className="mx-auto max-w-5xl p-4 sm:p-6 lg:p-8">
-      {/* CAPÇALERA I FILTRES */}
+      {/* Capçalera i filtres */}
       <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white">
-            La meva Agenda
+            Agenda de reserves
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Gestiona les teves reunions i invitacions
+            Gestiona les reserves que has organitzat tu mateix i les que has estat convidat a participar.
           </p>
         </div>
 
@@ -134,7 +134,7 @@ const LesMevesReservesPage = () => {
                     ? 'TOTES'
                     : f === 'mine'
                       ? 'LES MEVES'
-                      : 'INVITACIONS'}
+                      : 'CONVIDADES'}
                 </span>
               </button>
             );
@@ -142,7 +142,7 @@ const LesMevesReservesPage = () => {
         </div>
       </div>
 
-      {/* LLISTAT DE RESERVES */}
+      {/* Llistat de reserves */}
       <div className="grid gap-4">
         {filteredReserves.length > 0 ? (
           filteredReserves.map((reserva) => {
@@ -177,7 +177,7 @@ const LesMevesReservesPage = () => {
                       </span>
                     </div>
 
-                    {/* Informació de la Reserva */}
+                    {/* Informació de la reserva */}
                     <div className="space-y-1.5">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-lg font-bold text-white leading-tight">
