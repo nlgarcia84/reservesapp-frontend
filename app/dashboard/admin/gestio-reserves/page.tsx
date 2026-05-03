@@ -91,7 +91,7 @@ const GestioReserves = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 m-8">
             {Object.entries(reservesAgrupades).map(([salaNom, llista]) => (
               <div
                 key={salaNom}
@@ -106,9 +106,9 @@ const GestioReserves = () => {
                     .map((res) => (
                       <div
                         key={res.id}
-                        className="group relative rounded-2xl border border-white/5 bg-zinc-950/40 p-4 transition-all hover:bg-zinc-900/40"
+                        className="flex custom-scrollbar group relative rounded-2xl border border-white/5 bg-zinc-950/40 p-4 transition-all hover:bg-zinc-900/40"
                       >
-                        <div className="flex justify-between items-start mb-2">
+                        <div className="flex justify-between items-center mb-2">
                           <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">
                             {new Date(res.date).toLocaleDateString('ca-ES', {
                               day: '2-digit',

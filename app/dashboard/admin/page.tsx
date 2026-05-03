@@ -54,7 +54,6 @@ const AdminPage = () => {
     fetchData();
   }, [token]);
 
-  // --- 2. HOOKS DE FILTRADO (Siempre antes de cualquier return) ---
   const reservesAvui = useMemo(() => {
     const avui = new Date();
     const offset = avui.getTimezoneOffset() * 60000;
@@ -63,6 +62,24 @@ const AdminPage = () => {
       .split('T')[0];
     return reservation.filter((r) => r.date === avuiString);
   }, [reservation]);
+
+  const { mensajeReservesAvui, mensajeColorAvui } = useMemo(() => {
+    const count = reservesAvui.length;
+
+    if (count === 0)
+      return {
+        mensajeReservesAvui: 'No tens reserves avui',
+        mensajeColorAvui: 'text-zinc-500', // Gris si no hay nada
+      };
+
+    return {
+      mensajeReserves:
+        count === 1
+          ? `Tens ${count} reserva avui`
+          : `Tens ${count} reserves avui`,
+      mensajeColor: 'text-blue-400', // Azul si hay reservas
+    };
+  }, [reservesAvui.length]);
 
   const reservesProximas = useMemo(() => {
     // 1. Obtenemos la fecha de HOY a las 00:00:00 local
@@ -84,6 +101,23 @@ const AdminPage = () => {
       .sort((a, b) => a.date.localeCompare(b.date));
   }, [reservation]);
 
+  const { mensajeReservesProximes, mensajeColorProximes } = useMemo(() => {
+    const count = reservesAvui.length;
+
+    if (count === 0)
+      return {
+        mensajeReservesProximes: 'No tens pròximes reserves',
+        mensajeColorProximes: 'text-zinc-500', // Gris si no hay nada
+      };
+
+    return {
+      mensajeReserves:
+        count === 1
+          ? `Tens ${count} reserva pròximament`
+          : `Tens ${count} reserves pròximament`,
+      mensajeColor: 'text-blue-400', // Azul si hay reservas
+    };
+  }, [reservesAvui.length]);
   // --- 3. RENDERS CONDICIONALES ---
   if (loading)
     return <div className="p-10 text-zinc-400">Carregant dashboard...</div>;
@@ -112,13 +146,17 @@ const AdminPage = () => {
             <div className="justify-between text-center md:grid md:grid-cols-2 md:gap-4 xl:gap-6">
               <Card title="Total Sales" icon={Hotel}>
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold">{rooms.length}</span>
+                  <span className="text-2xl font-bold text-blue-400">
+                    {rooms.length}
+                  </span>
                   <span>Sales registrades</span>
                 </div>
               </Card>
               <Card title="Capacitat Total" icon={UsersRound}>
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold">{total}</span>
+                  <span className="text-2xl font-bold text-blue-400">
+                    {total}
+                  </span>
                   <span>Places disponibles</span>
                 </div>
               </Card>
@@ -133,8 +171,8 @@ const AdminPage = () => {
                   key={room.id}
                   className="m-1 mb-2 flex flex-row justify-between rounded-xl border border-white/10 bg-zinc-900/70 p-3"
                 >
-                  <p className="font-semibold text-zinc-100">{room.name}</p>
-                  <p className="text-sm text-zinc-400">
+                  <p className="font-medium text-zinc-100">{room.name}</p>
+                  <p className="text-sm text-blue-400 font-medium">
                     {room.capacity} places
                   </p>
                 </div>
@@ -146,7 +184,7 @@ const AdminPage = () => {
             <div className="xl:grid xl:grid-col-2">
               <Card title="Reserves Totals" icon={Clipboard}>
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold">
+                  <span className="text-2xl font-bold text-blue-400">
                     {reservation.length}
                   </span>
                   <span>Reserves</span>
@@ -155,12 +193,33 @@ const AdminPage = () => {
 
               <Card title="Reserves Avui" icon={Clock}>
                 <div className="flex flex-col">
-                  <span className="text-2xl font-bold text-blue-400">
-                    {reservesAvui.length}
+                  <span className={`text-lg font-bold ${mensajeColorAvui}`}>
+                    {mensajeReservesAvui}
                   </span>
-                  <span className="text-xs text-zinc-500">
+                  <span className="text-xs text-zinc-500 mb-5">
                     {new Date().toLocaleDateString()}
                   </span>
+                  <div className="space-y-2">
+                    {reservesAvui.slice(0, 5).map((r) => (
+                      <div
+                        key={r.id}
+                        className="flex justify-between text-left p-2 rounded-lg bg-zinc-900/50 border border-white/5"
+                      >
+                        <div>
+                          <p className="text-[10px] font-bold text-blue-400 uppercase">
+                            {new Date(r.date).toLocaleDateString('ca-ES', {
+                              weekday: 'short',
+                              day: 'numeric',
+                            })}
+                          </p>
+                          <p className="text-xs">Sala {r.roomId}</p>
+                        </div>
+                        <span className="text-xs text-zinc-500">
+                          {r.startTime} - {r.endTime}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </Card>
             </div>
@@ -170,8 +229,14 @@ const AdminPage = () => {
               icon={CalendarClock}
               subtitle="Properes reserves programades"
             >
+              <div></div>
+              <span
+                className={`text-lg font-bold text-blue-400 ${mensajeColorProximes}`}
+              >
+                {mensajeReservesProximes}
+              </span>
               {reservesProximas.length > 0 ? (
-                <div className="space-y-2">
+                <div className="space-y-2 mt-5">
                   {reservesProximas.slice(0, 5).map((r) => (
                     <div
                       key={r.id}
@@ -184,10 +249,10 @@ const AdminPage = () => {
                             day: 'numeric',
                           })}
                         </p>
-                        <p className="text-xs">Sala {r.room_id}</p>
+                        <p className="text-xs">Sala {r.roomId}</p>
                       </div>
                       <span className="text-xs text-zinc-500">
-                        {r.startTime}
+                        {r.startTime} - {r.endTime}
                       </span>
                     </div>
                   ))}
