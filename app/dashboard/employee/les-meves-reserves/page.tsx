@@ -70,17 +70,21 @@ const LesMevesReservesPage = () => {
   };
 
   // Filtra per tipus de reserva, propia o invitada
-  const filteredReserves = reserves.filter((r) => {
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0); // Ponemos a las 00:00 para comparar solo el día
-    // Filtre de seguretat (frontend) de data de la reserva per si no s'ha esborrat al backend
-    const fechaReserva = new Date(r.date);
-    if (fechaReserva < hoy) return false;
-    // Filtre per separar les reserves propues a les invidades
-    if (filter === 'mine') return r.userId?.toString() === userId;
-    if (filter === 'invited') return r.userId?.toString() !== userId;
-    return true;
-  });
+  const filteredReserves = reserves
+    .filter((r) => {
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0); // Ponemos a las 00:00 para comparar solo el día
+      // Filtre de seguretat (frontend) de data de la reserva per si no s'ha esborrat al backend
+      const fechaReserva = new Date(r.date);
+      if (fechaReserva < hoy) return false;
+      // Filtre per separar les reserves propues a les invidades
+      if (filter === 'mine') return r.userId?.toString() === userId;
+      if (filter === 'invited') return r.userId?.toString() !== userId;
+      return true;
+    })
+    .sort((a, b) => {
+      return a.date.localeCompare(b.date);
+    });
 
   if (isLoading) {
     return (
@@ -99,7 +103,8 @@ const LesMevesReservesPage = () => {
             Agenda de reserves
           </h1>
           <p className="mt-1 text-sm text-zinc-500">
-            Gestiona les reserves que has organitzat tu mateix i les que has estat convidat a participar.
+            Gestiona les reserves que has organitzat tu mateix i les que has
+            estat convidat a participar.
           </p>
         </div>
 
