@@ -15,8 +15,6 @@ describe('SidebarLayout', () => {
 
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
       expect(screen.getByText('Gestió de Sales')).toBeInTheDocument();
-      // Si l'admin encara diu "Gestió Reserves", ho deixem així. 
-      // Si l'has canviat també a l'admin, canvia-ho per 'La meva agenda'
       expect(screen.getByText('Gestió Reserves')).toBeInTheDocument();
     });
 
@@ -57,7 +55,6 @@ describe('SidebarLayout', () => {
       );
 
       expect(screen.getByText('Dashboard')).toBeInTheDocument();
-      // CANVI: Ara busquem el nou text
       expect(screen.getByText('La meva agenda')).toBeInTheDocument();
     });
 
@@ -83,7 +80,6 @@ describe('SidebarLayout', () => {
         <SidebarLayout role="employee" open={true} onClose={mockOnClose} />,
       );
 
-      // CANVI: Busquem per "La meva agenda" i la nova ruta
       const reservesLink = screen.getByRole('link', {
         name: /La meva agenda/i,
       });
@@ -213,13 +209,13 @@ describe('SidebarLayout', () => {
         <SidebarLayout role="admin" open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.getByText('Gestió de Sales')).toBeInTheDocument();
+      expect(screen.getByText(/gestió de sales/i)).toBeInTheDocument();
 
       rerender(
         <SidebarLayout role="employee" open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.queryByText('Gestió de Sales')).not.toBeInTheDocument();
+      expect(screen.queryByText(/gestió de sales/i)).not.toBeInTheDocument();
     });
 
     it('should update links when role prop changes from employee to admin', () => {
@@ -227,13 +223,13 @@ describe('SidebarLayout', () => {
         <SidebarLayout role="employee" open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.queryByText('Gestió de Sales')).not.toBeInTheDocument();
+      expect(screen.queryByText(/gestió de sales/i)).not.toBeInTheDocument();
 
       rerender(
         <SidebarLayout role="admin" open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.getByText('Gestió de Sales')).toBeInTheDocument();
+      expect(screen.getByText(/gestió de sales/i)).toBeInTheDocument();
     });
   });
 });
