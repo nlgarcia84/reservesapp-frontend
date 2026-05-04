@@ -1,4 +1,5 @@
 import { Upload } from 'lucide-react';
+import Image from 'next/image';
 
 type InputFileFormProps = {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -34,11 +35,7 @@ export const InputFileForm = ({
       />
       {preview && (
         <div className="relative w-full h-32 rounded-lg overflow-hidden border border-white/15">
-          <img
-            src={preview}
-            alt="Preview"
-            className="w-full h-full object-cover"
-          />
+          <Image src={preview} alt="Preview" fill className="object-cover" />
         </div>
       )}
     </div>

@@ -232,6 +232,23 @@ const AdminPage = () => {
       })
     : null;
 
+  // === Logging: Estat del Sistema ===
+  useEffect(() => {
+    if (onlineData) {
+      console.log('📊 [AdminPage] onlineData actualitzat:', {
+        count: onlineData.count,
+        updatedAt: onlineData.updatedAt,
+        timestamp: new Date().toISOString(),
+      });
+    }
+    if (onlineError) {
+      console.error('⚠️ [AdminPage] onlineError:', onlineError);
+    }
+    if (onlineLoading) {
+      console.log('⏳ [AdminPage] onlineLoading: true');
+    }
+  }, [onlineData, onlineError, onlineLoading]);
+
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(timer);

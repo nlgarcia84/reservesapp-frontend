@@ -146,7 +146,7 @@ const DetallReservaPage = () => {
       try {
         const reservationsData = await getReservationsByRoom(Number(id), token);
         setRoomReservations(reservationsData);
-      } catch (agendaError) {
+      } catch {
         setRoomReservations([]);
       }
     } catch (error) {

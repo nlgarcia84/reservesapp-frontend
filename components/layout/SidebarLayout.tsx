@@ -30,7 +30,10 @@ const roleLinks: Record<'admin' | 'employee', SidebarLink[]> = {
   ],
   employee: [
     { href: '/dashboard/employee', label: 'Dashboard' },
-    { href: '/dashboard/employee/les-meves-reserves', label: 'Agenda de reserves' },
+    {
+      href: '/dashboard/employee/les-meves-reserves',
+      label: 'Agenda de reserves',
+    },
   ],
 };
 
@@ -44,8 +47,8 @@ export const SidebarLayout = ({ role, open, onClose }: SidebarLayoutProps) => {
   // Estado para evitar hidratación incorrecta: solo renderizamos el nombre después de montar
   const [isMounted, setIsMounted] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 

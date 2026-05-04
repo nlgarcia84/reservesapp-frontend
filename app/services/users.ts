@@ -96,10 +96,22 @@ export const getOnlineUsers = async (
   });
 
   if (!res.ok) {
+    console.error('❌ getOnlineUsers API Error:', {
+      status: res.status,
+      statusText: res.statusText,
+      timestamp: new Date().toISOString(),
+    });
     throw new Error(`Error: ${res.status} ${res.statusText}`);
   }
 
-  return res.json();
+  const data = await res.json();
+  console.debug('🟢 getOnlineUsers Success:', {
+    count: data.count,
+    updatedAt: data.updatedAt,
+    fullResponse: data,
+    timestamp: new Date().toISOString(),
+  });
+  return data;
 };
 
 // Funció per obtenir l'ID d'un usuari a partir del seu nom

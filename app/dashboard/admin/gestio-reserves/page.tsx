@@ -55,7 +55,7 @@ const GestioReserves = () => {
     try {
       await deleteReservation(id, token!);
       setReserves((prev) => prev.filter((r) => r.id !== id));
-    } catch (error) {
+    } catch {
       alert('Error en eliminar la reserva');
     }
   };

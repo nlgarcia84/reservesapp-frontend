@@ -35,8 +35,8 @@ export const RoomList = ({ rooms, isAdmin, onRefresh }: RoomListProps) => {
 
   // Quan canvïi la pàgina, deselecciona qualsevol sala
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedRoomId(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, rooms]);
 
   useEffect(() => {

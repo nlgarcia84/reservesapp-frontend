@@ -6,7 +6,9 @@ import { Hand } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState, useCallback } from 'react';
 import { getRooms, type Room } from '@/app/services/rooms';
+import { getOnlineUsers, type OnlineUsersResponse } from '@/app/services/users';
 import { RoomList } from '@/components/ui/RoomList';
+import useSWR from 'swr';
 
 const EmployeePage = () => {
   const router = useRouter();
@@ -33,7 +35,15 @@ const EmployeePage = () => {
     return () => clearTimeout(timer);
   }, [isAuthenticated, router]);
 
-  // 2. Funció memoritzada per obtenir les sales de la base de dades
+  // 2. Crida a l'endpoint de usuaris actius per mantenir la sessió activa
+  // SWR actualitza automàticament cada 15 segons (refreshInterval: 15000)
+  const { data: onlineData } = useSWR<OnlineUsersResponse>(
+    token ? `${token}-online` : null,
+    () => (token ? getOnlineUsers(token) : null),
+    { refreshInterval: 15000, revalidateOnFocus: false },
+  );
+
+  // 3. Funció memoritzada per obtenir les sales de la base de dades
   // Evita recàrregues innecessàries gràcies a useCallback
   // Paràmetres: cap (utilitza el token del contexte d'autenticació)
   // Retorna: cap (actualitza els estats de rooms i isLoadingRooms)
@@ -50,12 +60,20 @@ const EmployeePage = () => {
     }
   }, [token]);
 
-  // 3. Efecte que dispara la crida a les sales quan l'usuari s'autentica
+  // 4. Efecte que dispara la crida a les sales quan l'usuari s'autentica
   useEffect(() => {
     if (isAuthenticated) {
       fetchRooms();
     }
   }, [isAuthenticated, fetchRooms]);
+
+  // 5. Efecte per a logging de l'estat de l'online data
+  useEffect(() => {
+    if (onlineData) {
+      console.log('⏳ [EmployeePage] onlineLoading:', !onlineData);
+      console.log('📊 [EmployeePage] onlineData actualitzat:', onlineData);
+    }
+  }, [onlineData]);
 
   if (isChecking) {
     return (
