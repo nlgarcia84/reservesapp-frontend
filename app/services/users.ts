@@ -8,6 +8,11 @@ type User = {
   password: string;
 };
 
+export type OnlineUsersResponse = {
+  count: number;
+  updatedAt?: string;
+};
+
 export const getUsers = async (token: string | null) => {
   // Validar que existeix un token, sinó llançar un error
   if (!token) throw new Error('Token no disponible');
@@ -77,4 +82,44 @@ export const deleteUser = async (
   if (!res.ok) {
     throw new Error(`Error: ${res.status} ${res.statusText}`);
   }
+};
+
+export const getOnlineUsers = async (
+  token: string | null,
+): Promise<OnlineUsersResponse> => {
+  if (!token) throw new Error('Token no disponible');
+
+  const res = await fetch(`${API_URL}/users/online`, {
+    method: 'GET',
+    cache: 'no-store',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Error: ${res.status} ${res.statusText}`);
+  }
+
+  return res.json();
+};
+
+// Funció per obtenir l'ID d'un usuari a partir del seu nom
+export const getUserId = async (
+  name: string,
+  token: string | null,
+): Promise<number> => {
+  if (!token) throw new Error('Token no disponible');
+
+  const res = await fetch(`${API_URL}/users`, {
+    method: 'GET',
+    cache: 'no-store',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Error: ${res.status} ${res.statusText}`);
+  }
+
+  const users: User[] = await res.json();
+  const userId = users.find((user) => user.name === name)?.id;
+  return userId || 0;
 };

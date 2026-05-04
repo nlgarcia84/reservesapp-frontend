@@ -77,8 +77,39 @@ export default function LandingPage() {
       </header>
 
       {/* Hero */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
-        <div className="text-center">
+      <section className="relative isolate flex min-h-[72vh] items-center overflow-hidden px-4 py-16 sm:px-6 sm:py-24">
+        {/* Vídeo de fons del Hero */}
+        <video
+          className="absolute inset-0 z-0 h-full w-full object-cover"
+          src="/assets/roomvideo.mp4"
+          autoPlay
+          muted
+          loop
+          playsInline
+          onError={() =>
+            console.warn('Hero video failed to load: /assets/roomvideo.mp4')
+          }
+        />
+
+        {/* Filtre fosc base */}
+        <div aria-hidden className="absolute inset-0 z-10 bg-black/55" />
+
+        {/* Difuminat radial + vinyeta per fondre amb el fons negre */}
+        <div
+          aria-hidden
+          className="absolute inset-0 z-10"
+          style={{
+            background:
+              'radial-gradient(120% 80% at 50% 12%, rgba(59,130,246,0.14) 0%, rgba(10,10,10,0.35) 40%, rgba(0,0,0,0.92) 100%)',
+          }}
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 z-10"
+          style={{ boxShadow: 'inset 0 0 220px rgba(0,0,0,0.88)' }}
+        />
+
+        <div className="relative z-20 mx-auto w-full max-w-7xl text-center">
           <h1
             className="mb-6 text-4xl font-bold tracking-tight sm:text-6xl animate-fade-in-up"
             style={{ color: 'var(--text-primary)' }}

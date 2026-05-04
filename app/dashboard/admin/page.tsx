@@ -12,6 +12,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@/app/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
 import { getRooms, type Room } from '@/app/services/rooms';
+import { getOnlineUsers, type OnlineUsersResponse } from '@/app/services/users';
 import { useTimeGreeting } from '@/app/hooks/useTimeGreeting';
 import {
   getAllReservations,
@@ -26,7 +27,8 @@ import {
   Clipboard,
   Clock,
   CalendarClock,
-  UserCheck,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
 
 // Utilitats
@@ -74,22 +76,6 @@ const chartConfig = {
     color: '#3b82f6',
   },
 } satisfies ChartConfig;
-
-const fetcher = async ([url, token]: [string, string]) => {
-  const res = await fetch(url, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!res.ok) throw new Error('Error fetch');
-  return res.json();
-};
-
-// Tipatge per la resposta de l'endpoint /users/online
-// Aquest endpoint ha de retornar com a mínim { count: number }
-// Opcionalment pot incloure `updatedAt` per mostrar quan es va actualitzar
-type OnlineUsersResponse = {
-  count: number;
-  updatedAt?: string;
-};
 
 const AdminPage = () => {
   const { token } = useAuth();
@@ -215,26 +201,23 @@ const AdminPage = () => {
     data: onlineData,
     error: onlineError,
     isLoading: onlineLoading,
-  } = useSWR<OnlineUsersResponse>(
-    token ? [`${process.env.NEXT_PUBLIC_API_URL}/users/online`, token] : null,
-    fetcher,
-    {
-      refreshInterval: 15000,
-      revalidateOnFocus: false,
-      revalidateOnReconnect: true,
-      dedupingInterval: 8000,
-      keepPreviousData: true,
-    },
-  );
+  } = useSWR<OnlineUsersResponse>(token, getOnlineUsers, {
+    refreshInterval: 15000,
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+    dedupingInterval: 8000,
+    keepPreviousData: true,
+  });
 
   const onlineCount = onlineData?.count ?? 0;
   const hasOnlineError = Boolean(onlineError);
   const isSystemActive = !hasOnlineError && onlineCount > 0;
+  const onlineStatusIcon = isSystemActive ? Wifi : WifiOff;
 
   const onlineStatusText = onlineLoading
     ? 'Comprovant estat...'
     : hasOnlineError
-      ? 'Estat no disponible'
+      ? `Erro servidor (${onlineError?.status || 'desconegut'})`
       : isSystemActive
         ? 'Sistema actiu'
         : 'Sense activitat';
@@ -569,7 +552,7 @@ const AdminPage = () => {
               3) Mostrar comptador d'usuaris actius i hora `updatedAt` si existeix.
               4) Estils adaptatius per indicar visualment l'estat (pulse/ping).
             */}
-            <Card title="Estat del Sistema" icon={UserCheck}>
+            <Card title="Estat del Sistema" icon={onlineStatusIcon}>
               <div className="flex flex-col">
                 <div
                   className={`text-sm font-bold text-center py-2 rounded-lg bg-white/5 mb-4 ${
@@ -587,34 +570,45 @@ const AdminPage = () => {
 
                 <div className="flex justify-between items-center p-3 rounded-xl bg-zinc-800/20 border border-white/5">
                   <div className="flex items-center gap-3">
-                    <div className="relative flex h-2 w-2">
+                    <div
+                      className={`relative flex h-11 w-11 items-center justify-center rounded-full border ${
+                        onlineLoading
+                          ? 'border-amber-400/30 bg-amber-500/10 text-amber-300'
+                          : isSystemActive
+                            ? 'border-emerald-400/30 bg-emerald-500/10 text-emerald-400'
+                            : 'border-red-400/30 bg-red-500/10 text-red-400'
+                      }`}
+                    >
                       <span
-                        className={`absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                        className={`absolute inset-0 rounded-full ${
                           onlineLoading
-                            ? 'bg-amber-400 animate-pulse'
-                            : hasOnlineError
-                              ? 'bg-orange-400 animate-ping'
-                              : isSystemActive
-                                ? 'bg-emerald-400 animate-ping'
-                                : 'bg-red-400 animate-ping'
+                            ? 'bg-amber-400/10 animate-ping'
+                            : isSystemActive
+                              ? 'bg-emerald-400/10 animate-ping'
+                              : 'bg-red-400/10 animate-ping'
                         }`}
                       />
-                      <span
-                        className={`relative inline-flex rounded-full h-2 w-2 ${
-                          onlineLoading
-                            ? 'bg-amber-500'
-                            : hasOnlineError
-                              ? 'bg-orange-500'
-                              : isSystemActive
-                                ? 'bg-emerald-500'
-                                : 'bg-red-500'
-                        }`}
-                      />
+                      {isSystemActive ? (
+                        <Wifi
+                          className={`relative z-10 h-5 w-5 ${
+                            onlineLoading ? 'animate-pulse' : 'animate-bounce'
+                          }`}
+                        />
+                      ) : (
+                        <WifiOff
+                          className={`relative z-10 h-5 w-5 animate-pulse`}
+                        />
+                      )}
                     </div>
 
                     <div className="flex flex-col">
                       <span className="text-xs font-bold text-zinc-200 uppercase">
                         Usuaris en línia
+                      </span>
+                      <span className="text-[10px] text-zinc-500">
+                        {isSystemActive
+                          ? 'Connexió activa detectada'
+                          : 'Connexió desactivada o sense usuaris'}
                       </span>
                       {updatedAtText && !hasOnlineError && (
                         <span className="text-[10px] text-zinc-500">
