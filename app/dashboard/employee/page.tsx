@@ -39,7 +39,7 @@ const EmployeePage = () => {
   // SWR actualitza automàticament cada 15 segons (refreshInterval: 15000)
   const { data: onlineData } = useSWR<OnlineUsersResponse>(
     token ? `${token}-online` : null,
-    () => (token ? getOnlineUsers(token) : null),
+    token ? () => getOnlineUsers(token) : null,
     { refreshInterval: 15000, revalidateOnFocus: false },
   );
 
