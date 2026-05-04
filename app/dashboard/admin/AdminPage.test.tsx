@@ -13,6 +13,13 @@ jest.mock('@/app/services/rooms', () => ({
     getRooms: jest.fn(),
 }));
 
+global.fetch = jest.fn(() =>
+    Promise.resolve({
+        json: () => Promise.resolve([]),
+        ok: true,
+    })
+) as jest.Mock;
+
 describe('Component AdminPage', () => {
     beforeEach(() => {
         jest.clearAllMocks();

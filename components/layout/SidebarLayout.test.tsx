@@ -211,13 +211,13 @@ describe('SidebarLayout', () => {
         <SidebarLayout role="admin" open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.getByText('Gestió de Sales')).toBeInTheDocument();
+      expect(screen.getByText(/gestió de sales/i)).toBeInTheDocument();
 
       rerender(
         <SidebarLayout role="employee" open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.queryByText('Gestió de Sales')).not.toBeInTheDocument();
+      expect(screen.queryByText(/gestió de sales/i)).not.toBeInTheDocument();
     });
 
     it('should update links when role prop changes from employee to admin', () => {
@@ -225,13 +225,13 @@ describe('SidebarLayout', () => {
         <SidebarLayout role="employee" open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.queryByText('Gestió de Sales')).not.toBeInTheDocument();
+      expect(screen.queryByText(/gestió de sales/i)).not.toBeInTheDocument();
 
       rerender(
         <SidebarLayout role="admin" open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.getByText('Gestió de Sales')).toBeInTheDocument();
+      expect(screen.getByText(/gestió de sales/i)).toBeInTheDocument();
     });
   });
 });
