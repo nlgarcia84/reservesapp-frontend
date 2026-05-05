@@ -137,10 +137,11 @@ const DetallReservaPage = () => {
         getRoomById(id as string, token),
         getUsers(token),
       ]);
-
       setRoom(roomData);
       setAllUsers(
-        usersData.filter((u: User) => u.id.toString() !== userId?.toString()),
+        role === 'ADMIN'
+          ? usersData // L'admin ho veu tot, inclòs ell mateix
+          : usersData.filter((u: User) => u.id.toString() !== userId?.toString()) // L'empleat no es veu a si mateix per no duplicar-se
       );
 
       try {
@@ -154,7 +155,7 @@ const DetallReservaPage = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [id, token, userId]);
+  }, [id, token, role, userId]);
 
   useEffect(() => {
     fetchData();
@@ -168,20 +169,27 @@ const DetallReservaPage = () => {
       );
 
       if (resToEdit) {
-        console.log('Modo edición activado para ID:', resToEdit.id);
-        setEditingId(Number(resToEdit.id));
+        setEditingId(idParaEditar);
         setReservaDate(resToEdit.date);
         setStartTime(resToEdit.startTime);
         setEndTime(resToEdit.endTime);
 
         if (resToEdit.guests && Array.isArray(resToEdit.guests)) {
-          setSelectedGuests(
-            resToEdit.guests.map((g: number | string) => g.toString()),
-          );
+          // Mapejem amb cura: si el guest és un objecte agafem .id, si és número el passem a string
+          type GuestItem = number | string | { id: number | string };
+          const guestIds = resToEdit.guests.map((g: GuestItem) => {
+            if (typeof g === 'object' && g !== null) return String(g.id);
+            return String(g);
+          });
+
+          // Filtrem per no incloure el propi usuari creador de la reserva si el backend el torna a la llista
+          const filteredGuests = guestIds.filter(id => id !== userId?.toString());
+
+          setSelectedGuests(filteredGuests);
         }
       }
     }
-  }, [editIdFromUrl, roomReservations]);
+  }, [editIdFromUrl, roomReservations, userId]);
 
   const resetForm = () => {
     setEditingId(null);
@@ -194,38 +202,47 @@ const DetallReservaPage = () => {
 
   const handleReserva = async () => {
     const creatorId = userId || localStorage.getItem('userId');
-    const editReservationId = searchParams.get('editReservationId');
 
     if (!token || !id || !creatorId) return;
 
-    interface ReservationPayload {
-      id?: number;
-      room_id: number;
-      user_id: number;
-      date: string;
-      start_time: string;
-      end_time: string;
-      guests: number[];
+    // 1. Decidim qui és el "propietari" (user_id) de la reserva:
+    // - Si editem: mantenim l'original.
+    // - Si som Admin creant: el primer de la llista de convidats serà el "propietari".
+    // - Si som Employee creant: som nosaltres mateixos.
+    let finalUserId;
+    if (editingId) {
+      finalUserId = roomReservations.find(r => Number(r.id) === editingId)?.userId || creatorId;
+    } else {
+      // Si l'Admin crea i ha triat gent, el primer convidat serà el titular a la DB
+      // Si no ha triat ningú, el titular és ell mateix.
+      finalUserId = (role === 'ADMIN' && selectedGuests.length > 0)
+        ? selectedGuests[0]
+        : creatorId;
     }
 
-    const reservationData: ReservationPayload = {
+    // 2. Gestionem la llista de convidats (guests):
+    let guestsArray = selectedGuests.map(Number);
+
+    // Si NO som admin (és a dir, som Employee), ens afegim sempre a nosaltres mateixos
+    if (role !== 'ADMIN' && !guestsArray.includes(Number(creatorId))) {
+      guestsArray = [Number(creatorId), ...guestsArray];
+    }
+    // Si som Admin, respectem EXACTAMENT el que hagi triat l'admin a la llista (sense auto-incloure'l)
+
+    const reservationData = {
       room_id: Number(id),
-      user_id: Number(creatorId),
+      user_id: Number(finalUserId),
       date: reservaDate,
       start_time: startTime,
       end_time: endTime,
-      guests: [...new Set([Number(creatorId), ...selectedGuests.map(Number)])],
+      guests: guestsArray,
     };
 
     try {
-      if (editReservationId) {
-        const idParaActualizar = Number(editReservationId);
-        reservationData.id = idParaActualizar;
-        console.log('Actualizando reserva existente:', idParaActualizar);
-        await updateReservation(idParaActualizar, reservationData, token);
+      if (editingId) {
+        await updateReservation(editingId, reservationData, token);
         alert('Reserva actualitzada correctament!');
       } else {
-        console.log('Creando nueva reserva...');
         await createReservation(reservationData, token);
         alert('Reserva realitzada correctament!');
       }
@@ -237,7 +254,7 @@ const DetallReservaPage = () => {
       }
       router.refresh();
     } catch (error) {
-      console.error('Error en la petición:', error);
+      console.error('Error:', error);
       alert('Error al processar la reserva');
     }
   };
@@ -258,7 +275,7 @@ const DetallReservaPage = () => {
   );
 
   const selectedGuestObjects = allUsers.filter((u) =>
-    selectedGuests.includes(u.id.toString()),
+    selectedGuests.some(guestId => guestId.toString() === u.id.toString())
   );
 
   if (isLoading)

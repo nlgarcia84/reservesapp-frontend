@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Users, Image as ImageIcon } from 'lucide-react';
+import { Users, Image as ImageIcon, CalendarPlus } from 'lucide-react';
 import { DeleteButton } from '@/components/ui/DeleteButton';
 import { type Room } from '@/app/services/rooms';
 import { motion } from 'framer-motion';
@@ -108,11 +108,23 @@ export const RoomCard = ({
           </div>
         </div>
 
-        <Link href={detailsUrl} className="mt-auto block">
-          <button className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500 active:scale-95">
-            {isAdmin ? 'Editar i veure detalls' : 'Veure detalls i reservar'}
-          </button>
-        </Link>
+        <div className="mt-auto flex flex-col gap-2">
+          {/* Botó de Reservar per a l'Admin */}
+          {isAdmin && (
+            <Link href={`/dashboard/employee/reserves/${room.id}`} className="block">
+              <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-emerald-500 active:scale-95">
+                <CalendarPlus size={18} />
+                Reservar
+              </button>
+            </Link>
+          )}
+
+          <Link href={detailsUrl} className="block">
+            <button className="w-full rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500 active:scale-95">
+              {isAdmin ? 'Editar i veure detalls' : 'Veure detalls i reservar'}
+            </button>
+          </Link>
+        </div>
       </div>
     </motion.div>
   );
